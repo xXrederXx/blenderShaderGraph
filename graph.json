@@ -1,0 +1,42 @@
+[
+    {
+      "id": "brick1",
+      "type": "BrickTexture",
+      "params": {
+        "offset": 0,
+        "squash": 1,
+        "color1": "#ffffff",
+        "color2": "#000000",
+        "colorMotar": "#ffffff",
+        "motarSize": 20,
+        "motarSmoothness": 0,
+        "brickWidth": 100,
+        "rowHeight": 100
+      }
+    },
+    {
+      "id": "noise1",
+      "type": "NoiseTexture",
+      "params": {
+        "size": 10
+      }
+    },
+    {
+      "id": "mixed1",
+      "type": "MixColor",
+      "inputs": {
+        "input1": "brick1.color",
+        "input2": "noise1",
+        "factor": 0.5
+      }
+    },
+    {
+      "id": "output1",
+      "type": "Output",
+      "inputs": {
+        "image": "mixed1",
+        "filename": "diffuse.png"
+      }
+    }
+  ]
+  
