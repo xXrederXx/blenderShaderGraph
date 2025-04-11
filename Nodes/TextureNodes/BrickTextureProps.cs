@@ -22,7 +22,7 @@ public record BrickTextureProps(
 {
     public readonly int imgWidth = imgWidth;
     public readonly int imgHeight = imgHeight;
-    public readonly float offset = MyMath.Clapm01(offset); // 0 - 1
+    public readonly float offset = MyMath.Clamp01(offset); // 0 - 1
     public readonly int offsetFrequency = offsetFrequency;
     public readonly float squash = squash;
     public readonly int squashFrequency = squashFrequency;
@@ -30,7 +30,7 @@ public record BrickTextureProps(
     public readonly Color color2 = color2;
     public readonly Color colorMotar = colorMotar;
     public readonly float motarSize = motarSize;
-    public readonly float motarSmoothness = MyMath.Clapm01(motarSmoothness); // 0 - 1
+    public readonly float motarSmoothness = MyMath.Clamp01(motarSmoothness); // 0 - 1
     public readonly float bias = Math.Clamp(bias, -1, 1); // -1 - 1
     public readonly float brickWidth = brickWidth;
     public readonly float rowHeight = rowHeight;

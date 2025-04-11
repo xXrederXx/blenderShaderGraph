@@ -14,5 +14,5 @@ public static class MyMath
         return a + (b - a) * t;
     }
 
-    public static float Clapm01(float val) => Math.Clamp(val, 0, 1);
+    public static float Clamp01(float val) => Math.Clamp(val, 0, 1);
 }

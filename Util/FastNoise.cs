@@ -1690,9 +1690,9 @@ public class FastNoise
         int y3 = y1 + 2;
         int z3 = z1 + 2;
 
-        FN_DECIMAL xs = x - (FN_DECIMAL)x1;
-        FN_DECIMAL ys = y - (FN_DECIMAL)y1;
-        FN_DECIMAL zs = z - (FN_DECIMAL)z1;
+        FN_DECIMAL xs = x - x1;
+        FN_DECIMAL ys = y - y1;
+        FN_DECIMAL zs = z - z1;
 
         return CubicLerp(
             CubicLerp(
@@ -1820,8 +1820,8 @@ public class FastNoise
         int x3 = x1 + 2;
         int y3 = y1 + 2;
 
-        FN_DECIMAL xs = x - (FN_DECIMAL)x1;
-        FN_DECIMAL ys = y - (FN_DECIMAL)y1;
+        FN_DECIMAL xs = x - x1;
+        FN_DECIMAL ys = y - y1;
 
         return CubicLerp(
                    CubicLerp(ValCoord2D(seed, x0, y0), ValCoord2D(seed, x1, y0), ValCoord2D(seed, x2, y0), ValCoord2D(seed, x3, y0),

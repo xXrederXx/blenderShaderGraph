@@ -14,15 +14,16 @@ public static class ColorUtil
 
     public static float ValueFromColor(Color color)
     {
-        return ((float)color.R + (float)color.G + (float)color.B) / 3.0f / 255.0f;
+        return (color.R + (float)color.G + color.B) / 3.0f / 255.0f;
     }
 
     public static Color LerpColor(Color aCol, Color bCol, float t)
     {
-        int r = (int)MyMath.Lerp(aCol.R, bCol.R, t);
-        int g = (int)MyMath.Lerp(aCol.G, bCol.G, t);
-        int b = (int)MyMath.Lerp(aCol.B, bCol.B, t);
-        return Color.FromArgb(r, g, b);
+        return Color.FromArgb(
+            (int)MyMath.Lerp(aCol.R, bCol.R, t),
+            (int)MyMath.Lerp(aCol.G, bCol.G, t),
+            (int)MyMath.Lerp(aCol.B, bCol.B, t)
+        );
     }
 
     public static void ColorToHSV(
