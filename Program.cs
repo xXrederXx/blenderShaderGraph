@@ -1,8 +1,26 @@
 ﻿using blenderShaderGraph.Util;
 
+string content = "";
+string newContent = "";
+string fp = "./graph.json";
 while (true)
 {
+    content = newContent;
+
     System.Console.WriteLine("Run");
-    GraphRunner.Run("./graph.json");
-    Console.ReadKey();
+    try
+    {
+        GraphRunner.Run(fp);
+    }
+    catch (Exception err)
+    {
+        System.Console.WriteLine(err.Message);
+    }
+    while (content == newContent)
+    {
+        Thread.Sleep(500); // Ajust as needed
+        StreamReader x = File.OpenText(fp);
+        newContent = x.ReadToEnd();
+        x.Close();
+    }
 }

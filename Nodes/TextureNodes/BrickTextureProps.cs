@@ -61,8 +61,9 @@ public record BrickTextureProps
         this.rows = (int)(imgHeight / rowHeight) + 1;
         this.cols = (int)(imgWidth / brickWidth) + 1;
         this.halfMotarSize = (int)Math.Ceiling(motarSize / 2);
-        this.MotarLerpDist =
-            motarSmoothness > 0 ? (1f / ((int)Math.Ceiling(motarSize / 2) * motarSmoothness)) : 1f;
+        this.MotarLerpDist = this.motarSmoothness > 0 
+            ? motarSmoothness / halfMotarSize 
+            : 0f;
         offsetWidth = (int)Math.Ceiling(offset * brickWidth);
         squashedBrickWidth = brickWidth * squash;
     }

@@ -5,11 +5,11 @@
       "params": {
         "offset": 0,
         "squash": 1,
-        "color1": "#f0000f",
+        "color1": "#f0ff0f",
         "color2": "#0ffff0",
         "colorMotar": "#ffffff",
-        "motarSize": 20,
-        "motarSmoothness": 0,
+        "motarSize": 10,
+        "motarSmoothness": 0.1,
         "brickWidth": 200,
         "rowHeight": 100
       }
