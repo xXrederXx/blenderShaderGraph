@@ -5,7 +5,7 @@ namespace blenderShaderGraph.Nodes.TextureNodes;
 
 public static class BrickTextureNode
 {
-    private static Random rng = new();
+    private static readonly Random rng = new();
 
     public static (Bitmap color, Bitmap fac) GenerateTexture(BrickTextureProps props)
     {
@@ -15,32 +15,32 @@ public static class BrickTextureNode
         ApplyColorsRow(props, imgColor, imgFactor);
 
         return (imgColor, imgFactor);
+    }
 
-        static void ApplyColorsRow(BrickTextureProps props, Bitmap imgColor, Bitmap imgFactor)
+    private static void ApplyColorsRow(BrickTextureProps props, Bitmap imgColor, Bitmap imgFactor)
+    {
+        for (int r = 0; r < props.rows; r++)
         {
-            for (int r = 0; r < props.rows; r++)
-            {
-                bool isOffset = props.offsetFrequency != 0 && r % props.offsetFrequency == 0;
-                bool isSquashed = props.squashFrequency != 0 && r % props.squashFrequency == 0;
+            bool isOffset = props.offsetFrequency != 0 && r % props.offsetFrequency == 0;
+            bool isSquashed = props.squashFrequency != 0 && r % props.squashFrequency == 0;
 
-                int yStart = (int)(r * props.rowHeight);
-                int yEnd = (int)(yStart + props.rowHeight);
-                int colStart = isOffset ? -1 : 0;
-                int colEnd = isOffset ? props.cols + 1 : props.cols;
+            int yStart = (int)(r * props.rowHeight);
+            int yEnd = (int)(yStart + props.rowHeight);
+            int colStart = isOffset ? -1 : 0;
+            int colEnd = isOffset ? props.cols + 1 : props.cols;
 
-                float _brickWidth = isSquashed ? props.brickWidth * props.squash : props.brickWidth;
-                ApplyColorColumns(
-                    props,
-                    imgColor,
-                    imgFactor,
-                    isOffset,
-                    yStart,
-                    yEnd,
-                    colStart,
-                    colEnd,
-                    _brickWidth
-                );
-            }
+            float _brickWidth = isSquashed ? props.squashedBrickWidth : props.brickWidth;
+            ApplyColorColumns(
+                props,
+                imgColor,
+                imgFactor,
+                isOffset,
+                yStart,
+                yEnd,
+                colStart,
+                colEnd,
+                _brickWidth
+            );
         }
     }
 
@@ -63,16 +63,16 @@ public static class BrickTextureNode
 
             if (isOffset)
             {
-                xStart += (int)Math.Ceiling(props.offset * props.brickWidth);
-                xEnd += (int)Math.Ceiling(props.offset * props.brickWidth);
+                xStart += props.offsetWidth;
+                xEnd += props.offsetWidth;
             }
 
             Color brickColor = GetColor(props.color1, props.color2, props.bias);
-            generateSquare(props, imgColor, imgFactor, yStart, yEnd, xStart, xEnd, brickColor);
+            GenerateSquare(props, imgColor, imgFactor, yStart, yEnd, xStart, xEnd, brickColor);
         }
     }
 
-    private static void generateSquare(
+    private static void GenerateSquare(
         BrickTextureProps props,
         Bitmap imgColor,
         Bitmap imgFactor,
@@ -83,15 +83,15 @@ public static class BrickTextureNode
         Color brickColor
     )
     {
-        for (int y = yStart; y < yEnd; y++)
-        {
-            for (int x = xStart; x < xEnd; x++)
-            {
-                if (y < 0 || y >= props.imgHeight || x < 0 || x >= props.imgWidth)
-                {
-                    continue;
-                }
+        int yStartLoop = Math.Max(yStart, 0);
+        int yEndLoop = Math.Min(yEnd, props.imgHeight);
+        int xStartLoop = Math.Max(xStart, 0);
+        int xEndLoop = Math.Min(xEnd, props.imgWidth);
 
+        for (int y = yStartLoop; y < yEndLoop; y++)
+        {
+            for (int x = xStartLoop; x < xEndLoop; x++)
+            {
                 SetPixel(props, imgColor, imgFactor, yStart, yEnd, xStart, xEnd, brickColor, y, x);
             }
         }
@@ -165,7 +165,6 @@ public static class BrickTextureNode
         bool inRightMotar
     )
     {
-        float blend;
         // Corner blend: combine vertical and horizontal distance
         int verticalDist = inTopMotar ? distTop : (inBottomMotar ? distBottom : 0);
         int horizontalDist = inLeftMotar ? distLeft : (inRightMotar ? distRight : 0);
@@ -176,26 +175,21 @@ public static class BrickTextureNode
         // Blend using max of both directions (soft diagonal blend)
         if (inTopMotar && !inBottomMotar && inLeftMotar && !inRightMotar)
         {
-            blend = Math.Clamp(Math.Min(vBlend, hBlend), 0, 1);
+            return Math.Clamp(Math.Min(vBlend, hBlend), 0, 1);
         }
-        else if (inTopMotar && !inBottomMotar && !inLeftMotar && inRightMotar)
+        if (inTopMotar && !inBottomMotar && !inLeftMotar && inRightMotar)
         {
-            blend = Math.Clamp(Math.Min(vBlend, hBlend), 0, 1);
+            return Math.Clamp(Math.Min(vBlend, hBlend), 0, 1);
         }
-        else if (!inTopMotar && inBottomMotar && inLeftMotar && !inRightMotar)
+        if (!inTopMotar && inBottomMotar && inLeftMotar && !inRightMotar)
         {
-            blend = Math.Clamp(Math.Min(vBlend, hBlend), 0, 1);
+            return Math.Clamp(Math.Min(vBlend, hBlend), 0, 1);
         }
-        else if (!inTopMotar && inBottomMotar && !inLeftMotar && inRightMotar)
+        if (!inTopMotar && inBottomMotar && !inLeftMotar && inRightMotar)
         {
-            blend = Math.Clamp(Math.Min(vBlend, hBlend), 0, 1);
+            return Math.Clamp(Math.Min(vBlend, hBlend), 0, 1);
         }
-        else
-        {
-            blend = Math.Clamp(Math.Max(vBlend, hBlend), 0, 1);
-        }
-
-        return blend;
+        return Math.Clamp(Math.Max(vBlend, hBlend), 0, 1);
     }
 
     private static Color GetColor(Color color1, Color color2, float bias)

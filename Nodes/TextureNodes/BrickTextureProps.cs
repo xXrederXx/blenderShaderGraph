@@ -35,9 +35,11 @@ public record BrickTextureProps(
     public readonly float brickWidth = brickWidth;
     public readonly float rowHeight = rowHeight;
 
-    public int rows => (int)(imgHeight / rowHeight) + 1;
-    public int cols => (int)(imgWidth / brickWidth) + 1;
-    public int halfMotarSize => (int)Math.Ceiling(motarSize / 2);
-    public float MotarLerpDist =>
-        motarSmoothness > 0 ? (1f / (halfMotarSize * motarSmoothness)) : 1f;
+    public int rows = (int)(imgHeight / rowHeight) + 1;
+    public int cols = (int)(imgWidth / brickWidth) + 1;
+    public int halfMotarSize = (int)Math.Ceiling(motarSize / 2);
+    public float MotarLerpDist =
+        motarSmoothness > 0 ? (1f / ((int)Math.Ceiling(motarSize / 2) * motarSmoothness)) : 1f;
+    public int offsetWidth = (int)Math.Ceiling(offset * brickWidth);
+    public float squashedBrickWidth = brickWidth * squash;
 }

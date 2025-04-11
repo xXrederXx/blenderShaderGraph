@@ -13,7 +13,7 @@ public record NoiseTextureProps(
 
 public static class NoiseTextureNode
 {
-    static FastNoise noiseGen = new();
+    static readonly FastNoise noiseGen = new();
 
     static NoiseTextureNode()
     {
