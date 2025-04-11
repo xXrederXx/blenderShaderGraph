@@ -5,7 +5,7 @@ namespace blenderShaderGraph.Nodes.TextureNodes;
 
 public static class BrickTextureNode
 {
-    private static readonly Random rng = new();
+    private static readonly Random rng = Random.Shared;
 
     public static (Bitmap color, Bitmap fac) GenerateTexture(BrickTextureProps props)
     {
@@ -22,31 +22,39 @@ public static class BrickTextureNode
         return (imgColor, imgFactor);
     }
 
-    private static void ApplyColorsRow(BrickTextureProps props, Color[,] imgColor, Color[,] imgFactor)
+    private static void ApplyColorsRow(
+        BrickTextureProps props,
+        Color[,] imgColor,
+        Color[,] imgFactor
+    )
     {
-        for (int r = 0; r < props.rows; r++)
-        {
-            bool isOffset = props.offsetFrequency != 0 && r % props.offsetFrequency == 0;
-            bool isSquashed = props.squashFrequency != 0 && r % props.squashFrequency == 0;
+        Parallel.For(
+            0,
+            props.rows,
+            (r) =>
+            {
+                bool isOffset = props.offsetFrequency != 0 && r % props.offsetFrequency == 0;
+                bool isSquashed = props.squashFrequency != 0 && r % props.squashFrequency == 0;
 
-            int yStart = (int)(r * props.rowHeight);
-            int yEnd = (int)(yStart + props.rowHeight);
-            int colStart = isOffset ? -1 : 0;
-            int colEnd = isOffset ? props.cols + 1 : props.cols;
+                int yStart = (int)(r * props.rowHeight);
+                int yEnd = (int)(yStart + props.rowHeight);
+                int colStart = isOffset ? -1 : 0;
+                int colEnd = isOffset ? props.cols + 1 : props.cols;
 
-            float _brickWidth = isSquashed ? props.squashedBrickWidth : props.brickWidth;
-            ApplyColorColumns(
-                props,
-                imgColor,
-                imgFactor,
-                isOffset,
-                yStart,
-                yEnd,
-                colStart,
-                colEnd,
-                _brickWidth
-            );
-        }
+                float _brickWidth = isSquashed ? props.squashedBrickWidth : props.brickWidth;
+                ApplyColorColumns(
+                    props,
+                    imgColor,
+                    imgFactor,
+                    isOffset,
+                    yStart,
+                    yEnd,
+                    colStart,
+                    colEnd,
+                    _brickWidth
+                );
+            }
+        );
     }
 
     private static void ApplyColorColumns(

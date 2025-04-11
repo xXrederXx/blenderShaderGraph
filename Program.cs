@@ -1,8 +1,9 @@
-﻿using System.Drawing;
-using blenderShaderGraph.Benchmark;
-using blenderShaderGraph.Nodes.TextureNodes;
+﻿using blenderShaderGraph.Benchmark;
 
-new NoiseTextureBench().Run(10);
-new NoiseTextureBench().Run(10);
+BrickTextureNodeBench brickTextureNodeBench = new();
 
-NoiseTextureNode.ApplyNoise(new(1024, 1024)).Save("c.png");
+brickTextureNodeBench.Run(10);
+new BrickTextureNodeBench().Run(10);
+
+brickTextureNodeBench.img.c?.Save("c.png");
+brickTextureNodeBench.img.f?.Save("f.png");

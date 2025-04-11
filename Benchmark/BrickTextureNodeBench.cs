@@ -6,7 +6,7 @@ namespace blenderShaderGraph.Benchmark;
 
 public class BrickTextureNodeBench : Basebench
 {
-    public Bitmap? img;
+    public (Bitmap? c, Bitmap? f) img;
 
     public BrickTextureNodeBench() : base("Brick Texture Generation")
     {
@@ -32,7 +32,6 @@ public class BrickTextureNodeBench : Basebench
                     200f,
                     40
                 )
-            )
-            .color;
+            );
     }
 }
