@@ -8,13 +8,33 @@ public static class BitmapUtil
 {
     public static void ForPixel(this Bitmap self, Func<int, int, Color> func)
     {
-        for (int i = 0; i < self.Width; i++)
+        Color[,] colors = new Color[self.Width, self.Height];
+        for (int x = 0; x < self.Width; x++)
         {
-            for (int j = 0; j < self.Height; j++)
+            for (int y = 0; y < self.Height; y++)
             {
-                self.SetPixel(i, j, func.Invoke(i, j));
+                colors[x, y] = func.Invoke(x, y);
             }
         }
+        self.SetPixles(colors);
+    }
+
+    public static void ForPixelParralel(this Bitmap self, Func<int, int, Color> func)
+    {
+        Color[,] colors = new Color[self.Width, self.Height];
+        int h = self.Height;
+        Parallel.For(
+            0,
+            self.Width,
+            (x) =>
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    colors[x, y] = func.Invoke(x, y);
+                }
+            }
+        );
+        self.SetPixles(colors);
     }
 
     public static Bitmap FilledBitmap(int width, int height, Color color)
@@ -36,7 +56,11 @@ public static class BitmapUtil
         Color[,] result = new Color[width, height];
 
         Rectangle rect = new Rectangle(0, 0, width, height);
-        BitmapData bmpData = self.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+        BitmapData bmpData = self.LockBits(
+            rect,
+            ImageLockMode.ReadOnly,
+            PixelFormat.Format32bppArgb
+        );
 
         int byteCount = Math.Abs(bmpData.Stride) * height;
         byte[] pixels = new byte[byteCount];
@@ -62,7 +86,7 @@ public static class BitmapUtil
         return result;
     }
 
-        public static void SetPixles(this Bitmap self, Color[,] pixels)
+    public static void SetPixles(this Bitmap self, Color[,] pixels)
     {
         int width = self.Width;
         int height = self.Height;
@@ -71,7 +95,11 @@ public static class BitmapUtil
             throw new ArgumentException("Pixel array size does not match bitmap dimensions.");
 
         Rectangle rect = new Rectangle(0, 0, width, height);
-        BitmapData bmpData = self.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+        BitmapData bmpData = self.LockBits(
+            rect,
+            ImageLockMode.WriteOnly,
+            PixelFormat.Format32bppArgb
+        );
 
         int byteCount = Math.Abs(bmpData.Stride) * height;
         byte[] pixelBytes = new byte[byteCount];

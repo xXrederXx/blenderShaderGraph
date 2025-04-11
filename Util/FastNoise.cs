@@ -596,7 +596,7 @@ public class FastNoise
     [MethodImplAttribute(FN_INLINE)]
     private int FloatCast2Int(FN_DECIMAL f)
     {
-        var i = BitConverter.DoubleToInt64Bits(f);
+        long i = BitConverter.DoubleToInt64Bits(f);
 
         return (int)(i ^ (i >> 32));
     }

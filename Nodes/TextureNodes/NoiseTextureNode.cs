@@ -22,9 +22,7 @@ public static class NoiseTextureNode
         noiseGen.SetFractalLacunarity(2);
     }
 
-    public static Bitmap ApplyNoise(
-        NoiseTextureProps props
-    )
+    public static Bitmap ApplyNoise(NoiseTextureProps props)
     {
         Bitmap bitmap = new(props.imgWidth, props.imgHeight);
 
@@ -35,7 +33,7 @@ public static class NoiseTextureNode
         noiseGen.SetFractalGain(Math.Clamp(props.roughness, 0f, 1f));
 
         // Apply noise based on scaled coordinates
-        bitmap.ForPixel(
+        bitmap.ForPixelParralel(
             (x, y) =>
             {
                 float nx = x * props.size;

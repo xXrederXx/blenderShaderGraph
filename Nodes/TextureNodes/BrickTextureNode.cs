@@ -12,12 +12,17 @@ public static class BrickTextureNode
         Bitmap imgColor = new(props.imgWidth, props.imgHeight);
         Bitmap imgFactor = new(props.imgWidth, props.imgHeight);
 
-        ApplyColorsRow(props, imgColor, imgFactor);
+        Color[,] imgC = new Color[props.imgWidth, props.imgHeight];
+        Color[,] imgF = new Color[props.imgWidth, props.imgHeight];
 
+        ApplyColorsRow(props, imgC, imgF);
+
+        imgColor.SetPixles(imgC);
+        imgFactor.SetPixles(imgF);
         return (imgColor, imgFactor);
     }
 
-    private static void ApplyColorsRow(BrickTextureProps props, Bitmap imgColor, Bitmap imgFactor)
+    private static void ApplyColorsRow(BrickTextureProps props, Color[,] imgColor, Color[,] imgFactor)
     {
         for (int r = 0; r < props.rows; r++)
         {
@@ -46,8 +51,8 @@ public static class BrickTextureNode
 
     private static void ApplyColorColumns(
         BrickTextureProps props,
-        Bitmap imgColor,
-        Bitmap imgFactor,
+        Color[,] imgColor,
+        Color[,] imgFactor,
         bool isOffset,
         int yStart,
         int yEnd,
@@ -74,8 +79,8 @@ public static class BrickTextureNode
 
     private static void GenerateSquare(
         BrickTextureProps props,
-        Bitmap imgColor,
-        Bitmap imgFactor,
+        Color[,] imgColor,
+        Color[,] imgFactor,
         int yStart,
         int yEnd,
         int xStart,
@@ -99,8 +104,8 @@ public static class BrickTextureNode
 
     private static void SetPixel(
         BrickTextureProps props,
-        Bitmap imgColor,
-        Bitmap imgFactor,
+        Color[,] imgColor,
+        Color[,] imgFactor,
         int yStart,
         int yEnd,
         int xStart,
@@ -143,13 +148,13 @@ public static class BrickTextureNode
         {
             Color MotarC = ColorUtil.LerpColor(props.colorMotar, brickColor, blend);
             Color MotarF = ColorUtil.LerpColor(Color.White, Color.Black, blend);
-            imgColor.SetPixel(x, y, MotarC);
-            imgFactor.SetPixel(x, y, MotarF);
+            imgColor[x, y] = MotarC;
+            imgFactor[x, y] = MotarF;
         }
         else
         {
-            imgColor.SetPixel(x, y, brickColor);
-            imgFactor.SetPixel(x, y, Color.Black);
+            imgColor[x, y] = brickColor;
+            imgFactor[x, y] = Color.Black;
         }
     }
 
