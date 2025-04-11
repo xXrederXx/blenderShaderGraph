@@ -7,7 +7,7 @@ public static class BrickTextureNode
 {
     private static readonly Random rng = Random.Shared;
 
-    public static (Bitmap color, Bitmap fac) GenerateTexture(BrickTextureProps props)
+    public static (Bitmap color, Bitmap fac) Generate(BrickTextureProps props)
     {
         Bitmap imgColor = new(props.imgWidth, props.imgHeight);
         Bitmap imgFactor = new(props.imgWidth, props.imgHeight);

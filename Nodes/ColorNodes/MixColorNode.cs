@@ -5,7 +5,7 @@ namespace blenderShaderGraph.Nodes.ColorNodes;
 
 public static class MixColorNode
 {
-    public static Bitmap Mix(
+    public static Bitmap Generate(
         Bitmap a,
         Bitmap b,
         float factor = 0.5f,

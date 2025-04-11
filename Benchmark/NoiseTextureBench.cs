@@ -13,6 +13,6 @@ public class NoiseTextureBench : Basebench
 
     protected override void FuncToTest()
     {
-        img = NoiseTextureNode.ApplyNoise(new(1024, 1024));
+        img = NoiseTextureNode.Generate(new(1024, 1024));
     }
 }

@@ -14,7 +14,7 @@ public static class NoiseTextureNode
         noiseGen.SetFractalLacunarity(2);
     }
 
-    public static Bitmap ApplyNoise(NoiseTextureProps props)
+    public static Bitmap Generate(NoiseTextureProps props)
     {
         Bitmap bitmap = new(props.imgWidth, props.imgHeight);
 

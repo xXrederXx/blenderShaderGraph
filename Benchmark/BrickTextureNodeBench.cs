@@ -15,7 +15,7 @@ public class BrickTextureNodeBench : Basebench
     protected override void FuncToTest()
     {
         img = BrickTextureNode
-            .GenerateTexture(
+            .Generate(
                 new(
                     1000,
                     1000,

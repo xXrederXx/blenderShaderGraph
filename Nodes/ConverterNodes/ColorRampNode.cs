@@ -6,7 +6,7 @@ namespace blenderShaderGraph.Nodes.ConverterNodes;
 
 public static class ColorRampNode
 {
-    public static void ApplyColorRamp(
+    public static void Apply(
         Bitmap bitmap,
         ColorStop[] colorStops,
         ColorRampMode mode = ColorRampMode.Linear
