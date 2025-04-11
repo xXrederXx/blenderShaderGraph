@@ -54,12 +54,14 @@ public static class MixColorNode
     {
         int width = Math.Min(a.Width, b.Width);
         int height = Math.Min(a.Height, b.Height);
+        Color[,] aCols = a.GetPixles();
+        Color[,] bCols = b.GetPixles();
         Bitmap res = new(width, height);
         res.ForPixel(
             (x, y) =>
             {
-                Color aCol = a.GetPixel(x, y);
-                Color bCol = b.GetPixel(x, y);
+                Color aCol = aCols[x, y];
+                Color bCol = bCols[x, y];
                 float fac = ColorUtil.ValueFromColor(factor.GetPixel(x, y));
                 return Color.FromArgb(
                     255,
@@ -87,13 +89,15 @@ public static class MixColorNode
     {
         int width = Math.Min(a.Width, b.Width);
         int height = Math.Min(a.Height, b.Height);
+        Color[,] aCols = a.GetPixles();
+        Color[,] bCols = b.GetPixles();
         Bitmap res = new(width, height);
 
         res.ForPixel(
             (x, y) =>
             {
-                Color aCol = a.GetPixel(x, y);
-                Color bCol = b.GetPixel(x, y);
+                Color aCol = aCols[x, y];
+                Color bCol = bCols[x, y];
                 float fac = ColorUtil.ValueFromColor(factor.GetPixel(x, y));
                 ColorUtil.ColorToHSV(aCol, out double ah, out double asat, out double av);
                 ColorUtil.ColorToHSV(bCol, out double bh, out double _, out double _);
@@ -120,13 +124,15 @@ public static class MixColorNode
     {
         int width = Math.Min(a.Width, b.Width);
         int height = Math.Min(a.Height, b.Height);
+        Color[,] aCols = a.GetPixles();
+        Color[,] bCols = b.GetPixles();
         Bitmap res = new(width, height);
 
         res.ForPixel(
             (x, y) =>
             {
-                Color aCol = a.GetPixel(x, y);
-                Color bCol = b.GetPixel(x, y);
+                Color aCol = aCols[x, y];
+                Color bCol = bCols[x, y];
                 float fac = ColorUtil.ValueFromColor(factor.GetPixel(x, y));
                 ColorUtil.ColorToHSV(aCol, out double ahue, out double asat, out double av);
                 ColorUtil.ColorToHSV(bCol, out double _, out double bsat, out double _);
@@ -153,13 +159,15 @@ public static class MixColorNode
     {
         int width = Math.Min(a.Width, b.Width);
         int height = Math.Min(a.Height, b.Height);
+        Color[,] aCols = a.GetPixles();
+        Color[,] bCols = b.GetPixles();
         Bitmap res = new(width, height);
 
         res.ForPixel(
             (x, y) =>
             {
-                Color aCol = a.GetPixel(x, y);
-                Color bCol = b.GetPixel(x, y);
+                Color aCol = aCols[x, y];
+                Color bCol = bCols[x, y];
                 float fac = ColorUtil.ValueFromColor(factor.GetPixel(x, y));
                 ColorUtil.ColorToHSV(aCol, out double ahue, out double asat, out double av);
                 ColorUtil.ColorToHSV(bCol, out double _, out double _, out double bv);
