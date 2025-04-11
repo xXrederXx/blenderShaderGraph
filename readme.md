@@ -38,11 +38,12 @@ Nodes can be connected through a JSON file, allowing rapid iteration without rec
 ---
 
 # 📚 Node Documentation
+You dont need to specify all Inputs. Most have a default value. But whenever it has a input of type *(Bitmap reference)* you need to specify one. Inputs are always in the ```params``` object.
 
 ## BrickTexture Node
 **Generates a brick pattern with color and factor output maps.**
 
-### Inputs (via `params`):
+### Inputs:
 - `width` *(int)* – Output image width
 - `height` *(int)* – Output image height
 - `offset`, `offsetFrequency` *(float/int)* – Horizontal row offset - offset (0 to 1)
