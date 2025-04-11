@@ -1,3 +1,8 @@
 ﻿using blenderShaderGraph.Util;
 
-GraphRunner.Run("./graph.json");
+while (true)
+{
+    System.Console.WriteLine("Run");
+    GraphRunner.Run("./graph.json");
+    Console.ReadKey();
+}

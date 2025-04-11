@@ -5,12 +5,12 @@
       "params": {
         "offset": 0,
         "squash": 1,
-        "color1": "#ffffff",
-        "color2": "#000000",
+        "color1": "#f0000f",
+        "color2": "#0ffff0",
         "colorMotar": "#ffffff",
         "motarSize": 20,
         "motarSmoothness": 0,
-        "brickWidth": 100,
+        "brickWidth": 200,
         "rowHeight": 100
       }
     },
@@ -18,7 +18,8 @@
       "id": "noise1",
       "type": "NoiseTexture",
       "params": {
-        "size": 10
+        "size": 5,
+        "roughness":1
       }
     },
     {
@@ -27,7 +28,8 @@
       "params": {
         "a": "brick1.color",
         "b": "noise1",
-        "factor": 0.5
+        "factor": 0.3,
+        "mode":"value"
       }
     },
     {
