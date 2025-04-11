@@ -22,10 +22,10 @@ public static class ExampleTile
                 color1: Color.White,
                 color2: Color.Black,
                 colorMotar: Color.White,
-                motarSize: 5,
-                motarSmoothness: 0.1f,
-                brickWidth: 40,
-                rowHeight: 40
+                motarSize: 20,
+                motarSmoothness: 0f,
+                brickWidth: 100,
+                rowHeight: 100
             )
         );
         Roughness = CalcR(brick);
@@ -39,7 +39,7 @@ public static class ExampleTile
 
     private static Bitmap CalcD((Bitmap color, Bitmap fac) brick)
     {
-        Bitmap brickNoise = NoiseTextureNode.Generate(new(size: 60));
+        Bitmap brickNoise = NoiseTextureNode.Generate(new(size: 10));
         ColorRampNode.Apply(
             brickNoise,
             [new(Color.Black, 0), new(Color.FromArgb(113, 113, 113), 1)]
