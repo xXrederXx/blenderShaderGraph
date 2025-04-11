@@ -8,24 +8,40 @@ public static class JsonElementUtil
 {
     public static int GetInt(this JsonElement self, string propName, int def = 0)
     {
-        int val = self.GetProperty(propName).GetInt32();
+        if(!self.TryGetProperty(propName, out JsonElement element))
+        {
+            return def;
+        }
+        int val = element.GetInt32();
         return val == 0 ? def : val;
     }
 
     public static float GetFloat(this JsonElement self, string propName, float def = 0)
     {
-        float val = (float)self.GetProperty(propName).GetDouble();
+        if(!self.TryGetProperty(propName, out JsonElement element))
+        {
+            return def;
+        }
+        float val = (float)element.GetDouble();
         return val == 0f ? def : val;
     }
 
     public static string GetString(this JsonElement self, string propName, string def = "")
     {
-        string? val = self.GetProperty(propName).GetString();
+        if(!self.TryGetProperty(propName, out JsonElement element))
+        {
+            return def;
+        }
+        string? val = element.GetString();
         return val is null ? def : val;
     }
     public static bool GetBool(this JsonElement self, string propName)
     {
-        return self.GetProperty(propName).GetBoolean();
+        if(!self.TryGetProperty(propName, out JsonElement element))
+        {
+            return false;
+        }
+        return element.GetBoolean();
     }
     public static Bitmap GetBitmap(this JsonElement self, string IdSelf, Dictionary<string, object> contex, string propName)
     {

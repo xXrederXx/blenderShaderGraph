@@ -24,16 +24,16 @@
     {
       "id": "mixed1",
       "type": "MixColor",
-      "inputs": {
-        "input1": "brick1.color",
-        "input2": "noise1",
+      "params": {
+        "a": "brick1.color",
+        "b": "noise1",
         "factor": 0.5
       }
     },
     {
       "id": "output1",
       "type": "Output",
-      "inputs": {
+      "params": {
         "image": "mixed1",
         "filename": "diffuse.png"
       }

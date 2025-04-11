@@ -14,7 +14,7 @@ public class OutputNodeJson : IJsonNode
     public override void Execute(Dictionary<string, object> context)
     {
         JsonElement p = _element.GetProperty("params");
-        Bitmap img =p.GetBitmap(Id, context, "img");
+        Bitmap img = p.GetBitmap(Id, context, "image");
         string fn = p.GetString("filename", "out.png");
 
         img.Save(fn);

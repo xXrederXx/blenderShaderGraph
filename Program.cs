@@ -1,5 +1,3 @@
-﻿using blenderShaderGraph.Examples;
-using blenderShaderGraph.Nodes.TextureNodes;
-using blenderShaderGraph.Nodes.VectorNodes;
+﻿using blenderShaderGraph.Util;
 
-ExampleTile.Execute();
+GraphRunner.Run("./graph.json");
