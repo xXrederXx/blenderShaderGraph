@@ -1,9 +1,4 @@
-﻿using blenderShaderGraph.Benchmark;
+﻿using blenderShaderGraph.Nodes.TextureNodes;
+using blenderShaderGraph.Nodes.VectorNodes;
 
-BrickTextureNodeBench brickTextureNodeBench = new();
-
-brickTextureNodeBench.Run(10);
-new BrickTextureNodeBench().Run(10);
-
-brickTextureNodeBench.img.c?.Save("c.png");
-brickTextureNodeBench.img.f?.Save("f.png");
+BumpNode.GenerateBump(new(BrickTextureNode.GenerateTexture(new()).fac)).Save("b.png");
