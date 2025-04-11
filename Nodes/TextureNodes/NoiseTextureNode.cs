@@ -3,14 +3,6 @@ using blenderShaderGraph.Util;
 
 namespace blenderShaderGraph.Nodes.TextureNodes;
 
-public record NoiseTextureProps(
-    int imgWidth,
-    int imgHeight,
-    float size = 1,
-    float detail = 2,
-    float roughness = 0.5f
-);
-
 public static class NoiseTextureNode
 {
     static readonly FastNoise noiseGen = new();
