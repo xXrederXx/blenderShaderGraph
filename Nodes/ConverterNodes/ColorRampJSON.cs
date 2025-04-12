@@ -13,7 +13,7 @@ public class ColorRampJSON : IJsonNode
     public override void Execute(Dictionary<string, object> contex)
     {
         JsonElement p = _element.GetProperty("params");
-        Bitmap bmp = p.GetBitmap(Id, contex, "img");
+        Bitmap bmp = p.GetBitmap(Id, contex, "image");
         List<ColorStop> stops = [];
         foreach (JsonElement x in p.GetProperty("colorStops").EnumerateArray())
         {

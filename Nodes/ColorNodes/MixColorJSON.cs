@@ -34,7 +34,7 @@ public class MixColorJSON : IJsonNode
                 mode
             );
         }
-        catch
+        catch (FileNotFoundException)
         {
             res = MixColorNode.Generate(
                 p.GetBitmap(Id, contex, "a"),

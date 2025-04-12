@@ -48,7 +48,7 @@ public static class JsonElementUtil
         string img = self.GetString(propName, "");
         if (!contex.TryGetValue(img, out var obj) || obj is not Bitmap bmp)
         {
-            throw new Exception($"Output node {IdSelf} could not find input: {img}");
+            throw new FileNotFoundException($"Node {IdSelf} could not find input: {img}");
         }
         return new(bmp);
     }

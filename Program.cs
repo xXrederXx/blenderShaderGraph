@@ -2,7 +2,7 @@
 
 string content = "";
 string newContent = "";
-string fp = "./graph.json";
+string fp = "./graph.sg.json";
 while (true)
 {
     content = newContent;
