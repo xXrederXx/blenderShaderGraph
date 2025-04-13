@@ -27,6 +27,8 @@ public record BrickTextureProps
     public readonly int offsetWidth;
     public readonly float squashedBrickWidth;
     public bool forceTilable;
+    public readonly int TilableCalcRows;
+    public readonly int TilableCalcRowsSquashed;
 
     public BrickTextureProps(
         int imgWidth = 1024,
@@ -69,5 +71,8 @@ public record BrickTextureProps
             : 0f;
         offsetWidth = (int)Math.Ceiling(offset * brickWidth);
         squashedBrickWidth = brickWidth * squash;
+
+        TilableCalcRows = rows - 1;
+        TilableCalcRowsSquashed = (int)(imgWidth / squashedBrickWidth);
     }
 }

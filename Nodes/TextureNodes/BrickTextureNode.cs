@@ -236,11 +236,11 @@ public static class BrickTextureNode
         int c;
         if (isSquashed)
         {
-            c = (col + 1) % ((int)(props.imgWidth / _brickWidth) + 1 - 1);
+            c = (col + 1) % props.TilableCalcRowsSquashed;
         }
         else
         {
-            c = (col + 1) % (props.rows - 1);
+            c = (col + 1) % props.TilableCalcRows;
         }
         int hash = HashPosition(r, c);
         double val = (hash % 10000) / 10000.0;
