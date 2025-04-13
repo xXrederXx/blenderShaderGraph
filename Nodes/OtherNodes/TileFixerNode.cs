@@ -12,7 +12,7 @@ public static class TileFixerNode
 
         Bitmap res = new (width, height);
         Color[,] oldColors = bitmap.GetPixles();
-        Color[,] newColors = new Color[width, height];
+        Color[,] newColors = bitmap.GetPixles();
 
         // Blend left ↔ right edges
         for (int x = 0; x < blendBandSize; x++)
