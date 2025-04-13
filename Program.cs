@@ -7,7 +7,6 @@ while (true)
 {
     content = newContent;
 
-    System.Console.WriteLine("Run");
     try
     {
         GraphRunner.Run(fp);

@@ -17,6 +17,6 @@ public class OutputNodeJson : IJsonNode
         string fn = p.GetString("filename", "out.png");
 
         img.Save(fn);
-        Console.WriteLine($"Saved: {fn}");
+        Console.WriteLine($"\t- Saved: {fn}");
     }
 }

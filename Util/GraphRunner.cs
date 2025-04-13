@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using blenderShaderGraph.Nodes;
 using blenderShaderGraph.Nodes.ConverterNodes;
@@ -11,10 +12,14 @@ public class GraphRunner
 {
     public static void Run(string path)
     {
+        Stopwatch sw = new();
+        sw.Start();
+        System.Console.WriteLine("\n------------ Generation Starting ------------\n");
+        System.Console.WriteLine("\t- Parsing JSON File");
         string json = File.ReadAllText(path);
         JsonDocument doc = JsonDocument.Parse(json);
         List<IJsonNode> nodes = new List<IJsonNode>();
-
+        System.Console.WriteLine("\t- Parsing Contnents");
         foreach (JsonElement element in doc.RootElement.EnumerateArray())
         {
             string? type = element.GetProperty("type").GetString();
@@ -34,9 +39,11 @@ public class GraphRunner
 
             nodes.Add(node);
         }
-
+        System.Console.WriteLine("\t- Executing Nodes");
         Dictionary<string, object> context = new Dictionary<string, object>();
         foreach (IJsonNode node in nodes)
             node.Execute(context);
+        sw.Stop();
+        System.Console.WriteLine("\n------------ Finished in " + sw.ElapsedMilliseconds + "ms ------------\n");
     }
 }
