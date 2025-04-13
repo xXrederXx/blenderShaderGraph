@@ -3,24 +3,25 @@
 		"id": "brick",
 		"type": "BrickTexture",
 		"params": {
-			"width": 1024,
-			"height": 1024,
-			"offset": 0.0,
-			"offsetFrequency": 0,
-			"squash": 1,
-			"squashFrequency": 0,
-			"color1": "#ffffff",
+			"width": 1000,
+			"height": 1000,
+			"offset": 1,
+			"offsetFrequency": 2,
+			"squash": 2,
+			"squashFrequency": 2,
+			"color1": "#ffffff", 
 			"color2": "#000000",
 			"colorMotar": "#00ff00",
 			"motarSize": 7,
 			"motarSmoothness": 1,
 			"bias": 0,
 			"brickWidth": 100,
-			"rowHeight": 100
+			"rowHeight": 100,
+			"forceTilable": true
 		}
 	},
 	{
-		"id": "noiseBrick",
+		"id": "noiseBrickOld",
 		"type": "NoiseTexture",
 		"params": {
 			"width": 1024,
@@ -28,6 +29,14 @@
 			"size": 1,
 			"detail": 2,
 			"roughness": 0
+		}
+	},
+	{
+		"id": "noiseBrick",
+		"type": "TileFixer",
+		"params": {
+			"image": "noiseBrickOld",
+			"blur": 32
 		}
 	},
 	{
@@ -94,19 +103,27 @@
 		}
 	},
 	{
-		"id": "fix",
-		"type": "TileFixer",
-		"params": {
-			"image": "mixLast",
-			"blur": 8
-		}
-	},
-	{
 		"id": "out1",
 		"type": "Output",
 		"params": {
 			"filename": "brick.png",
-			"image": "fix"
+			"image": "mixLast" 
+		}
+	},
+	{
+		"id": "out2",
+		"type": "Output",
+		"params": {
+			"filename": "fac.png",
+			"image": "brick" 
+		}
+	},
+	{
+		"id": "out3",
+		"type": "Output",
+		"params": {
+			"filename": "fac.png",
+			"image": "noiseBrick" 
 		}
 	}
 ]

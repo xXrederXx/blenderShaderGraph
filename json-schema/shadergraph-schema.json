@@ -48,7 +48,8 @@
 			  "motarSmoothness": { "type": "number" },
 			  "bias": { "type": "number" },
 			  "brickWidth": { "type": "number" },
-			  "rowHeight": { "type": "number" }
+			  "rowHeight": { "type": "number" },
+			  "forceTilable": { "type": "boolean" }
 			}
 		  }
 		}

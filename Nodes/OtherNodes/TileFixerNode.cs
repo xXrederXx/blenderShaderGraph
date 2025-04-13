@@ -1,4 +1,3 @@
-using System;
 using System.Drawing;
 using blenderShaderGraph.Util;
 
@@ -11,62 +10,52 @@ public static class TileFixerNode
         int width = bitmap.Width;
         int height = bitmap.Height;
 
-        var originalPixels = bitmap.GetPixles();
-        var remappedPixels = new Color[width, height];
+        Bitmap clone = (Bitmap)bitmap.Clone();
 
-        int halfWidth = width / 2;
-        int halfHeight = height / 2;
-
-        // Rearrange quadrants
-        SwapQuadrant(originalPixels, remappedPixels, 0, 0, halfWidth, halfHeight, halfWidth, halfHeight);             // TL -> BR
-        SwapQuadrant(originalPixels, remappedPixels, halfWidth, 0, halfWidth, halfHeight, -halfWidth, halfHeight);    // TR -> BL
-        SwapQuadrant(originalPixels, remappedPixels, 0, halfHeight, halfWidth, halfHeight, halfWidth, -halfHeight);   // BL -> TR
-        SwapQuadrant(originalPixels, remappedPixels, halfWidth, halfHeight, halfWidth, halfHeight, -halfWidth, -halfHeight); // BR -> TL
-
-        // Blend vertical seams
-        for (int x = halfWidth - blendBandSize; x < halfWidth + blendBandSize; x++)
+        // Blend left ↔ right edges
+        for (int x = 0; x < blendBandSize; x++)
         {
-            float blendPos = (float)(x - (halfWidth - blendBandSize)) / (2 * blendBandSize);
-            float weightA = 1f - SmoothFalloff(blendPos);
-            float weightB = SmoothFalloff(blendPos);
+            float t = SmoothFalloff(x / (float)blendBandSize);
 
             for (int y = 0; y < height; y++)
             {
-                Color left = remappedPixels[x - blendBandSize, y];
-                Color right = remappedPixels[x + blendBandSize, y];
-                remappedPixels[x, y] = ColorUtil.LerpColor(left, right, weightB);
+                // Left side
+                Color origLeft = clone.GetPixel(x, y);
+                Color mirrorRight = clone.GetPixel(width - blendBandSize + x, y);
+                Color blendL = ColorUtil.LerpColor(mirrorRight, origLeft, t);
+                bitmap.SetPixel(x, y, blendL);
+
+                // Right side
+                Color origRight = clone.GetPixel(width - 1 - x, y);
+                Color mirrorLeft = clone.GetPixel(blendBandSize - 1 - x, y);
+                Color blendR = ColorUtil.LerpColor(mirrorLeft, origRight, t);
+                bitmap.SetPixel(width - 1 - x, y, blendR);
             }
         }
 
-        // Blend horizontal seams
-        for (int y = halfHeight - blendBandSize; y < halfHeight + blendBandSize; y++)
+        // Blend top ↔ bottom edges
+        for (int y = 0; y < blendBandSize; y++)
         {
-            float blendPos = (float)(y - (halfHeight - blendBandSize)) / (2 * blendBandSize);
-            float weightA = 1f - SmoothFalloff(blendPos);
-            float weightB = SmoothFalloff(blendPos);
+            float t = SmoothFalloff(y / (float)blendBandSize);
 
             for (int x = 0; x < width; x++)
             {
-                Color top = remappedPixels[x, y - blendBandSize];
-                Color bottom = remappedPixels[x, y + blendBandSize];
-                remappedPixels[x, y] = ColorUtil.LerpColor(top, bottom, weightB);
-            }
-        }
+                // Top side
+                Color origTop = clone.GetPixel(x, y);
+                Color mirrorBottom = clone.GetPixel(x, height - blendBandSize + y);
+                Color blendT = ColorUtil.LerpColor(mirrorBottom, origTop, t);
+                bitmap.SetPixel(x, y, blendT);
 
-        bitmap.SetPixles(remappedPixels);
-    }
-
-    private static void SwapQuadrant(Color[,] src, Color[,] dst, int startX, int startY, int width, int height, int offsetX, int offsetY)
-    {
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                dst[startX + x + offsetX, startY + y + offsetY] = src[startX + x, startY + y];
+                // Bottom side
+                Color origBottom = clone.GetPixel(x, height - 1 - y);
+                Color mirrorTop = clone.GetPixel(x, blendBandSize - 1 - y);
+                Color blendB = ColorUtil.LerpColor(mirrorTop, origBottom, t);
+                bitmap.SetPixel(x, height - 1 - y, blendB);
             }
         }
     }
 
+    // Falloff for smoother blending — cosine gives a soft rolloff
     private static float SmoothFalloff(float x)
     {
         return (1 - MathF.Cos(x * MathF.PI)) * 0.5f;
