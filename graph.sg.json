@@ -98,7 +98,7 @@
 		"type": "TileFixer",
 		"params": {
 			"image": "mixLast",
-			"blur": 10
+			"blur": 8
 		}
 	},
 	{
@@ -106,7 +106,7 @@
 		"type": "Output",
 		"params": {
 			"filename": "brick.png",
-			"image": "mixLast"
+			"image": "fix"
 		}
 	}
 ]
