@@ -23,23 +23,22 @@ public class MixColorJSON : IJsonNode
             "value" => MixColorMode.Value,
             _ => MixColorMode.Mix,
         };
-
         Bitmap res;
-        try
+        if (p.GetProperty("factor").ValueKind == JsonValueKind.Number)
+        {
+            res = MixColorNode.Generate(
+                p.GetBitmap(Id, contex, "a"),
+                p.GetBitmap(Id, contex, "b"),
+                p.GetFloat("factor", 0),
+                mode
+            );
+        }
+        else
         {
             res = MixColorNode.Generate(
                 p.GetBitmap(Id, contex, "a"),
                 p.GetBitmap(Id, contex, "b"),
                 p.GetBitmap(Id, contex, "factor"),
-                mode
-            );
-        }
-        catch (FileNotFoundException)
-        {
-            res = MixColorNode.Generate(
-                p.GetBitmap(Id, contex, "a"),
-                p.GetBitmap(Id, contex, "b"),
-                p.GetFloat("factor", 0.5f),
                 mode
             );
         }

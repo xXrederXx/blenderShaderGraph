@@ -14,7 +14,7 @@ while (true)
     }
     catch (Exception err)
     {
-        System.Console.WriteLine(err.Message);
+        System.Console.WriteLine(err.Message + err.StackTrace);
     }
     while (content == newContent)
     {
