@@ -36,7 +36,7 @@ public static class BrickTextureNode
     {
         Parallel.For(
             0,
-            props.rows,
+            props.cols,
             (r) =>
             {
                 bool isOffset = props.offsetFrequency != 0 && r % props.offsetFrequency == 0;
@@ -45,7 +45,7 @@ public static class BrickTextureNode
                 int yStart = (int)(r * props.rowHeight);
                 int yEnd = (int)(yStart + props.rowHeight);
                 int colStart = isOffset ? -1 : 0;
-                int colEnd = isOffset ? props.cols + 1 : props.cols;
+                int colEnd = isOffset ? props.rows + 1 : props.rows;
 
                 float _brickWidth = isSquashed ? props.squashedBrickWidth : props.brickWidth;
                 ApplyColorColumns(
@@ -113,7 +113,7 @@ public static class BrickTextureNode
                             }
                         } */
             Color brickColor = props.forceTilable
-                ? GetTileableColor(props, r, c, isOffset)
+                ? GetTileableColor(props, r, c)
                 : GetColor(props.color1, props.color2, props.bias);
             GenerateSquare(props, imgColor, imgFactor, yStart, yEnd, xStart, xEnd, brickColor);
         }
@@ -245,11 +245,11 @@ public static class BrickTextureNode
         return ColorUtil.LerpColor(color1, color2, (float)Math.Clamp(val + bias, 0, 1));
     }
 
-    private static Color GetTileableColor(BrickTextureProps props, int row, int col, bool isOffset)
+    private static Color GetTileableColor(BrickTextureProps props, int row, int col)
     {
         // Ensures color is repeated across tiles
-        int r = row % props.rows;
-        int c = (col + 1) % (props.cols - 1);
+        int r = row % props.cols;
+        int c = (col + 1) % (props.rows - 1);
         int hash = HashPosition(r, c);
         double val = (hash % 10000) / 10000.0;
         return ColorUtil.LerpColor(

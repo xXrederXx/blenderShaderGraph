@@ -20,8 +20,8 @@ public record BrickTextureProps
     public readonly float brickWidth;
     public readonly float rowHeight;
 
-    public readonly int rows;
     public readonly int cols;
+    public readonly int rows;
     public readonly int halfMotarSize;
     public readonly float MotarLerpDist;
     public readonly int offsetWidth;
@@ -61,8 +61,8 @@ public record BrickTextureProps
         this.brickWidth = brickWidth;
         this.rowHeight = rowHeight;
         this.forceTilable = forceTilable;
-        this.rows = (int)(imgHeight / rowHeight) + 1;
-        this.cols = (int)(imgWidth / brickWidth) + 1;
+        this.cols = (int)(imgHeight / rowHeight) + 1;
+        this.rows = (int)(imgWidth / brickWidth) + 1;
         this.halfMotarSize = (int)Math.Ceiling(motarSize / 2);
         this.MotarLerpDist = this.motarSmoothness > 0 
             ? motarSmoothness / halfMotarSize 
