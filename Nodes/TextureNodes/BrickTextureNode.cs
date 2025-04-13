@@ -53,6 +53,7 @@ public static class BrickTextureNode
                     imgColor,
                     imgFactor,
                     isOffset,
+                    isSquashed,
                     yStart,
                     yEnd,
                     colStart,
@@ -69,6 +70,7 @@ public static class BrickTextureNode
         Color[,] imgColor,
         Color[,] imgFactor,
         bool isOffset,
+        bool isSquashed,
         int yStart,
         int yEnd,
         int colStart,
@@ -88,32 +90,8 @@ public static class BrickTextureNode
                 xEnd += props.offsetWidth;
             }
 
-            /*             // Clamp and wrap if tileable
-                        if (props.forceTilable)
-                        {
-                            int _xStart = (xStart + props.imgWidth) % props.imgWidth;
-                            int _xEnd = (xEnd + props.imgWidth) % props.imgWidth;
-            
-                            // Handle wrapped bricks by splitting draw into two parts
-                            if (_xEnd > _xStart)
-                            {
-                                Color _brickColor = GetTileableColor(props, r, c);
-                                GenerateSquare(
-                                    props,
-                                    imgColor,
-                                    imgFactor,
-                                    yStart,
-                                    yEnd,
-                                    _xStart,
-                                    props.imgWidth + (int)props.motarSize + 1,
-                                    _brickColor
-                                );
-                                GenerateSquare(props, imgColor, imgFactor, yStart, yEnd, (int)-props.motarSize - 1, _xEnd, _brickColor);
-                                continue;
-                            }
-                        } */
             Color brickColor = props.forceTilable
-                ? GetTileableColor(props, r, c)
+                ? GetTileableColor(props, r, c, _brickWidth, isSquashed)
                 : GetColor(props.color1, props.color2, props.bias);
             GenerateSquare(props, imgColor, imgFactor, yStart, yEnd, xStart, xEnd, brickColor);
         }
@@ -245,11 +223,25 @@ public static class BrickTextureNode
         return ColorUtil.LerpColor(color1, color2, (float)Math.Clamp(val + bias, 0, 1));
     }
 
-    private static Color GetTileableColor(BrickTextureProps props, int row, int col)
+    private static Color GetTileableColor(
+        BrickTextureProps props,
+        int row,
+        int col,
+        float _brickWidth,
+        bool isSquashed
+    )
     {
         // Ensures color is repeated across tiles
         int r = row % props.cols;
-        int c = (col + 1) % (props.rows - 1);
+        int c;
+        if (isSquashed)
+        {
+            c = (col + 1) % ((int)(props.imgWidth / _brickWidth) + 1 - 1);
+        }
+        else
+        {
+            c = (col + 1) % (props.rows - 1);
+        }
         int hash = HashPosition(r, c);
         double val = (hash % 10000) / 10000.0;
         return ColorUtil.LerpColor(
