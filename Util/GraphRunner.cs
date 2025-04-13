@@ -1,7 +1,7 @@
-using System;
 using System.Text.Json;
 using blenderShaderGraph.Nodes;
-using blenderShaderGraph.Nodes.Output;
+using blenderShaderGraph.Nodes.OtherNodes;
+using blenderShaderGraph.Nodes.OutputNodes;
 using blenderShaderGraph.Nodes.TextureNodes;
 
 namespace blenderShaderGraph.Util;
@@ -27,6 +27,7 @@ public class GraphRunner
                 "Bump" => new BumpJSON(id, element),
                 "ColorRamp" => new ColorRampJSON(id, element),
                 "Output" => new OutputNodeJson(id, element),
+                "TileFixer" => new TileFixerJSON(id, element),
                 _ => throw new Exception($"Unknown node type: {type}"),
             };
 

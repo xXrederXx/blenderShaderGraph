@@ -3,8 +3,7 @@ using System.Drawing;
 using System.Text.Json;
 using blenderShaderGraph.Util;
 
-namespace blenderShaderGraph.Nodes.Output;
-
+namespace blenderShaderGraph.Nodes.OutputNodes;
 
 public class OutputNodeJson : IJsonNode
 {
@@ -21,4 +20,3 @@ public class OutputNodeJson : IJsonNode
         Console.WriteLine($"Saved: {fn}");
     }
 }
-
