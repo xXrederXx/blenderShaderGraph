@@ -1,6 +1,5 @@
 using System.Drawing;
 using System.Text.Json;
-using blenderShaderGraph.Nodes.ColorNodes;
 using blenderShaderGraph.Util;
 
 namespace blenderShaderGraph.Nodes.OtherNodes;
@@ -14,11 +13,11 @@ public class TileFixerJSON : IJsonNode
     {
         JsonElement p = _element.GetProperty("params");
 
-        Bitmap res = new Bitmap(p.GetBitmap(Id, contex, "image"));
+        Bitmap inp = p.GetBitmap(Id, contex, "image");
         int blur = p.GetInt("blur", 16);
 
-        TileFixerNode.Apply(res, blur);
-        
+        Bitmap res = TileFixerNode.Apply(inp, blur);
+
         contex[Id] = res;
     }
 }

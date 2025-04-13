@@ -5,12 +5,14 @@ namespace blenderShaderGraph.Nodes.OtherNodes;
 
 public static class TileFixerNode
 {
-    public static void Apply(Bitmap bitmap, int blendBandSize = 32)
+    public static Bitmap Apply(Bitmap bitmap, int blendBandSize = 32)
     {
         int width = bitmap.Width;
         int height = bitmap.Height;
 
-        Bitmap clone = (Bitmap)bitmap.Clone();
+        Bitmap res = new (width, height);
+        Color[,] oldColors = bitmap.GetPixles();
+        Color[,] newColors = new Color[width, height];
 
         // Blend left ↔ right edges
         for (int x = 0; x < blendBandSize; x++)
@@ -20,16 +22,16 @@ public static class TileFixerNode
             for (int y = 0; y < height; y++)
             {
                 // Left side
-                Color origLeft = clone.GetPixel(x, y);
-                Color mirrorRight = clone.GetPixel(width - blendBandSize + x, y);
+                Color origLeft = oldColors[x, y];
+                Color mirrorRight = oldColors[width - blendBandSize + x, y];
                 Color blendL = ColorUtil.LerpColor(mirrorRight, origLeft, t);
-                bitmap.SetPixel(x, y, blendL);
+                newColors[x, y] = blendL;
 
                 // Right side
-                Color origRight = clone.GetPixel(width - 1 - x, y);
-                Color mirrorLeft = clone.GetPixel(blendBandSize - 1 - x, y);
+                Color origRight = oldColors[width - 1 - x, y];
+                Color mirrorLeft = oldColors[blendBandSize - 1 - x, y];
                 Color blendR = ColorUtil.LerpColor(mirrorLeft, origRight, t);
-                bitmap.SetPixel(width - 1 - x, y, blendR);
+                newColors[width - 1 - x, y] = blendR;
             }
         }
 
@@ -41,18 +43,20 @@ public static class TileFixerNode
             for (int x = 0; x < width; x++)
             {
                 // Top side
-                Color origTop = clone.GetPixel(x, y);
-                Color mirrorBottom = clone.GetPixel(x, height - blendBandSize + y);
+                Color origTop = oldColors[x, y];
+                Color mirrorBottom = oldColors[x, height - blendBandSize + y];
                 Color blendT = ColorUtil.LerpColor(mirrorBottom, origTop, t);
-                bitmap.SetPixel(x, y, blendT);
+                newColors[x, y] = blendT;
 
                 // Bottom side
-                Color origBottom = clone.GetPixel(x, height - 1 - y);
-                Color mirrorTop = clone.GetPixel(x, blendBandSize - 1 - y);
+                Color origBottom = oldColors[x, height - 1 - y];
+                Color mirrorTop = oldColors[x, blendBandSize - 1 - y];
                 Color blendB = ColorUtil.LerpColor(mirrorTop, origBottom, t);
-                bitmap.SetPixel(x, height - 1 - y, blendB);
+                newColors[x, height - 1 - y] = blendB;
             }
         }
+        res.SetPixles(newColors);
+        return res;
     }
 
     // Falloff for smoother blending — cosine gives a soft rolloff

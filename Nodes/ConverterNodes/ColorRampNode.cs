@@ -6,20 +6,24 @@ namespace blenderShaderGraph.Nodes.ConverterNodes;
 
 public static class ColorRampNode
 {
-    public static void Apply(
+    public static Bitmap Apply(
         Bitmap bitmap,
         ColorStop[] colorStops,
         ColorRampMode mode = ColorRampMode.Linear
     )
     {
-        bitmap.ForPixel(
+        Bitmap res = new Bitmap(bitmap.Width, bitmap.Height);
+        Color[,] colors = bitmap.GetPixles();
+
+        res.ForPixel(
             (x, y) =>
             {
-                Color color = bitmap.GetPixel(x, y);
+                Color color = colors[x, y];
                 float value = ColorUtil.ValueFromColor(color);
                 return GetColor(value, colorStops, mode);
             }
         );
+        return res;
     }
 
     private static Color GetColor(

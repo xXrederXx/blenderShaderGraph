@@ -1,9 +1,8 @@
 using System.Drawing;
 using System.Text.Json;
-using blenderShaderGraph.Nodes.ConverterNodes;
 using blenderShaderGraph.Util;
 
-namespace blenderShaderGraph.Nodes.TextureNodes;
+namespace blenderShaderGraph.Nodes.ConverterNodes;
 
 public class ColorRampJSON : IJsonNode
 {
@@ -29,7 +28,7 @@ public class ColorRampJSON : IJsonNode
             _ => ColorRampMode.Linear,
         };
 
-        ColorRampNode.Apply(bmp, stops.ToArray(), mode);
-        contex[Id] = bmp;
+        Bitmap res = ColorRampNode.Apply(bmp, stops.ToArray(), mode);
+        contex[Id] = res;
     }
 }
