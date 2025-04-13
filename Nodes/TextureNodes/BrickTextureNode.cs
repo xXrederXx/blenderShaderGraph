@@ -6,6 +6,12 @@ namespace blenderShaderGraph.Nodes.TextureNodes;
 public static class BrickTextureNode
 {
     private static readonly Random rng = Random.Shared;
+    private static readonly int seedForTile;
+
+    static BrickTextureNode()
+    {
+        seedForTile = new Random().Next();
+    }
 
     public static (Bitmap color, Bitmap fac) Generate(BrickTextureProps props)
     {
@@ -51,7 +57,8 @@ public static class BrickTextureNode
                     yEnd,
                     colStart,
                     colEnd,
-                    _brickWidth
+                    _brickWidth,
+                    r
                 );
             }
         );
@@ -66,7 +73,8 @@ public static class BrickTextureNode
         int yEnd,
         int colStart,
         int colEnd,
-        float _brickWidth
+        float _brickWidth,
+        int r
     )
     {
         for (int c = colStart; c < colEnd; c++)
@@ -80,7 +88,33 @@ public static class BrickTextureNode
                 xEnd += props.offsetWidth;
             }
 
-            Color brickColor = GetColor(props.color1, props.color2, props.bias);
+            /*             // Clamp and wrap if tileable
+                        if (props.forceTilable)
+                        {
+                            int _xStart = (xStart + props.imgWidth) % props.imgWidth;
+                            int _xEnd = (xEnd + props.imgWidth) % props.imgWidth;
+            
+                            // Handle wrapped bricks by splitting draw into two parts
+                            if (_xEnd > _xStart)
+                            {
+                                Color _brickColor = GetTileableColor(props, r, c);
+                                GenerateSquare(
+                                    props,
+                                    imgColor,
+                                    imgFactor,
+                                    yStart,
+                                    yEnd,
+                                    _xStart,
+                                    props.imgWidth + (int)props.motarSize + 1,
+                                    _brickColor
+                                );
+                                GenerateSquare(props, imgColor, imgFactor, yStart, yEnd, (int)-props.motarSize - 1, _xEnd, _brickColor);
+                                continue;
+                            }
+                        } */
+            Color brickColor = props.forceTilable
+                ? GetTileableColor(props, r, c, isOffset)
+                : GetColor(props.color1, props.color2, props.bias);
             GenerateSquare(props, imgColor, imgFactor, yStart, yEnd, xStart, xEnd, brickColor);
         }
     }
@@ -209,5 +243,25 @@ public static class BrickTextureNode
     {
         double val = rng.NextDouble();
         return ColorUtil.LerpColor(color1, color2, (float)Math.Clamp(val + bias, 0, 1));
+    }
+
+    private static Color GetTileableColor(BrickTextureProps props, int row, int col, bool isOffset)
+    {
+        // Ensures color is repeated across tiles
+        int r = row % props.rows;
+        int c = (col + 1) % (props.cols - 1);
+        int hash = HashPosition(r, c);
+        double val = (hash % 10000) / 10000.0;
+        return ColorUtil.LerpColor(
+            props.color1,
+            props.color2,
+            (float)Math.Clamp(val + props.bias, 0, 1)
+        );
+    }
+
+    private static int HashPosition(int r, int c)
+    {
+        // Simple 2D hash for tileable deterministic color
+        return ((r * 73856093) ^ (c * 19349663)) & seedForTile;
     }
 }

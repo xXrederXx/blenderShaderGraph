@@ -27,7 +27,8 @@ public class BrickTextureJSON : IJsonNode
                 motarSmoothness: p.GetFloat("motarSmoothness", 0),
                 bias: p.GetFloat("bias", 0),
                 brickWidth: p.GetFloat("brickWidth", 30),
-                rowHeight: p.GetFloat("rowHeight", 12)
+                rowHeight: p.GetFloat("rowHeight", 12),
+                forceTilable: p.GetBool("forceTilable")
             )
         );
         contex[Id + ".color"] = color;

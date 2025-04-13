@@ -26,6 +26,7 @@ public record BrickTextureProps
     public readonly float MotarLerpDist;
     public readonly int offsetWidth;
     public readonly float squashedBrickWidth;
+    public bool forceTilable;
 
     public BrickTextureProps(
         int imgWidth = 1024,
@@ -41,7 +42,8 @@ public record BrickTextureProps
         float motarSmoothness = 0, // 0 - 1
         float bias = 0, // -1 - 1
         float brickWidth = 30,
-        float rowHeight = 12
+        float rowHeight = 12,
+        bool forceTilable = true
     )
     {
         this.imgWidth = imgWidth;
@@ -58,6 +60,7 @@ public record BrickTextureProps
         this.bias = Math.Clamp(bias, -1, 1);
         this.brickWidth = brickWidth;
         this.rowHeight = rowHeight;
+        this.forceTilable = forceTilable;
         this.rows = (int)(imgHeight / rowHeight) + 1;
         this.cols = (int)(imgWidth / brickWidth) + 1;
         this.halfMotarSize = (int)Math.Ceiling(motarSize / 2);
