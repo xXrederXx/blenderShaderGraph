@@ -11,6 +11,7 @@
 		  "Output": "#/$defs/Output",
 		  "NoiseTexture": "#/$defs/NoiseTexture",
 		  "MixColor": "#/$defs/MixColor",
+		  "TileFixer": "#/$defs/TileFixer",
 		  "ColorRamp": "#/$defs/ColorRamp"
 		}
 	  },
@@ -20,6 +21,7 @@
 		{ "$ref": "#/$defs/Output" },
 		{ "$ref": "#/$defs/NoiseTexture" },
 		{ "$ref": "#/$defs/MixColor" },
+		{ "$ref": "#/$defs/TileFixer" },
 		{ "$ref": "#/$defs/ColorRamp" }
 	  ]
 	},
@@ -110,6 +112,22 @@
 			  "distance": { "type": "number" },
 			  "invert": { "type": "boolean" },
 			  "isDX": { "type": "boolean" }
+			}
+		  }
+		}
+	  },
+	  "TileFixer": {
+		"type": "object",
+		"required": ["id", "type", "params"],
+		"properties": {
+		  "id": { "type": "string" },
+		  "type": { "const": "TileFixer" },
+		  "params": {
+			"type": "object",
+			"required": ["image"],
+			"properties": {
+			  "image": { "type": "string" },
+			  "blur": { "type": "number" }
 			}
 		  }
 		}
