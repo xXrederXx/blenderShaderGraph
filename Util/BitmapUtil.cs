@@ -40,7 +40,7 @@ public static class BitmapUtil
     public static Bitmap FilledBitmap(int width, int height, Color color)
     {
         Bitmap ret = new(width, height);
-        ret.ForPixel((x, y) => color);
+        ret.ForPixelParralel((x, y) => color);
         return ret;
     }
 

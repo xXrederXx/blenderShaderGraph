@@ -41,6 +41,24 @@ public static class ColorUtil
         value = max / 255d;
     }
 
+    public static void ColorToHSVOnlyH(Color color, out double hue)
+    {
+        hue = color.GetHue();
+    }
+
+    public static void ColorToHSVOnlyS(Color color, out double saturation)
+    {
+        int max = Math.Max(color.R, Math.Max(color.G, color.B));
+        int min = Math.Min(color.R, Math.Min(color.G, color.B));
+        saturation = (max == 0) ? 0 : 1d - (1d * min / max);
+    }
+
+    public static void ColorToHSVOnlyV(Color color, out double value)
+    {
+        int max = Math.Max(color.R, Math.Max(color.G, color.B));
+        value = max / 255d;
+    }
+
     public static Color ColorFromHSV(double hue, double saturation, double value)
     {
         int hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;

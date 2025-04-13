@@ -1,4 +1,3 @@
-using System;
 using System.Drawing;
 using blenderShaderGraph.Util;
 
@@ -14,13 +13,13 @@ public static class ColorRampNode
     {
         Bitmap res = new Bitmap(bitmap.Width, bitmap.Height);
         Color[,] colors = bitmap.GetPixles();
-
-        res.ForPixel(
+        ColorStop[] sortedStops = colorStops.OrderBy(cs => cs.pos).ToArray();
+        res.ForPixelParralel(
             (x, y) =>
             {
                 Color color = colors[x, y];
                 float value = ColorUtil.ValueFromColor(color);
-                return GetColor(value, colorStops, mode);
+                return GetColor(value, sortedStops, mode);
             }
         );
         return res;
@@ -28,120 +27,121 @@ public static class ColorRampNode
 
     private static Color GetColor(
         float value,
-        ColorStop[] colorStops,
+        ColorStop[] sortedStops,
         ColorRampMode mode = ColorRampMode.Linear
     )
     {
         value = Math.Clamp(value, 0, 1);
-        if (colorStops.Length == 0)
+        if (sortedStops.Length == 0)
         {
             return Color.FromKnownColor(KnownColor.Black);
         }
-        if (colorStops.Length == 1)
+        if (sortedStops.Length == 1)
         {
-            return colorStops[0].color;
+            return sortedStops[0].color;
         }
 
         return mode switch
         {
-            ColorRampMode.Linear => GetColorLinear(value, colorStops),
-            ColorRampMode.Constant => GetColorConstant(value, colorStops),
+            ColorRampMode.Linear => GetColorLinear(value, sortedStops),
+            ColorRampMode.Constant => GetColorConstant(value, sortedStops),
             _ => Color.FromKnownColor(KnownColor.Black),
         };
     }
 
-    private static Color GetColorConstant(float value, ColorStop[] colorStops)
+    private static Color GetColorConstant(float value, ColorStop[] sortedStops)
     {
-        (bool ret, Color retColor) = CalcLowAndHeigh(
-            value,
-            colorStops,
-            out ColorStop? nextHigh,
-            out ColorStop? nextLow
-        );
-        if (ret)
+        var (low, high, exactMatch, exactColor) = FindSurroundingStops(value, sortedStops);
+        if (exactMatch && exactColor.HasValue)
         {
-            return retColor;
+            return exactColor.Value;
         }
 
-        if (nextHigh is null && nextLow is null)
+        if (high is null && low is null)
         {
             throw new Exception(
                 "Both nextHigh and NextLow are null. this means, that no color is found."
             );
         }
 
-        if (nextLow is null)
+        if (low is null)
         {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-            return nextHigh.color;
+            return high.color;
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
-        return nextLow.color;
+        return low.color;
     }
 
-    private static Color GetColorLinear(float value, ColorStop[] colorStops)
+    private static Color GetColorLinear(float value, ColorStop[] sortedStops)
     {
-        (bool ret, Color retColor) = CalcLowAndHeigh(
-            value,
-            colorStops,
-            out ColorStop? nextHigh,
-            out ColorStop? nextLow
-        );
-        if (ret)
+        var (low, high, exactMatch, exactColor) = FindSurroundingStops(value, sortedStops);
+        if (exactMatch && exactColor.HasValue)
         {
-            return retColor;
+            return exactColor.Value;
         }
 
-        if (nextHigh is null)
+        if (high is null)
         {
-            nextHigh = nextLow;
+            high = low;
         }
-        if (nextLow is null)
+        if (low is null)
         {
-            nextLow = nextHigh;
+            low = high;
         }
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
         return ColorUtil.LerpColor(
-            nextLow.color,
-            nextHigh.color,
-            MyMath.Map(value, nextLow.pos, nextHigh.pos, 0, 1)
+            low.color,
+            high.color,
+            MyMath.Map(value, low.pos, high.pos, 0, 1)
         );
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
     }
-
-    private static (bool ret, Color value) CalcLowAndHeigh(
-        float value,
-        ColorStop[] colorStops,
-        out ColorStop? nextHigh,
-        out ColorStop? nextLow
-    )
+    private static (
+        ColorStop? low,
+        ColorStop? high,
+        bool exactMatch,
+        Color? exactColor
+    ) FindSurroundingStops(float value, ColorStop[] sortedStops)
     {
-        nextHigh = null;
-        nextLow = null;
-        foreach (ColorStop stop in colorStops)
+        int left = 0;
+        int right = sortedStops.Length - 1;
+
+        // Handle edge cases: value is outside the bounds
+        if (value <= sortedStops[0].pos)
+            return (null, sortedStops[0], false, null);
+        if (value >= sortedStops[^1].pos)
+            return (sortedStops[^1], null, false, null);
+
+        // Binary search for the closest lower and upper ColorStops
+        while (left <= right)
         {
-            if (stop.pos > value && (nextHigh is null || stop.pos < nextHigh.pos))
+            int mid = (left + right) / 2;
+            float midPos = sortedStops[mid].pos;
+
+            // Exact match found
+            if (value == midPos)
             {
-                nextHigh = stop;
+                return (null, null, true, sortedStops[mid].color);
             }
-            if (stop.pos < value && (nextLow is null || stop.pos > nextLow.pos))
+            // Search left half
+            else if (value < midPos)
             {
-                nextLow = stop;
+                right = mid - 1;
             }
-            if (stop.pos == value)
+            // Search right half
+            else
             {
-                return (ret: true, value: stop.color);
+                left = mid + 1;
             }
         }
 
-        if (nextHigh is null && nextLow is null)
-        {
-            throw new Exception(
-                "Both nextHigh and NextLow are null. this means, that no color is found."
-            );
-        }
-
-        return (ret: false, value: default);
+        // At this point:
+        // - right is the largest index where pos <= value
+        // - left is the smallest index where pos > value
+        ColorStop low = sortedStops[right];
+        ColorStop high = sortedStops[left];
+        return (low, high, false, null);
     }
 }
 
