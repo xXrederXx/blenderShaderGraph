@@ -3,187 +3,202 @@
 	"title": "Node Graph",
 	"type": "array",
 	"items": {
-	  "discriminator": {
-		"propertyName": "type",
-		"mapping": {
-		  "BrickTexture": "#/$defs/BrickTexture",
-		  "Bump": "#/$defs/Bump",
-		  "Output": "#/$defs/Output",
-		  "NoiseTexture": "#/$defs/NoiseTexture",
-		  "MixColor": "#/$defs/MixColor",
-		  "TileFixer": "#/$defs/TileFixer",
-		  "ColorRamp": "#/$defs/ColorRamp"
-		}
-	  },
-	  "oneOf": [
-		{ "$ref": "#/$defs/BrickTexture" },
-		{ "$ref": "#/$defs/Bump" },
-		{ "$ref": "#/$defs/Output" },
-		{ "$ref": "#/$defs/NoiseTexture" },
-		{ "$ref": "#/$defs/MixColor" },
-		{ "$ref": "#/$defs/TileFixer" },
-		{ "$ref": "#/$defs/ColorRamp" }
-	  ]
+		"discriminator": {
+			"propertyName": "type",
+			"mapping": {
+				"BrickTexture": "#/$defs/BrickTexture",
+				"Bump": "#/$defs/Bump",
+				"Output": "#/$defs/Output",
+				"NoiseTexture": "#/$defs/NoiseTexture",
+				"MixColor": "#/$defs/MixColor",
+				"TileFixer": "#/$defs/TileFixer",
+				"Resize": "#/$defs/Resize",
+				"ColorRamp": "#/$defs/ColorRamp"
+			}
+		},
+		"oneOf": [
+			{ "$ref": "#/$defs/BrickTexture" },
+			{ "$ref": "#/$defs/Bump" },
+			{ "$ref": "#/$defs/Output" },
+			{ "$ref": "#/$defs/NoiseTexture" },
+			{ "$ref": "#/$defs/MixColor" },
+			{ "$ref": "#/$defs/TileFixer" },
+			{ "$ref": "#/$defs/Resize" },
+			{ "$ref": "#/$defs/ColorRamp" }
+		]
 	},
 	"$defs": {
-	  "BrickTexture": {
-		"type": "object",
-		"required": ["id", "type", "params"],
-		"properties": {
-		  "id": { "type": "string" },
-		  "type": { "const": "BrickTexture" },
-		  "params": {
+		"BrickTexture": {
 			"type": "object",
+			"required": ["id", "type", "params"],
 			"properties": {
-			  "width": { "type": "number" },
-			  "height": { "type": "number" },
-			  "offset": { "type": "number" },
-			  "offsetFrequency": { "type": "number" },
-			  "squash": { "type": "number" },
-			  "squashFrequency": { "type": "number" },
-			  "color1": { "type": "string", "pattern": "^#([0-9a-fA-F]{6})$" },
-			  "color2": { "type": "string", "pattern": "^#([0-9a-fA-F]{6})$" },
-			  "colorMotar": { "type": "string", "pattern": "^#([0-9a-fA-F]{6})$" },
-			  "motarSize": { "type": "number" },
-			  "motarSmoothness": { "type": "number" },
-			  "bias": { "type": "number" },
-			  "brickWidth": { "type": "number" },
-			  "rowHeight": { "type": "number" },
-			  "forceTilable": { "type": "boolean" }
-			}
-		  }
-		}
-	  },
-	  "NoiseTexture": {
-		"type": "object",
-		"required": ["id", "type", "params"],
-		"properties": {
-		  "id": { "type": "string" },
-		  "type": { "const": "NoiseTexture" },
-		  "params": {
-			"type": "object",
-			"properties": {
-			  "width": { "type": "number" },
-			  "height": { "type": "number" },
-			  "size": { "type": "number" },
-			  "detail": { "type": "number" },
-			  "roughness": { "type": "number" }
-			}
-		  }
-		}
-	  },
-	  "MixColor": {
-		"type": "object",
-		"required": ["id", "type", "params"],
-		"properties": {
-		  "id": { "type": "string" },
-		  "type": { "const": "MixColor" },
-		  "params": {
-			"type": "object",
-			"required": ["a", "b"],
-			"properties": {
-			  "a": { "type": "string" },
-			  "b": { "type": "string" },
-			  "factor": {
-				"anyOf": [
-				  { "type": "number" },
-				  { "type": "string" }
-				]
-			  },
-			  "mode": {
-				"type": "string",
-				"enum": ["mix", "hue", "saturation", "value"]
-			  }
-			}
-		  }
-		}
-	  },
-	  "Bump": {
-		"type": "object",
-		"required": ["id", "type", "params"],
-		"properties": {
-		  "id": { "type": "string" },
-		  "type": { "const": "Bump" },
-		  "params": {
-			"type": "object",
-			"required": ["heightMap"],
-			"properties": {
-			  "heightMap": { "type": "string" },
-			  "strength": { "type": "number" },
-			  "distance": { "type": "number" },
-			  "invert": { "type": "boolean" },
-			  "isDX": { "type": "boolean" }
-			}
-		  }
-		}
-	  },
-	  "TileFixer": {
-		"type": "object",
-		"required": ["id", "type", "params"],
-		"properties": {
-		  "id": { "type": "string" },
-		  "type": { "const": "TileFixer" },
-		  "params": {
-			"type": "object",
-			"required": ["image"],
-			"properties": {
-			  "image": { "type": "string" },
-			  "blur": { "type": "number" }
-			}
-		  }
-		}
-	  },
-	  "ColorRamp": {
-		"type": "object",
-		"required": ["id", "type", "params"],
-		"properties": {
-		  "id": { "type": "string" },
-		  "type": { "const": "ColorRamp" },
-		  "params": {
-			"type": "object",
-			"required": ["image"],
-			"properties": {
-			  "image": { "type": "string" },
-			  "colorStops": {
-				"type": "array",
-				"items": {
-				  "type": "object",
-				  "required": ["color", "position"],
-				  "properties": {
-					"color": {
-					  "type": "string",
-					  "pattern": "^#([0-9a-fA-F]{6})$"
-					},
-					"position": {
-					  "type": "number"
+				"id": { "type": "string" },
+				"type": { "const": "BrickTexture" },
+				"params": {
+					"type": "object",
+					"properties": {
+						"width": { "type": "number" },
+						"height": { "type": "number" },
+						"offset": { "type": "number" },
+						"offsetFrequency": { "type": "number" },
+						"squash": { "type": "number" },
+						"squashFrequency": { "type": "number" },
+						"color1": { "type": "string", "pattern": "^#([0-9a-fA-F]{6})$" },
+						"color2": { "type": "string", "pattern": "^#([0-9a-fA-F]{6})$" },
+						"colorMotar": { "type": "string", "pattern": "^#([0-9a-fA-F]{6})$" },
+						"motarSize": { "type": "number" },
+						"motarSmoothness": { "type": "number" },
+						"bias": { "type": "number" },
+						"brickWidth": { "type": "number" },
+						"rowHeight": { "type": "number" },
+						"forceTilable": { "type": "boolean" }
 					}
-				  }
 				}
-			  },
-			  "mode": {
-				"type": "string",
-				"enum": ["linear", "constant"]
-			  }
 			}
-		  }
-		}
-	  },
-	  "Output": {
-		"type": "object",
-		"required": ["id", "type", "params"],
-		"properties": {
-		  "id": { "type": "string" },
-		  "type": { "const": "Output" },
-		  "params": {
+		},
+		"NoiseTexture": {
 			"type": "object",
-			"required": ["image", "filename"],
+			"required": ["id", "type", "params"],
 			"properties": {
-			  "image": { "type": "string" },
-			  "filename": { "type": "string" }
+				"id": { "type": "string" },
+				"type": { "const": "NoiseTexture" },
+				"params": {
+					"type": "object",
+					"properties": {
+						"width": { "type": "number" },
+						"height": { "type": "number" },
+						"size": { "type": "number" },
+						"detail": { "type": "number" },
+						"roughness": { "type": "number" }
+					}
+				}
 			}
-		  }
+		},
+		"MixColor": {
+			"type": "object",
+			"required": ["id", "type", "params"],
+			"properties": {
+				"id": { "type": "string" },
+				"type": { "const": "MixColor" },
+				"params": {
+					"type": "object",
+					"required": ["a", "b"],
+					"properties": {
+						"a": { "type": "string" },
+						"b": { "type": "string" },
+						"factor": {
+							"anyOf": [{ "type": "number" }, { "type": "string" }]
+						},
+						"mode": {
+							"type": "string",
+							"enum": ["mix", "hue", "saturation", "value"]
+						}
+					}
+				}
+			}
+		},
+		"Bump": {
+			"type": "object",
+			"required": ["id", "type", "params"],
+			"properties": {
+				"id": { "type": "string" },
+				"type": { "const": "Bump" },
+				"params": {
+					"type": "object",
+					"required": ["heightMap"],
+					"properties": {
+						"heightMap": { "type": "string" },
+						"strength": { "type": "number" },
+						"distance": { "type": "number" },
+						"invert": { "type": "boolean" },
+						"isDX": { "type": "boolean" }
+					}
+				}
+			}
+		},
+		"TileFixer": {
+			"type": "object",
+			"required": ["id", "type", "params"],
+			"properties": {
+				"id": { "type": "string" },
+				"type": { "const": "TileFixer" },
+				"params": {
+					"type": "object",
+					"required": ["image"],
+					"properties": {
+						"image": { "type": "string" },
+						"blur": { "type": "number" }
+					}
+				}
+			}
+		},
+		"ColorRamp": {
+			"type": "object",
+			"required": ["id", "type", "params"],
+			"properties": {
+				"id": { "type": "string" },
+				"type": { "const": "ColorRamp" },
+				"params": {
+					"type": "object",
+					"required": ["image"],
+					"properties": {
+						"image": { "type": "string" },
+						"colorStops": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"required": ["color", "position"],
+								"properties": {
+									"color": {
+										"type": "string",
+										"pattern": "^#([0-9a-fA-F]{6})$"
+									},
+									"position": {
+										"type": "number"
+									}
+								}
+							}
+						},
+						"mode": {
+							"type": "string",
+							"enum": ["linear", "constant"]
+						}
+					}
+				}
+			}
+		},
+		"Resize": {
+			"type": "object",
+			"required": ["id", "type", "params"],
+			"properties": {
+				"id": { "type": "string" },
+				"type": { "const": "Resize" },
+				"params": {
+					"type": "object",
+					"required": ["image"],
+					"properties": {
+						"image": { "type": "string" },
+						"width": { "type": "number" },
+						"height": { "type": "number" }
+					}
+				}
+			}
+		},
+		"Output": {
+			"type": "object",
+			"required": ["id", "type", "params"],
+			"properties": {
+				"id": { "type": "string" },
+				"type": { "const": "Output" },
+				"params": {
+					"type": "object",
+					"required": ["image", "filename"],
+					"properties": {
+						"image": { "type": "string" },
+						"filename": { "type": "string" }
+					}
+				}
+			}
 		}
-	  }
 	}
-  }
-  
+}

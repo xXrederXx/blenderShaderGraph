@@ -39,6 +39,7 @@ public class GraphRunner
                 "ColorRamp" => new ColorRampJSON(id, element),
                 "Output" => new OutputNodeJson(id, element),
                 "TileFixer" => new TileFixerJSON(id, element),
+                "Resize" => new ResizeJSON(id, element),
                 _ => throw new Exception($"Unknown node type: {type}"),
             };
 

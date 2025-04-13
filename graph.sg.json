@@ -103,11 +103,20 @@
 		}
 	},
 	{
+		"id": "resizedMain",
+		"type": "Resize",
+		"params": {
+			"image": "mixLast",
+			"width": 2024,
+			"height": 2024
+		}
+	},
+	{
 		"id": "out1",
 		"type": "Output",
 		"params": {
 			"filename": "brick.png",
-			"image": "mixLast" 
+			"image": "resizedMain" 
 		}
 	},
 	{
@@ -116,14 +125,6 @@
 		"params": {
 			"filename": "fac.png",
 			"image": "brick" 
-		}
-	},
-	{
-		"id": "out3",
-		"type": "Output",
-		"params": {
-			"filename": "fac.png",
-			"image": "noiseBrick" 
 		}
 	}
 ]
