@@ -10,16 +10,21 @@ namespace blenderShaderGraph.Util;
 
 public class GraphRunner
 {
+    static Stopwatch sw1 = new();
+    static Stopwatch sw2 = new();
     public static void Run(string path)
     {
-        Stopwatch sw = new();
-        sw.Start();
-        System.Console.WriteLine("\n------------ Generation Starting ------------\n");
+        sw1.Restart();
+
+        System.Console.WriteLine("\n------------------------ Generation Starting ------------------------\n");
         System.Console.WriteLine("\t- Parsing JSON File");
+
         string json = File.ReadAllText(path);
         JsonDocument doc = JsonDocument.Parse(json);
         List<IJsonNode> nodes = new List<IJsonNode>();
+
         System.Console.WriteLine("\t- Parsing Contnents");
+
         foreach (JsonElement element in doc.RootElement.EnumerateArray())
         {
             string? type = element.GetProperty("type").GetString();
@@ -39,11 +44,24 @@ public class GraphRunner
 
             nodes.Add(node);
         }
+
         System.Console.WriteLine("\t- Executing Nodes");
+
         Dictionary<string, object> context = new Dictionary<string, object>();
         foreach (IJsonNode node in nodes)
+        {
+            sw2.Restart();
             node.Execute(context);
-        sw.Stop();
-        System.Console.WriteLine("\n------------ Finished in " + sw.ElapsedMilliseconds + "ms ------------\n");
+            sw2.Stop();
+            System.Console.WriteLine(
+                $"\t  --> Executed Node {node.Id} ({node.GetType().Name.Replace("JSON", "").Replace("Json", "")}) in {sw2.ElapsedMilliseconds}ms"
+            );
+        }
+
+        sw1.Stop();
+
+        System.Console.WriteLine(
+            $"\n------------------------ Finished in {sw1.ElapsedMilliseconds}ms ------------------------\n"
+        );
     }
 }
