@@ -14,7 +14,7 @@ public static class ColorUtil
 
     public static float ValueFromColor(Color color)
     {
-        return (color.R + (float)color.G + color.B) / 3.0f / 255.0f;
+        return (color.R + color.G + color.B) * 0.00130718954248366f;
     }
 
     public static Color LerpColor(Color aCol, Color bCol, float t)
