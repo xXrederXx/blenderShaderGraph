@@ -7,6 +7,7 @@
 			"propertyName": "type",
 			"mapping": {
 				"BrickTexture": "#/$defs/BrickTexture",
+				"MaskTexture": "#/$defs/MaskTexture",
 				"Bump": "#/$defs/Bump",
 				"Output": "#/$defs/Output",
 				"NoiseTexture": "#/$defs/NoiseTexture",
@@ -19,6 +20,7 @@
 		},
 		"oneOf": [
 			{ "$ref": "#/$defs/BrickTexture" },
+			{ "$ref": "#/$defs/MaskTexture" },
 			{ "$ref": "#/$defs/Bump" },
 			{ "$ref": "#/$defs/Output" },
 			{ "$ref": "#/$defs/NoiseTexture" },
@@ -72,6 +74,28 @@
 						"size": { "type": "number" },
 						"detail": { "type": "number" },
 						"roughness": { "type": "number" }
+					}
+				}
+			}
+		},
+		"MaskTexture": {
+			"type": "object",
+			"required": ["id", "type", "params"],
+			"properties": {
+				"id": { "type": "string" },
+				"type": { "const": "MaskTexture" },
+				"params": {
+					"type": "object",
+					"properties": {
+						"width": { "type": "number" },
+						"height": { "type": "number" },
+						"dots": { "type": "number" },
+						"maxSize": { "type": "number" },
+						"minSize": { "type": "number" },
+						"mode": {
+							"type": "string",
+							"enum": ["square"]
+						}
 					}
 				}
 			}

@@ -42,6 +42,7 @@ public class GraphRunner
                 "TileFixer" => new TileFixerJSON(id, element),
                 "Resize" => new ResizeJSON(id, element),
                 "TextureCoordinate" => new TextureCoordinateJSON(id, element),
+                "MaskTexture" => new MaskTextureJSON(id, element),
                 _ => throw new Exception($"Unknown node type: {type}"),
             };
 
