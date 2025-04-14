@@ -72,9 +72,9 @@ public static class MixColorNode
                 float fac = ColorUtil.ValueFromColor(facCols[x, y]);
                 return Color.FromArgb(
                     255,
-                    (byte)(aCol.R * (1 - fac) + bCol.R * fac),
-                    (byte)(aCol.G * (1 - fac) + bCol.G * fac),
-                    (byte)(aCol.B * (1 - fac) + bCol.B * fac)
+                    MyMath.ClampByte(aCol.R * (1 - fac) + bCol.R * fac),
+                    MyMath.ClampByte(aCol.G * (1 - fac) + bCol.G * fac),
+                    MyMath.ClampByte(aCol.B * (1 - fac) + bCol.B * fac)
                 );
             }
         );
@@ -211,9 +211,9 @@ public static class MixColorNode
                 float fac = ColorUtil.ValueFromColor(facCols[x, y]);
                 return Color.FromArgb(
                     255,
-                    (byte)(aCol.R * (1 - fac) + newCol.R * fac),
-                    (byte)(aCol.G * (1 - fac) + newCol.G * fac),
-                    (byte)(aCol.B * (1 - fac) + newCol.B * fac)
+                    MyMath.ClampByte(aCol.R * (1 - fac) + newCol.R * fac),
+                    MyMath.ClampByte(aCol.G * (1 - fac) + newCol.G * fac),
+                    MyMath.ClampByte(aCol.B * (1 - fac) + newCol.B * fac)
                 );
             }
         );
@@ -244,26 +244,25 @@ public static class MixColorNode
             {
                 Color aCol = aCols[x, y];
                 Color bCol = bCols[x, y];
-                Color newCol;
-                if (aCol.GetBrightness() < 0.5)
-                {
-                    newCol = Color.FromArgb(
-                        255,
-                        aCol.R + bCol.R - 255,
-                        aCol.G + bCol.G - 255,
-                        aCol.B + bCol.B - 255
-                    );
-                }
-                else
-                {
-                    newCol = Color.FromArgb(255, aCol.R + bCol.R, aCol.G + bCol.G, aCol.B + bCol.B);
-                }
                 float fac = ColorUtil.ValueFromColor(facCols[x, y]);
+                byte BlendChannel(byte a, byte b)
+                {
+                    float af = a / 255f;
+                    float bf = b / 255f;
+
+                    float resf = af + 2f * bf - 1f;
+                    resf = MyMath.Clamp01(resf);
+
+                    // Factor mix: mix(a, result, fac)
+                    float mixed = af * (1f - fac) + resf * fac;
+                    return MyMath.ClampByte(mixed * 255f);
+                }
+
                 return Color.FromArgb(
                     255,
-                    (byte)(aCol.R * (1 - fac) + newCol.R * fac),
-                    (byte)(aCol.G * (1 - fac) + newCol.G * fac),
-                    (byte)(aCol.B * (1 - fac) + newCol.B * fac)
+                    BlendChannel(aCol.R, bCol.R),
+                    BlendChannel(aCol.G, bCol.G),
+                    BlendChannel(aCol.B, bCol.B)
                 );
             }
         );
@@ -298,9 +297,9 @@ public static class MixColorNode
                 float fac = ColorUtil.ValueFromColor(facCols[x, y]);
                 return Color.FromArgb(
                     255,
-                    (byte)(aCol.R * (1 - fac) + newCol.R * fac),
-                    (byte)(aCol.G * (1 - fac) + newCol.G * fac),
-                    (byte)(aCol.B * (1 - fac) + newCol.B * fac)
+                    MyMath.ClampByte(aCol.R * (1 - fac) + newCol.R * fac),
+                    MyMath.ClampByte(aCol.G * (1 - fac) + newCol.G * fac),
+                    MyMath.ClampByte(aCol.B * (1 - fac) + newCol.B * fac)
                 );
             }
         );
@@ -317,8 +316,6 @@ public static class MixColorNode
             BitmapUtil.FilledBitmap(width, height, ColorUtil.ColorFromValue(factor, false))
         );
     }
-
-    
 }
 
 public enum MixColorMode
@@ -329,5 +326,5 @@ public enum MixColorMode
     Value,
     Darken,
     LinearLight,
-    Lighten
+    Lighten,
 }

@@ -20,5 +20,5 @@ public static class MyMath
         x = Math.Clamp((x - edge0) / (edge1 - edge0), 0f, 1f);
         return x * x * (3 - 2 * x);
     }
-
+    public static byte ClampByte(float value) => (byte)Math.Clamp(value, 0, 255);
 }
