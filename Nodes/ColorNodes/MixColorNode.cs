@@ -18,6 +18,9 @@ public static class MixColorNode
             MixColorMode.Hue => Hue(a, b, factor),
             MixColorMode.Saturation => Saturation(a, b, factor),
             MixColorMode.Value => Value(a, b, factor),
+            MixColorMode.Darken => Darken(a, b, factor),
+            MixColorMode.LinearLight => LinearLight(a, b, factor),
+            MixColorMode.Lighten => Lighten(a, b, factor),
             _ => a,
         };
     }
@@ -35,6 +38,9 @@ public static class MixColorNode
             MixColorMode.Hue => Hue(a, b, factor),
             MixColorMode.Saturation => Saturation(a, b, factor),
             MixColorMode.Value => Value(a, b, factor),
+            MixColorMode.Darken => Darken(a, b, factor),
+            MixColorMode.LinearLight => LinearLight(a, b, factor),
+            MixColorMode.Lighten => Lighten(a, b, factor),
             _ => a,
         };
     }
@@ -182,6 +188,137 @@ public static class MixColorNode
 
         return res;
     }
+
+    private static Bitmap Darken(Bitmap a, Bitmap b, Bitmap factor)
+    {
+        int width = Math.Min(a.Width, b.Width);
+        int height = Math.Min(a.Height, b.Height);
+        Color[,] aCols = a.GetPixles();
+        Color[,] bCols = b.GetPixles();
+        Color[,] facCols = factor.GetPixles();
+        Bitmap res = new(width, height);
+        res.ForPixelParralel(
+            (x, y) =>
+            {
+                Color aCol = aCols[x, y];
+                Color bCol = bCols[x, y];
+                Color newCol = Color.FromArgb(
+                    255,
+                    Math.Min(aCol.R, bCol.R),
+                    Math.Min(aCol.G, bCol.G),
+                    Math.Min(aCol.B, bCol.B)
+                );
+                float fac = ColorUtil.ValueFromColor(facCols[x, y]);
+                return Color.FromArgb(
+                    255,
+                    (byte)(aCol.R * (1 - fac) + newCol.R * fac),
+                    (byte)(aCol.G * (1 - fac) + newCol.G * fac),
+                    (byte)(aCol.B * (1 - fac) + newCol.B * fac)
+                );
+            }
+        );
+        return res;
+    }
+
+    private static Bitmap Darken(Bitmap a, Bitmap b, float factor)
+    {
+        int width = Math.Min(a.Width, b.Width);
+        int height = Math.Min(a.Height, b.Height);
+        return Darken(
+            a,
+            b,
+            BitmapUtil.FilledBitmap(width, height, ColorUtil.ColorFromValue(factor, false))
+        );
+    }
+
+    private static Bitmap LinearLight(Bitmap a, Bitmap b, Bitmap factor)
+    {
+        int width = Math.Min(a.Width, b.Width);
+        int height = Math.Min(a.Height, b.Height);
+        Color[,] aCols = a.GetPixles();
+        Color[,] bCols = b.GetPixles();
+        Color[,] facCols = factor.GetPixles();
+        Bitmap res = new(width, height);
+        res.ForPixelParralel(
+            (x, y) =>
+            {
+                Color aCol = aCols[x, y];
+                Color bCol = bCols[x, y];
+                Color newCol;
+                if (aCol.GetBrightness() < 0.5)
+                {
+                    newCol = Color.FromArgb(
+                        255,
+                        aCol.R + bCol.R - 255,
+                        aCol.G + bCol.G - 255,
+                        aCol.B + bCol.B - 255
+                    );
+                }
+                else
+                {
+                    newCol = Color.FromArgb(255, aCol.R + bCol.R, aCol.G + bCol.G, aCol.B + bCol.B);
+                }
+                float fac = ColorUtil.ValueFromColor(facCols[x, y]);
+                return Color.FromArgb(
+                    255,
+                    (byte)(aCol.R * (1 - fac) + newCol.R * fac),
+                    (byte)(aCol.G * (1 - fac) + newCol.G * fac),
+                    (byte)(aCol.B * (1 - fac) + newCol.B * fac)
+                );
+            }
+        );
+        return res;
+    }
+
+    private static Bitmap LinearLight(Bitmap a, Bitmap b, float factor)
+    {
+        int width = Math.Min(a.Width, b.Width);
+        int height = Math.Min(a.Height, b.Height);
+        return LinearLight(
+            a,
+            b,
+            BitmapUtil.FilledBitmap(width, height, ColorUtil.ColorFromValue(factor, false))
+        );
+    }
+
+    private static Bitmap Lighten(Bitmap a, Bitmap b, Bitmap factor)
+    {
+        int width = Math.Min(a.Width, b.Width);
+        int height = Math.Min(a.Height, b.Height);
+        Color[,] aCols = a.GetPixles();
+        Color[,] bCols = b.GetPixles();
+        Color[,] facCols = factor.GetPixles();
+        Bitmap res = new(width, height);
+        res.ForPixelParralel(
+            (x, y) =>
+            {
+                Color aCol = aCols[x, y];
+                Color bCol = bCols[x, y];
+                Color newCol = aCol.GetBrightness() > bCol.GetBrightness() ? aCol : bCol;
+                float fac = ColorUtil.ValueFromColor(facCols[x, y]);
+                return Color.FromArgb(
+                    255,
+                    (byte)(aCol.R * (1 - fac) + newCol.R * fac),
+                    (byte)(aCol.G * (1 - fac) + newCol.G * fac),
+                    (byte)(aCol.B * (1 - fac) + newCol.B * fac)
+                );
+            }
+        );
+        return res;
+    }
+
+    private static Bitmap Lighten(Bitmap a, Bitmap b, float factor)
+    {
+        int width = Math.Min(a.Width, b.Width);
+        int height = Math.Min(a.Height, b.Height);
+        return Lighten(
+            a,
+            b,
+            BitmapUtil.FilledBitmap(width, height, ColorUtil.ColorFromValue(factor, false))
+        );
+    }
+
+    
 }
 
 public enum MixColorMode
@@ -190,4 +327,7 @@ public enum MixColorMode
     Hue,
     Saturation,
     Value,
+    Darken,
+    LinearLight,
+    Lighten
 }

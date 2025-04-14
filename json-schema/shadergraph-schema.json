@@ -91,7 +91,7 @@
 						},
 						"mode": {
 							"type": "string",
-							"enum": ["mix", "hue", "saturation", "value"]
+							"enum": ["mix", "hue", "saturation", "value", "darken", "lighten", "linearlight"]
 						}
 					}
 				}

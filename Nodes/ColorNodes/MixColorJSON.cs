@@ -21,6 +21,9 @@ public class MixColorJSON : IJsonNode
             "hue" => MixColorMode.Hue,
             "saturation" => MixColorMode.Saturation,
             "value" => MixColorMode.Value,
+            "darken" => MixColorMode.Darken,
+            "lighten" => MixColorMode.Lighten,
+            "linearlight" => MixColorMode.LinearLight,
             _ => MixColorMode.Mix,
         };
         Bitmap res;
