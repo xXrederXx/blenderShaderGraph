@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using blenderShaderGraph.Nodes;
 using blenderShaderGraph.Nodes.ConverterNodes;
+using blenderShaderGraph.Nodes.InputNodes;
 using blenderShaderGraph.Nodes.OtherNodes;
 using blenderShaderGraph.Nodes.OutputNodes;
 using blenderShaderGraph.Nodes.TextureNodes;
@@ -40,6 +41,7 @@ public class GraphRunner
                 "Output" => new OutputNodeJson(id, element),
                 "TileFixer" => new TileFixerJSON(id, element),
                 "Resize" => new ResizeJSON(id, element),
+                "TextureCoordinate" => new TextureCoordinateJSON(id, element),
                 _ => throw new Exception($"Unknown node type: {type}"),
             };
 

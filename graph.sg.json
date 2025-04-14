@@ -1,27 +1,9 @@
 [
 	{
-		"id": "noise",
-		"type": "NoiseTexture",
+		"id": "tex",
+		"type": "TextureCoordinate",
 		"params": {
 			
-		}
-	},
-	{
-		"id": "noise2",
-		"type": "NoiseTexture",
-		"params": {
-			"detail": 4,
-			"size": 5
-		}
-	},
-	{
-		"id": "mix",
-		"type": "MixColor",
-		"params": {
-			"a": "noise",
-			"b": "noise2",
-			"factor": 0.25,
-			"mode": "linearlight"
 		}
 	},
 	{
@@ -29,7 +11,7 @@
 		"type": "Output",
 		"params": {
 			"filename": "tmp.png",
-			"image": "mix"  
+			"image": "tex"  
 		}
 	}
 ]

@@ -13,6 +13,7 @@
 				"MixColor": "#/$defs/MixColor",
 				"TileFixer": "#/$defs/TileFixer",
 				"Resize": "#/$defs/Resize",
+				"TextureCoordinate": "#/$defs/TextureCoordinate",
 				"ColorRamp": "#/$defs/ColorRamp"
 			}
 		},
@@ -24,6 +25,7 @@
 			{ "$ref": "#/$defs/MixColor" },
 			{ "$ref": "#/$defs/TileFixer" },
 			{ "$ref": "#/$defs/Resize" },
+			{ "$ref": "#/$defs/TextureCoordinate" },
 			{ "$ref": "#/$defs/ColorRamp" }
 		]
 	},
@@ -70,6 +72,22 @@
 						"size": { "type": "number" },
 						"detail": { "type": "number" },
 						"roughness": { "type": "number" }
+					}
+				}
+			}
+		},
+		"TextureCoordinate": {
+			"type": "object",
+			"required": ["id", "type", "params"],
+			"properties": {
+				"id": { "type": "string" },
+				"type": { "const": "TextureCoordinate" },
+				"params": {
+					"type": "object",
+					"properties": {
+						"width": { "type": "number" },
+						"height": { "type": "number" },
+						"mode": { "type": "string" }
 					}
 				}
 			}
