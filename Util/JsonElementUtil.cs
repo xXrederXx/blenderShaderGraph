@@ -8,7 +8,7 @@ public static class JsonElementUtil
 {
     public static int GetInt(this JsonElement self, string propName, int def = 0)
     {
-        if(!self.TryGetProperty(propName, out JsonElement element))
+        if (!self.TryGetProperty(propName, out JsonElement element))
         {
             return def;
         }
@@ -18,7 +18,7 @@ public static class JsonElementUtil
 
     public static float GetFloat(this JsonElement self, string propName, float def = 0)
     {
-        if(!self.TryGetProperty(propName, out JsonElement element))
+        if (!self.TryGetProperty(propName, out JsonElement element))
         {
             return def;
         }
@@ -28,28 +28,51 @@ public static class JsonElementUtil
 
     public static string GetString(this JsonElement self, string propName, string def = "")
     {
-        if(!self.TryGetProperty(propName, out JsonElement element))
+        if (!self.TryGetProperty(propName, out JsonElement element))
         {
             return def;
         }
         string? val = element.GetString();
         return val is null ? def : val;
     }
+
     public static bool GetBool(this JsonElement self, string propName)
     {
-        if(!self.TryGetProperty(propName, out JsonElement element))
+        if (!self.TryGetProperty(propName, out JsonElement element))
         {
             return false;
         }
         return element.GetBoolean();
     }
-    public static Bitmap GetBitmap(this JsonElement self, string IdSelf, Dictionary<string, object> contex, string propName)
+
+    public static Bitmap GetBitmap(
+        this JsonElement self,
+        string IdSelf,
+        Dictionary<string, object> contex,
+        string propName,
+        int WidthIfCol = 1024,
+        int heightIfCol = 1024
+    )
     {
         string img = self.GetString(propName, "");
+        if (img.StartsWith('#') && (img.Length == 7 || img.Length == 9))
+        {
+            Color col = ColorTranslator.FromHtml(img);
+            return BitmapUtil.FilledBitmap(WidthIfCol, heightIfCol, col);
+        }
         if (!contex.TryGetValue(img, out var obj) || obj is not Bitmap bmp)
         {
             throw new FileNotFoundException($"Node {IdSelf} could not find input: {img}");
         }
         return new(bmp);
+    }
+
+    public static Color GetColor(this JsonElement self, string propName, string def = "#000000")
+    {
+        if (!self.TryGetProperty(propName, out JsonElement element))
+        {
+            return ColorTranslator.FromHtml(def);
+        }
+        return ColorTranslator.FromHtml(element.GetString(propName, def));
     }
 }

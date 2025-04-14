@@ -38,10 +38,11 @@ public class MixColorJSON : IJsonNode
         }
         else
         {
+            Bitmap factor = p.GetBitmap(Id, contex, "factor");
             res = MixColorNode.Generate(
-                p.GetBitmap(Id, contex, "a"),
-                p.GetBitmap(Id, contex, "b"),
-                p.GetBitmap(Id, contex, "factor"),
+                p.GetBitmap(Id, contex, "a", factor.Width, factor.Height),
+                p.GetBitmap(Id, contex, "b", factor.Width, factor.Height),
+                factor,
                 mode
             );
         }

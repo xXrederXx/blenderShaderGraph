@@ -100,7 +100,7 @@
 				"type": { "const": "MixColor" },
 				"params": {
 					"type": "object",
-					"required": ["a", "b"],
+					"required": ["a", "b", "factor"],
 					"properties": {
 						"a": { "type": "string" },
 						"b": { "type": "string" },
