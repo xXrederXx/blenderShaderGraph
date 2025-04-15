@@ -2,7 +2,10 @@
 	{
 		"id": "n",
 		"type": "NoiseTexture",
-		"params": {}
+		"params": {
+			"width": 1024,
+			"height": 1024
+		}
 	},
 	{
 		"id": "m1",
@@ -12,7 +15,9 @@
 			"minSize": 20,
 			"maxSize": 100,
 			"mode": "cube", 
-			"betterDistCalc": true
+			"betterDistCalc": true,
+			"width": 1024,
+			"height": 1024
 		}
 	},
 	{
@@ -23,7 +28,9 @@
 			"minSize": 200,
 			"maxSize": 500, 
 			"mode": "easeInSine", 
-			"betterDistCalc": true
+			"betterDistCalc": true,
+			"width": 1024,
+			"height": 1024
 		}
 	},
 	{

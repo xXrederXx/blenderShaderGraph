@@ -17,9 +17,8 @@ public class ExampleBrush
         int[] minM2 = [150, 250];
         float[] facMix1 = [0.4f, 0.5f, 0.6f];
         float[] facMix2 = [0.05f, 0.15f, 0.25f];
-        int i = 0;
-        foreach (
-            var (ndm1, ndm2, mxm1, mnm1, mnm2, fm1, fm2) in from ndm1 in dotsM1
+        var arr = (
+            from ndm1 in dotsM1
             from ndm2 in dotsM2
             from mxm1 in maxM1
             from mnm1 in minM1
@@ -27,23 +26,29 @@ public class ExampleBrush
             from fm1 in facMix1
             from fm2 in facMix2
             select (ndm1, ndm2, mxm1, mnm1, mnm2, fm1, fm2)
-        )
-        {
-            GenerateV1(
-                1024,
-                "Mask" + i.ToString("D3"),
-                ndm1,
-                ndm2,
-                mxm1,
-                mnm1,
-                400,
-                mnm2,
-                fm1,
-                fm2
-            );
-            System.Console.WriteLine("Finished " + i);
-            i++;
-        }
+        ).ToArray();
+        Parallel.For(
+            0,
+            arr.Length,
+            (i, body) =>
+            {
+                var (ndm1, ndm2, mxm1, mnm1, mnm2, fm1, fm2) = arr[i];
+                GenerateV1(
+                    1024,
+                    "./out/Mask" + i.ToString("D4"),
+                    ndm1,
+                    ndm2,
+                    mxm1,
+                    mnm1,
+                    400,
+                    mnm2,
+                    fm1,
+                    fm2
+                );
+                System.Console.WriteLine("Finished " + i);
+                i++;
+            }
+        );
     }
 
     private static void GenerateV1(
