@@ -6,7 +6,10 @@ namespace blenderShaderGraph.Nodes.TextureNodes;
 
 public enum MaskTextureType
 {
+    SquareFade,
+    EaseInSine,
     Square,
+    Cube,
 }
 
 public class MaskTexture
@@ -19,12 +22,15 @@ public class MaskTexture
         int numDots,
         int maxSize,
         int minSize,
-        MaskTextureType type = MaskTextureType.Square
+        MaskTextureType type = MaskTextureType.Square,
+        bool betterDistCalc = false
     )
     {
         Bitmap res = BitmapUtil.FilledBitmap(Width, Height, Color.Black);
         List<(int x, int y, int size)> dots = [];
-        for (int i = 0; i < numDots; i++)
+        int calcedDots = 0;
+        int trysMax = numDots * 2;
+        for (int i = 0; i < trysMax; i++)
         {
             int size = rng.Next(minSize, maxSize);
 
@@ -32,18 +38,25 @@ public class MaskTexture
             int maxValueY = Height - size;
             if (maxValueX < size || maxValueY < size)
             {
-                System.Console.WriteLine("Max Values are too big");
                 continue;
             }
             int x = rng.Next(size, maxValueX);
             int y = rng.Next(size, maxValueY);
             dots.Add((x, y, size));
+            calcedDots++;
+            if(calcedDots >= numDots)
+            {
+                break;
+            }
         }
         Color[,] cols = res.GetPixles();
 
-        Func<float, float, float> func = type switch
+        Func<float, float> func = type switch
         {
-            MaskTextureType.Square => SquareFade,
+            MaskTextureType.SquareFade => SquareFade,
+            MaskTextureType.EaseInSine => EaseInSine,
+            MaskTextureType.Square => Square,
+            MaskTextureType.Cube => Cube,
             _ => SquareFade,
         };
 
@@ -58,10 +71,25 @@ public class MaskTexture
                 for (int y = startY; y < endY; y++)
                 {
                     // calc normalized distance
-                    float xDist = MyMath.Clamp01(Math.Abs(x - dot.x) / dot.size);
-                    float yDist = MyMath.Clamp01(Math.Abs(y - dot.y) / dot.size);
-
-                    cols[x, y] = ColorUtil.ColorFromValue(func.Invoke(x, y), false);
+                    float xDist = Math.Abs(x - dot.x) / (float)dot.size;
+                    float yDist = Math.Abs(y - dot.y) / (float)dot.size;
+                    float value;
+                    if (betterDistCalc)
+                    {
+                        float dist = MyMath.Clamp01(
+                            (float)Math.Sqrt(Math.Pow(xDist, 2) + Math.Pow(yDist, 2))
+                        );
+                        value = func.Invoke(dist);
+                    }
+                    else
+                    {
+                        value = func.Invoke(xDist) * 0.5f + func.Invoke(yDist) * 0.5f;
+                    }
+                    cols[x, y] = ColorUtil.LerpColor(
+                        cols[x, y],
+                        Color.White,
+                        MyMath.Clamp01(value)
+                    );
                 }
             }
         }
@@ -69,8 +97,11 @@ public class MaskTexture
         return res;
     }
 
-    private static float SquareFade(float xDist, float yDist)
-    {
-        return 1 - xDist * 0.5f + 1 - yDist * 0.5f;
-    }
+    private static float SquareFade(float dist) => 1 - dist;
+
+    private static float EaseInSine(float dist) => (float)Math.Cos(dist * Math.PI / 2);
+
+    private static float Square(float dist) => (float)Math.Pow(1 - dist, 2);
+
+    private static float Cube(float dist) => (float)Math.Pow(1 - dist, 3);
 }

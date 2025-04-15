@@ -14,19 +14,23 @@ public class MaskTextureJSON : IJsonNode
     {
         JsonElement p = _element.GetProperty("params");
 
-        string modeStr = p.GetString("type", "square");
+        string modeStr = p.GetString("mode", "square");
         MaskTextureType mode = modeStr switch
         {
+            "squareFade" => MaskTextureType.SquareFade,
+            "easeInSine" => MaskTextureType.EaseInSine,
             "square" => MaskTextureType.Square,
+            "cube" => MaskTextureType.Cube,
             _ => MaskTextureType.Square,
         };
         Bitmap res = MaskTexture.Generate(
             p.GetInt("width", 1024),
             p.GetInt("height", 1024),
             p.GetInt("dots", 1024),
-            p.GetInt("minSize", 1024),
-            p.GetInt("maxSize", 1024),
-            mode
+            p.GetInt("maxSize", 124),
+            p.GetInt("minSize", 24),
+            mode,
+            p.GetBool("betterDistCalc")
         );
         contex[Id] = res;
     }

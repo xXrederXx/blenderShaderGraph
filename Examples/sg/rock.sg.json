@@ -1,0 +1,102 @@
+[
+	{
+		"id": "nd1",
+		"type": "NoiseTexture",
+		"params": {
+			"size": 1,
+			"roughness": 0.6
+		}
+	},
+	{
+		"id": "crd1",
+		"type": "ColorRamp",
+		"params": {
+			"image": "nd1",
+			"colorStops": [
+				{ "color": "#000000", "position": 0.42 },
+				{ "color": "#ffffff", "position": 0.6 }
+			]
+		}
+	},
+	{
+		"id": "md1",
+		"type": "MixColor",
+		"params": {
+			"a": "#475649",
+			"b": "#393939",
+			"factor": "crd1"
+		}
+	},
+	{
+		"id": "nd2",
+		"type": "NoiseTexture",
+		"params": {
+			"size": 1.5,
+			"roughness": 1,
+			"detail": 8
+		}
+	},
+	{
+		"id": "crd2",
+		"type": "ColorRamp",
+		"params": {
+			"image": "nd2",
+			"colorStops": [
+				{ "color": "#000000", "position": 0.42 },
+				{ "color": "#ffffff", "position": 0.6 }
+			]
+		}
+	},
+	{
+		"id": "md2",
+		"type": "MixColor",
+		"params": {
+			"a": "#475649",
+			"b": "#393939",
+			"factor": "crd2"
+		}
+	},
+	{
+		"id": "md3",
+		"type": "MixColor",
+		"params": {
+			"a": "md1",
+			"b": "md2",
+			"factor": 0.8,
+			"mode": "darken"
+		}
+	},
+	{
+		"id": "r1",
+		"type": "Resize",
+		"params": {
+			"width": 256,
+			"height": 256,
+			"image": "md3"
+		}
+	},
+	{
+		"id": "r2",
+		"type": "Resize",
+		"params": {
+			"width": 2048,
+			"height": 2048,
+			"image": "r1"
+		}
+	},
+	{
+		"id": "tiled",
+		"type": "TileFixer",
+		"params": {
+			"image": "r2"
+		}
+	},
+	{
+		"id": "out1",
+		"type": "Output",
+		"params": {
+			"image": "tiled", 
+			"filename": "tmp.png"
+		}
+	}
+]

@@ -234,7 +234,7 @@ public static class BrickTextureNode
         int r = row % props.cols;
         int c = (col + 1) % (isSquashed ? props.TilableCalcRowsSquashed : props.TilableCalcRows);
         int hash = HashPosition(r, c);
-        double val = (hash % 10000) / 10000.0;
+        double val = hash % 10000 / 10000.0;
         return ColorUtil.LerpColor(
             props.color1,
             props.color2,

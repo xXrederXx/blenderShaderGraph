@@ -263,7 +263,7 @@ public class FastNoise
     };
 
     [MethodImplAttribute(FN_INLINE)]
-    private static int FastFloor(FN_DECIMAL f) { return (f >= 0 ? (int)f : (int)f - 1); }
+    private static int FastFloor(FN_DECIMAL f) { return f >= 0 ? (int)f : (int)f - 1; }
 
     [MethodImplAttribute(FN_INLINE)]
     private static int FastRound(FN_DECIMAL f) { return (f >= 0) ? (int)(f + (FN_DECIMAL)0.5) : (int)(f - (FN_DECIMAL)0.5); }
@@ -280,8 +280,8 @@ public class FastNoise
     [MethodImplAttribute(FN_INLINE)]
     private static FN_DECIMAL CubicLerp(FN_DECIMAL a, FN_DECIMAL b, FN_DECIMAL c, FN_DECIMAL d, FN_DECIMAL t)
     {
-        FN_DECIMAL p = (d - c) - (a - b);
-        return t * t * t * p + t * t * ((a - b) - p) + t * (c - a) + b;
+        FN_DECIMAL p = d - c - (a - b);
+        return t * t * t * p + t * t * (a - b - p) + t * (c - a) + b;
     }
 
     private void CalculateFractalBounding()
@@ -351,7 +351,7 @@ public class FastNoise
         n ^= X_PRIME * x;
         n ^= Y_PRIME * y;
 
-        return (n * n * n * 60493) / (FN_DECIMAL)2147483648.0;
+        return n * n * n * 60493 / (FN_DECIMAL)2147483648.0;
     }
 
     [MethodImplAttribute(FN_INLINE)]
@@ -362,7 +362,7 @@ public class FastNoise
         n ^= Y_PRIME * y;
         n ^= Z_PRIME * z;
 
-        return (n * n * n * 60493) / (FN_DECIMAL)2147483648.0;
+        return n * n * n * 60493 / (FN_DECIMAL)2147483648.0;
     }
 
     [MethodImplAttribute(FN_INLINE)]
@@ -374,7 +374,7 @@ public class FastNoise
         n ^= Z_PRIME * z;
         n ^= W_PRIME * w;
 
-        return (n * n * n * 60493) / (FN_DECIMAL)2147483648.0;
+        return n * n * n * 60493 / (FN_DECIMAL)2147483648.0;
     }
 
     [MethodImplAttribute(FN_INLINE)]
@@ -1929,7 +1929,7 @@ public class FastNoise
                             FN_DECIMAL vecY = yi - y + vec.y * m_cellularJitter;
                             FN_DECIMAL vecZ = zi - z + vec.z * m_cellularJitter;
 
-                            FN_DECIMAL newDistance = (Math.Abs(vecX) + Math.Abs(vecY) + Math.Abs(vecZ)) + (vecX * vecX + vecY * vecY + vecZ * vecZ);
+                            FN_DECIMAL newDistance = Math.Abs(vecX) + Math.Abs(vecY) + Math.Abs(vecZ) + (vecX * vecX + vecY * vecY + vecZ * vecZ);
 
                             if (newDistance < distance)
                             {
@@ -2033,7 +2033,7 @@ public class FastNoise
                             FN_DECIMAL vecY = yi - y + vec.y * m_cellularJitter;
                             FN_DECIMAL vecZ = zi - z + vec.z * m_cellularJitter;
 
-                            FN_DECIMAL newDistance = (Math.Abs(vecX) + Math.Abs(vecY) + Math.Abs(vecZ)) + (vecX * vecX + vecY * vecY + vecZ * vecZ);
+                            FN_DECIMAL newDistance = Math.Abs(vecX) + Math.Abs(vecY) + Math.Abs(vecZ) + (vecX * vecX + vecY * vecY + vecZ * vecZ);
 
                             for (int i = m_cellularDistanceIndex1; i > 0; i--)
                             {
@@ -2124,7 +2124,7 @@ public class FastNoise
                         FN_DECIMAL vecX = xi - x + vec.x * m_cellularJitter;
                         FN_DECIMAL vecY = yi - y + vec.y * m_cellularJitter;
 
-                        FN_DECIMAL newDistance = (Math.Abs(vecX) + Math.Abs(vecY));
+                        FN_DECIMAL newDistance = Math.Abs(vecX) + Math.Abs(vecY);
 
                         if (newDistance < distance)
                         {
@@ -2145,7 +2145,7 @@ public class FastNoise
                         FN_DECIMAL vecX = xi - x + vec.x * m_cellularJitter;
                         FN_DECIMAL vecY = yi - y + vec.y * m_cellularJitter;
 
-                        FN_DECIMAL newDistance = (Math.Abs(vecX) + Math.Abs(vecY)) + (vecX * vecX + vecY * vecY);
+                        FN_DECIMAL newDistance = Math.Abs(vecX) + Math.Abs(vecY) + (vecX * vecX + vecY * vecY);
 
                         if (newDistance < distance)
                         {
@@ -2236,7 +2236,7 @@ public class FastNoise
                         FN_DECIMAL vecX = xi - x + vec.x * m_cellularJitter;
                         FN_DECIMAL vecY = yi - y + vec.y * m_cellularJitter;
 
-                        FN_DECIMAL newDistance = (Math.Abs(vecX) + Math.Abs(vecY)) + (vecX * vecX + vecY * vecY);
+                        FN_DECIMAL newDistance = Math.Abs(vecX) + Math.Abs(vecY) + (vecX * vecX + vecY * vecY);
 
                         for (int i = m_cellularDistanceIndex1; i > 0; i--)
                         {

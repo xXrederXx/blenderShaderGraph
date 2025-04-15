@@ -94,8 +94,9 @@
 						"minSize": { "type": "number" },
 						"mode": {
 							"type": "string",
-							"enum": ["square"]
-						}
+							"enum": ["square", "easeInSine", "squareFade", "cube"]
+						},
+						"betterDistCalc": { "type": "boolean"}
 					}
 				}
 			}
