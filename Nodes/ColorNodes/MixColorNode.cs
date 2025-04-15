@@ -12,17 +12,14 @@ public static class MixColorNode
         MixColorMode mode = MixColorMode.Mix
     )
     {
-        return mode switch
-        {
-            MixColorMode.Mix => Mix(a, b, factor),
-            MixColorMode.Hue => Hue(a, b, factor),
-            MixColorMode.Saturation => Saturation(a, b, factor),
-            MixColorMode.Value => Value(a, b, factor),
-            MixColorMode.Darken => Darken(a, b, factor),
-            MixColorMode.LinearLight => LinearLight(a, b, factor),
-            MixColorMode.Lighten => Lighten(a, b, factor),
-            _ => a,
-        };
+        int width = Math.Min(a.Width, b.Width);
+        int height = Math.Min(a.Height, b.Height);
+        var facBitmap = BitmapUtil.FilledBitmap(
+            width,
+            height,
+            ColorUtil.ColorFromValue(factor, false)
+        );
+        return GenerateInternal(a, b, facBitmap, mode, width, height);
     }
 
     public static Bitmap Generate(
@@ -32,289 +29,115 @@ public static class MixColorNode
         MixColorMode mode = MixColorMode.Mix
     )
     {
-        return mode switch
+        int width = Math.Min(a.Width, b.Width);
+        int height = Math.Min(a.Height, b.Height);
+        return GenerateInternal(a, b, factor, mode, width, height);
+    }
+
+    private static Bitmap GenerateInternal(
+        Bitmap a,
+        Bitmap b,
+        Bitmap factor,
+        MixColorMode mode,
+        int width,
+        int height
+    )
+    {
+        Color[,] aCols = a.GetPixles();
+        Color[,] bCols = b.GetPixles();
+        Color[,] facCols = factor.GetPixles();
+        Bitmap res = new(width, height);
+
+        Func<Color, Color, float, Color> blendFunc = mode switch
         {
-            MixColorMode.Mix => Mix(a, b, factor),
-            MixColorMode.Hue => Hue(a, b, factor),
-            MixColorMode.Saturation => Saturation(a, b, factor),
-            MixColorMode.Value => Value(a, b, factor),
-            MixColorMode.Darken => Darken(a, b, factor),
-            MixColorMode.LinearLight => LinearLight(a, b, factor),
-            MixColorMode.Lighten => Lighten(a, b, factor),
-            _ => a,
+            MixColorMode.Mix => MixBlend,
+            MixColorMode.Hue => HueBlend,
+            MixColorMode.Saturation => SaturationBlend,
+            MixColorMode.Value => ValueBlend,
+            MixColorMode.Darken => DarkenBlend,
+            MixColorMode.LinearLight => LinearLightBlend,
+            MixColorMode.Lighten => LightenBlend,
+            _ => (ac, bc, f) => ac,
         };
-    }
-
-    private static Bitmap Mix(Bitmap a, Bitmap b, float factor = 0.5f)
-    {
-        int width = Math.Min(a.Width, b.Width);
-        int height = Math.Min(a.Height, b.Height);
-        return Mix(
-            a,
-            b,
-            BitmapUtil.FilledBitmap(width, height, ColorUtil.ColorFromValue(factor, false))
-        );
-    }
-
-    private static Bitmap Mix(Bitmap a, Bitmap b, Bitmap factor)
-    {
-        int width = Math.Min(a.Width, b.Width);
-        int height = Math.Min(a.Height, b.Height);
-        Color[,] aCols = a.GetPixles();
-        Color[,] bCols = b.GetPixles();
-        Color[,] facCols = factor.GetPixles();
-        Bitmap res = new(width, height);
-        res.ForPixelParralel(
-            (x, y) =>
-            {
-                Color aCol = aCols[x, y];
-                Color bCol = bCols[x, y];
-                float fac = ColorUtil.ValueFromColor(facCols[x, y]);
-                return Color.FromArgb(
-                    255,
-                    MyMath.ClampByte(aCol.R * (1 - fac) + bCol.R * fac),
-                    MyMath.ClampByte(aCol.G * (1 - fac) + bCol.G * fac),
-                    MyMath.ClampByte(aCol.B * (1 - fac) + bCol.B * fac)
-                );
-            }
-        );
-        return res;
-    }
-
-    private static Bitmap Hue(Bitmap a, Bitmap b, float factor)
-    {
-        int width = Math.Min(a.Width, b.Width);
-        int height = Math.Min(a.Height, b.Height);
-        return Hue(
-            a,
-            b,
-            BitmapUtil.FilledBitmap(width, height, ColorUtil.ColorFromValue(factor, false))
-        );
-    }
-
-    private static Bitmap Hue(Bitmap a, Bitmap b, Bitmap factor)
-    {
-        int width = Math.Min(a.Width, b.Width);
-        int height = Math.Min(a.Height, b.Height);
-        Color[,] aCols = a.GetPixles();
-        Color[,] bCols = b.GetPixles();
-        Color[,] facCols = factor.GetPixles();
-        Bitmap res = new(width, height);
 
         res.ForPixelParralel(
             (x, y) =>
             {
-                Color aCol = aCols[x, y];
-                Color bCol = bCols[x, y];
                 float fac = ColorUtil.ValueFromColor(facCols[x, y]);
-                ColorUtil.ColorToHSV(aCol, out double ah, out double asat, out double av);
-                ColorUtil.ColorToHSVOnlyV(bCol, out double bh);
-                double nh = ah * (1 - fac) + bh * fac;
-                return ColorUtil.ColorFromHSV(nh, asat, av);
+                return blendFunc(aCols[x, y], bCols[x, y], fac);
             }
         );
 
         return res;
     }
 
-    private static Bitmap Saturation(Bitmap a, Bitmap b, float factor)
+    private static Color MixBlend(Color a, Color b, float fac)
     {
-        int width = Math.Min(a.Width, b.Width);
-        int height = Math.Min(a.Height, b.Height);
-        return Saturation(
-            a,
-            b,
-            BitmapUtil.FilledBitmap(width, height, ColorUtil.ColorFromValue(factor, false))
+        return Color.FromArgb(
+            255,
+            MyMath.ClampByte(a.R * (1 - fac) + b.R * fac),
+            MyMath.ClampByte(a.G * (1 - fac) + b.G * fac),
+            MyMath.ClampByte(a.B * (1 - fac) + b.B * fac)
         );
     }
 
-    private static Bitmap Saturation(Bitmap a, Bitmap b, Bitmap factor)
+    private static Color HueBlend(Color a, Color b, float fac)
     {
-        int width = Math.Min(a.Width, b.Width);
-        int height = Math.Min(a.Height, b.Height);
-        Color[,] aCols = a.GetPixles();
-        Color[,] bCols = b.GetPixles();
-        Color[,] facCols = factor.GetPixles();
-        Bitmap res = new(width, height);
-
-        res.ForPixelParralel(
-            (x, y) =>
-            {
-                Color aCol = aCols[x, y];
-                Color bCol = bCols[x, y];
-                float fac = ColorUtil.ValueFromColor(facCols[x, y]);
-                ColorUtil.ColorToHSV(aCol, out double ahue, out double asat, out double av);
-                ColorUtil.ColorToHSVOnlyS(bCol, out double bsat);
-                double nsat = asat * (1 - fac) + bsat * fac;
-                return ColorUtil.ColorFromHSV(ahue, nsat, av);
-            }
-        );
-
-        return res;
+        ColorUtil.ColorToHSV(a, out double ah, out double asat, out double av);
+        ColorUtil.ColorToHSVOnlyV(b, out double bh);
+        double nh = ah * (1 - fac) + bh * fac;
+        return ColorUtil.ColorFromHSV(nh, asat, av);
     }
 
-    private static Bitmap Value(Bitmap a, Bitmap b, float factor)
+    private static Color SaturationBlend(Color a, Color b, float fac)
     {
-        int width = Math.Min(a.Width, b.Width);
-        int height = Math.Min(a.Height, b.Height);
-        return Value(
-            a,
-            b,
-            BitmapUtil.FilledBitmap(width, height, ColorUtil.ColorFromValue(factor, false))
-        );
+        ColorUtil.ColorToHSV(a, out double ah, out double asat, out double av);
+        ColorUtil.ColorToHSVOnlyS(b, out double bsat);
+        double ns = asat * (1 - fac) + bsat * fac;
+        return ColorUtil.ColorFromHSV(ah, ns, av);
     }
 
-    private static Bitmap Value(Bitmap a, Bitmap b, Bitmap factor)
+    private static Color ValueBlend(Color a, Color b, float fac)
     {
-        int width = Math.Min(a.Width, b.Width);
-        int height = Math.Min(a.Height, b.Height);
-        Color[,] aCols = a.GetPixles();
-        Color[,] bCols = b.GetPixles();
-        Color[,] facCols = factor.GetPixles();
-        Bitmap res = new(width, height);
-
-        res.ForPixelParralel(
-            (x, y) =>
-            {
-                Color aCol = aCols[x, y];
-                Color bCol = bCols[x, y];
-                float fac = ColorUtil.ValueFromColor(facCols[x, y]);
-                ColorUtil.ColorToHSV(aCol, out double ahue, out double asat, out double av);
-                ColorUtil.ColorToHSVOnlyV(bCol, out double bv);
-                double nv = av * (1 - fac) + bv * fac;
-                return ColorUtil.ColorFromHSV(ahue, asat, nv);
-            }
-        );
-
-        return res;
+        ColorUtil.ColorToHSV(a, out double ah, out double asat, out double av);
+        ColorUtil.ColorToHSVOnlyV(b, out double bv);
+        double nv = av * (1 - fac) + bv * fac;
+        return ColorUtil.ColorFromHSV(ah, asat, nv);
     }
 
-    private static Bitmap Darken(Bitmap a, Bitmap b, Bitmap factor)
+    private static Color DarkenBlend(Color a, Color b, float fac)
     {
-        int width = Math.Min(a.Width, b.Width);
-        int height = Math.Min(a.Height, b.Height);
-        Color[,] aCols = a.GetPixles();
-        Color[,] bCols = b.GetPixles();
-        Color[,] facCols = factor.GetPixles();
-        Bitmap res = new(width, height);
-        res.ForPixelParralel(
-            (x, y) =>
-            {
-                Color aCol = aCols[x, y];
-                Color bCol = bCols[x, y];
-                Color newCol = Color.FromArgb(
-                    255,
-                    Math.Min(aCol.R, bCol.R),
-                    Math.Min(aCol.G, bCol.G),
-                    Math.Min(aCol.B, bCol.B)
-                );
-                float fac = ColorUtil.ValueFromColor(facCols[x, y]);
-                return Color.FromArgb(
-                    255,
-                    MyMath.ClampByte(aCol.R * (1 - fac) + newCol.R * fac),
-                    MyMath.ClampByte(aCol.G * (1 - fac) + newCol.G * fac),
-                    MyMath.ClampByte(aCol.B * (1 - fac) + newCol.B * fac)
-                );
-            }
-        );
-        return res;
-    }
-
-    private static Bitmap Darken(Bitmap a, Bitmap b, float factor)
-    {
-        int width = Math.Min(a.Width, b.Width);
-        int height = Math.Min(a.Height, b.Height);
-        return Darken(
-            a,
-            b,
-            BitmapUtil.FilledBitmap(width, height, ColorUtil.ColorFromValue(factor, false))
+        var c = Color.FromArgb(255, Math.Min(a.R, b.R), Math.Min(a.G, b.G), Math.Min(a.B, b.B));
+        return Color.FromArgb(
+            255,
+            MyMath.ClampByte(a.R * (1 - fac) + c.R * fac),
+            MyMath.ClampByte(a.G * (1 - fac) + c.G * fac),
+            MyMath.ClampByte(a.B * (1 - fac) + c.B * fac)
         );
     }
 
-    private static Bitmap LinearLight(Bitmap a, Bitmap b, Bitmap factor)
+    private static Color LightenBlend(Color a, Color b, float fac)
     {
-        int width = Math.Min(a.Width, b.Width);
-        int height = Math.Min(a.Height, b.Height);
-        Color[,] aCols = a.GetPixles();
-        Color[,] bCols = b.GetPixles();
-        Color[,] facCols = factor.GetPixles();
-        Bitmap res = new(width, height);
-        res.ForPixelParralel(
-            (x, y) =>
-            {
-                Color aCol = aCols[x, y];
-                Color bCol = bCols[x, y];
-                float fac = ColorUtil.ValueFromColor(facCols[x, y]);
-                byte BlendChannel(byte a, byte b)
-                {
-                    float af = a / 255f;
-                    float bf = b / 255f;
-
-                    float resf = af + 2f * bf - 1f;
-                    resf = MyMath.Clamp01(resf);
-
-                    // Factor mix: mix(a, result, fac)
-                    float mixed = af * (1f - fac) + resf * fac;
-                    return MyMath.ClampByte(mixed * 255f);
-                }
-
-                return Color.FromArgb(
-                    255,
-                    BlendChannel(aCol.R, bCol.R),
-                    BlendChannel(aCol.G, bCol.G),
-                    BlendChannel(aCol.B, bCol.B)
-                );
-            }
-        );
-        return res;
-    }
-
-    private static Bitmap LinearLight(Bitmap a, Bitmap b, float factor)
-    {
-        int width = Math.Min(a.Width, b.Width);
-        int height = Math.Min(a.Height, b.Height);
-        return LinearLight(
-            a,
-            b,
-            BitmapUtil.FilledBitmap(width, height, ColorUtil.ColorFromValue(factor, false))
+        var c = a.GetBrightness() > b.GetBrightness() ? a : b;
+        return Color.FromArgb(
+            255,
+            MyMath.ClampByte(a.R * (1 - fac) + c.R * fac),
+            MyMath.ClampByte(a.G * (1 - fac) + c.G * fac),
+            MyMath.ClampByte(a.B * (1 - fac) + c.B * fac)
         );
     }
 
-    private static Bitmap Lighten(Bitmap a, Bitmap b, Bitmap factor)
+    private static Color LinearLightBlend(Color a, Color b, float fac)
     {
-        int width = Math.Min(a.Width, b.Width);
-        int height = Math.Min(a.Height, b.Height);
-        Color[,] aCols = a.GetPixles();
-        Color[,] bCols = b.GetPixles();
-        Color[,] facCols = factor.GetPixles();
-        Bitmap res = new(width, height);
-        res.ForPixelParralel(
-            (x, y) =>
-            {
-                Color aCol = aCols[x, y];
-                Color bCol = bCols[x, y];
-                Color newCol = aCol.GetBrightness() > bCol.GetBrightness() ? aCol : bCol;
-                float fac = ColorUtil.ValueFromColor(facCols[x, y]);
-                return Color.FromArgb(
-                    255,
-                    MyMath.ClampByte(aCol.R * (1 - fac) + newCol.R * fac),
-                    MyMath.ClampByte(aCol.G * (1 - fac) + newCol.G * fac),
-                    MyMath.ClampByte(aCol.B * (1 - fac) + newCol.B * fac)
-                );
-            }
-        );
-        return res;
-    }
+        byte Blend(byte ac, byte bc)
+        {
+            float af = ac / 255f,
+                bf = bc / 255f;
+            float result = MyMath.Clamp01(af + 2f * bf - 1f);
+            return MyMath.ClampByte((af * (1f - fac) + result * fac) * 255f);
+        }
 
-    private static Bitmap Lighten(Bitmap a, Bitmap b, float factor)
-    {
-        int width = Math.Min(a.Width, b.Width);
-        int height = Math.Min(a.Height, b.Height);
-        return Lighten(
-            a,
-            b,
-            BitmapUtil.FilledBitmap(width, height, ColorUtil.ColorFromValue(factor, false))
-        );
+        return Color.FromArgb(255, Blend(a.R, b.R), Blend(a.G, b.G), Blend(a.B, b.B));
     }
 }
 
