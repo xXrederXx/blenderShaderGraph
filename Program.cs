@@ -1,5 +1,8 @@
-﻿using blenderShaderGraph.Util;
+﻿using blenderShaderGraph.Examples.Code;
+using blenderShaderGraph.Util;
 
+ExampleBrush.MassiveV1();
+return;
 string content = "";
 string newContent = "";
 string fp = "./graph.sg.json";

@@ -8,7 +8,7 @@ public class ExampleBrush
 {
     public static void Generate() { }
 
-    private static void MassiveV1()
+    public static void MassiveV1()
     {
         int[] dotsM1 = [10, 30, 50];
         int[] dotsM2 = [1, 5, 10];
@@ -27,28 +27,25 @@ public class ExampleBrush
             from fm2 in facMix2
             select (ndm1, ndm2, mxm1, mnm1, mnm2, fm1, fm2)
         ).ToArray();
-        Parallel.For(
-            0,
-            arr.Length,
-            (i, body) =>
-            {
-                var (ndm1, ndm2, mxm1, mnm1, mnm2, fm1, fm2) = arr[i];
-                GenerateV1(
-                    1024,
-                    "./out/Mask" + i.ToString("D4"),
-                    ndm1,
-                    ndm2,
-                    mxm1,
-                    mnm1,
-                    400,
-                    mnm2,
-                    fm1,
-                    fm2
-                );
-                System.Console.WriteLine("Finished " + i);
-                i++;
-            }
-        );
+        System.Console.WriteLine("Create " + arr.Length + "brushes. Time to cancel 2sec (ctrl-c)");
+        Thread.Sleep(2000);
+        for (int i = 0; i < arr.Length; i++)
+        {
+            var (ndm1, ndm2, mxm1, mnm1, mnm2, fm1, fm2) = arr[i];
+            GenerateV1(
+                1024,
+                "./out/Mask" + i.ToString("D4") + ".png",
+                ndm1,
+                ndm2,
+                mxm1,
+                mnm1,
+                400,
+                mnm2,
+                fm1,
+                fm2
+            );
+            System.Console.WriteLine("Finished " + ((float)i / arr.Length * 100).ToString("F2") + "%");
+        }
     }
 
     private static void GenerateV1(
