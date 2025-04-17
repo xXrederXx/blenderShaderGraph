@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 
 public readonly struct MyColorF : IEquatable<MyColorF>
@@ -83,5 +84,13 @@ public readonly struct MyColorF : IEquatable<MyColorF>
         byte B = (byte)Math.Round((b + m) * 255f);
 
         return (R, G, B);
+    }
+    public override int GetHashCode()
+    {
+        return rgba.GetHashCode();
+    }
+    public override string ToString()
+    {
+        return $"Color [R: {r} G: {g} B: {b} A: {a}]";
     }
 }
