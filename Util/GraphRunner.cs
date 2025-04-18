@@ -13,16 +13,19 @@ public class GraphRunner
 {
     static Stopwatch sw1 = new();
     static Stopwatch sw2 = new();
+
     public static void Run(string path)
     {
         sw1.Restart();
 
-        System.Console.WriteLine("\n------------------------ Generation Starting ------------------------\n");
+        System.Console.WriteLine(
+            "\n------------------------ Generation Starting ------------------------\n"
+        );
         System.Console.WriteLine("\t- Parsing JSON File");
 
         string json = File.ReadAllText(path);
         JsonDocument doc = JsonDocument.Parse(json);
-        List<IJsonNode> nodes = new List<IJsonNode>();
+        List<JsonNode> nodes = new List<JsonNode>();
 
         System.Console.WriteLine("\t- Parsing Contnents");
 
@@ -31,7 +34,7 @@ public class GraphRunner
             string? type = element.GetProperty("type").GetString();
             string id = element.GetProperty("id").GetString() ?? "";
 
-            IJsonNode node = type switch
+            JsonNode node = type switch
             {
                 "BrickTexture" => new BrickTextureJSON(id, element),
                 "NoiseTexture" => new NoiseTextureJSON(id, element),
@@ -52,7 +55,7 @@ public class GraphRunner
         System.Console.WriteLine("\t- Executing Nodes");
 
         Dictionary<string, object> context = new Dictionary<string, object>();
-        foreach (IJsonNode node in nodes)
+        foreach (JsonNode node in nodes)
         {
             sw2.Restart();
             node.Execute(context);

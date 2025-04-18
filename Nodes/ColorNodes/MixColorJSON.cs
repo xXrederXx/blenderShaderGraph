@@ -5,7 +5,7 @@ using blenderShaderGraph.Util;
 
 namespace blenderShaderGraph.Nodes.TextureNodes;
 
-public class MixColorJSON : IJsonNode
+public class MixColorJSON : JsonNode
 {
     public MixColorJSON(string id, JsonElement element)
         : base(id, element) { }

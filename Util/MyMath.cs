@@ -1,5 +1,3 @@
-using System;
-
 namespace blenderShaderGraph.Util;
 
 public static class MyMath

@@ -5,7 +5,7 @@ using blenderShaderGraph.Util;
 
 namespace blenderShaderGraph.Nodes.TextureNodes;
 
-public class MaskTextureJSON : IJsonNode
+public class MaskTextureJSON : JsonNode
 {
     public MaskTextureJSON(string id, JsonElement element)
         : base(id, element) { }

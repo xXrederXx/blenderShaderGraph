@@ -5,7 +5,7 @@ using blenderShaderGraph.Util;
 
 namespace blenderShaderGraph.Nodes.OutputNodes;
 
-public class OutputNodeJson : IJsonNode
+public class OutputNodeJson : JsonNode
 {
     public OutputNodeJson(string id, JsonElement element)
         : base(id, element) { }

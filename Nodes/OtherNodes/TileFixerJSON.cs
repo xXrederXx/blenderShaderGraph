@@ -4,7 +4,7 @@ using blenderShaderGraph.Util;
 
 namespace blenderShaderGraph.Nodes.OtherNodes;
 
-public class TileFixerJSON : IJsonNode
+public class TileFixerJSON : JsonNode
 {
     public TileFixerJSON(string id, JsonElement element)
         : base(id, element) { }

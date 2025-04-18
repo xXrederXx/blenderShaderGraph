@@ -4,7 +4,7 @@ using blenderShaderGraph.Util;
 
 namespace blenderShaderGraph.Nodes.TextureNodes;
 
-public class BrickTextureJSON : IJsonNode
+public class BrickTextureJSON : JsonNode
 {
     public BrickTextureJSON(string id, JsonElement element)
         : base(id, element) { }

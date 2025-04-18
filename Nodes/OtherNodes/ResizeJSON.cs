@@ -4,7 +4,7 @@ using blenderShaderGraph.Util;
 
 namespace blenderShaderGraph.Nodes.OtherNodes;
 
-public class ResizeJSON : IJsonNode
+public class ResizeJSON : JsonNode
 {
     public ResizeJSON(string id, JsonElement element)
         : base(id, element) { }

@@ -4,7 +4,7 @@ using blenderShaderGraph.Util;
 
 namespace blenderShaderGraph.Nodes.TextureNodes;
 
-public class NoiseTextureJSON : IJsonNode
+public class NoiseTextureJSON : JsonNode
 {
     public NoiseTextureJSON(string id, JsonElement element)
         : base(id, element) { }

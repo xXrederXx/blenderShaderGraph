@@ -4,7 +4,7 @@ using blenderShaderGraph.Util;
 
 namespace blenderShaderGraph.Nodes.ConverterNodes;
 
-public class ColorRampJSON : IJsonNode
+public class ColorRampJSON : JsonNode
 {
     public ColorRampJSON(string id, JsonElement element)
         : base(id, element) { }

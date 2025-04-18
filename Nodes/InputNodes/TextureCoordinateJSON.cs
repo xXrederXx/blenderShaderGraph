@@ -4,7 +4,7 @@ using blenderShaderGraph.Util;
 
 namespace blenderShaderGraph.Nodes.InputNodes;
 
-public class TextureCoordinateJSON : IJsonNode
+public class TextureCoordinateJSON : JsonNode
 {
     public TextureCoordinateJSON(string id, JsonElement element)
         : base(id, element) { }

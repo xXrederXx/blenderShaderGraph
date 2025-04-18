@@ -5,7 +5,7 @@ using blenderShaderGraph.Util;
 
 namespace blenderShaderGraph.Nodes.TextureNodes;
 
-public class BumpJSON : IJsonNode
+public class BumpJSON : JsonNode
 {
     public BumpJSON(string id, JsonElement element)
         : base(id, element) { }
