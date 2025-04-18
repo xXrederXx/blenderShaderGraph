@@ -1,6 +1,6 @@
 using System.Drawing;
 
-public readonly struct MyColorF : IEquatable<MyColorF>
+public readonly struct MyColor : IEquatable<MyColor>
 {
     public readonly uint rgba;
 
@@ -10,12 +10,12 @@ public readonly struct MyColorF : IEquatable<MyColorF>
     public byte a => unchecked((byte)(rgba >> 24)); // A: bits 24–31
     public Color color => Color.FromArgb(a, r, g, b);
 
-    public MyColorF(byte r, byte g, byte b, byte a = 255)
+    public MyColor(byte r, byte g, byte b, byte a = 255)
     {
         rgba = ((uint)a << 24) | ((uint)b << 16) | ((uint)g << 8) | r;
     }
 
-    public bool Equals(MyColorF other) => rgba == other.rgba;
+    public bool Equals(MyColor other) => rgba == other.rgba;
 
     // --- HSV Conversion Helpers ---
 
@@ -30,10 +30,10 @@ public readonly struct MyColorF : IEquatable<MyColorF>
     // Standard luminance formula, normalized to 0-1
     public float GetGrayscale() => (0.299f * r + 0.587f * g + 0.114f * b) / 255f;
 
-    public static MyColorF FromHSV(float h, float s, float v, byte a = 255)
+    public static MyColor FromHSV(float h, float s, float v, byte a = 255)
     {
         (byte r, byte g, byte b) = HSVToRGB(h, s, v);
-        return new MyColorF(r, g, b, a);
+        return new MyColor(r, g, b, a);
     }
 
     // --- Utility Methods ---
@@ -92,11 +92,11 @@ public readonly struct MyColorF : IEquatable<MyColorF>
     {
         return $"Color [R: {r} G: {g} B: {b} A: {a}]";
     }
-    public static implicit operator Color(MyColorF myColor)
+    public static implicit operator Color(MyColor myColor)
     {
         return myColor.color;
     }
-    public static implicit operator MyColorF(Color color)
+    public static implicit operator MyColor(Color color)
     {
         return new(color.R, color.G, color.B, color.A);
     }
