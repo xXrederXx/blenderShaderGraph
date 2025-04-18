@@ -14,11 +14,11 @@ public class NoiseTextureJSON : JsonNode
         JsonElement p = _element.GetProperty("params");
         Bitmap res = NoiseTextureNode.Generate(
             new(
-                imgWidth: p.GetInt("width", 1024),
-                imgHeight: p.GetInt("height", 1024),
-                size: p.GetFloat("size", 1),
-                detail: p.GetFloat("detail", 2),
-                roughness: p.GetFloat("roughness", 0.5f)
+                ImgWidth: p.GetInt("width", 1024),
+                ImgHeight: p.GetInt("height", 1024),
+                Scale: p.GetFloat("size", 1),
+                Detail: p.GetFloat("detail", 2),
+                Roughness: p.GetFloat("roughness", 0.5f)
             )
         );
         contex[Id] = res;

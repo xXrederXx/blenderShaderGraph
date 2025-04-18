@@ -39,7 +39,7 @@ public static class ExampleTile
 
     private static Bitmap CalcD((Bitmap color, Bitmap fac) brick)
     {
-        Bitmap brickNoise = NoiseTextureNode.Generate(new(size: 10));
+        Bitmap brickNoise = NoiseTextureNode.Generate(new(Scale: 10));
         ColorRampNode.Apply(
             brickNoise,
             [new(Color.Black, 0), new(Color.FromArgb(113, 113, 113), 1)]
@@ -89,7 +89,7 @@ public static class ExampleTile
         );
 
         Bitmap lineNoise = NoiseTextureNode.Generate(
-            new(size: 14.6f, detail: 5.9f, roughness: 0.767f)
+            new(Scale: 14.6f, Detail: 5.9f, Roughness: 0.767f)
         );
         ColorRampNode.Apply(
             lineNoise,
@@ -114,7 +114,7 @@ public static class ExampleTile
 
     private static Bitmap CalcN((Bitmap color, Bitmap fac) brick)
     {
-        Bitmap noise = NoiseTextureNode.Generate(new(size: 5, detail: 8, roughness: 1));
+        Bitmap noise = NoiseTextureNode.Generate(new(Scale: 5, Detail: 8, Roughness: 1));
         Bitmap mixed = MixColorNode.Generate(
             noise,
             BitmapUtil.FilledBitmap(1024, 1024, Color.White),

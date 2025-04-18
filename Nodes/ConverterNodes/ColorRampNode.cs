@@ -97,6 +97,7 @@ public static class ColorRampNode
         );
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
     }
+
     private static (
         ColorStop? low,
         ColorStop? high,
