@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 
 public readonly struct MyColorF : IEquatable<MyColorF>
@@ -92,5 +91,13 @@ public readonly struct MyColorF : IEquatable<MyColorF>
     public override string ToString()
     {
         return $"Color [R: {r} G: {g} B: {b} A: {a}]";
+    }
+    public static implicit operator Color(MyColorF myColor)
+    {
+        return myColor.color;
+    }
+    public static implicit operator MyColorF(Color color)
+    {
+        return new(color.R, color.G, color.B, color.A);
     }
 }
