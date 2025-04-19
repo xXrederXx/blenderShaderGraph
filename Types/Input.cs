@@ -22,7 +22,7 @@ public class Input<T> : Input
 
     public readonly T? Value;
     public readonly T[,]? Array;
-    private readonly bool useArray;
+    public readonly bool useArray;
 
     public Input(T value)
     {

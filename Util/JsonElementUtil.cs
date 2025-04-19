@@ -70,9 +70,7 @@ public static class JsonElementUtil
         this JsonElement self,
         string IdSelf,
         Dictionary<string, object> contex,
-        string propName,
-        int WidthIfCol = 1024,
-        int heightIfCol = 1024
+        string propName
     )
     {
         string img = self.GetString(propName, "");
@@ -86,6 +84,21 @@ public static class JsonElementUtil
             throw new FileNotFoundException($"Node {IdSelf} could not find input: {img}");
         }
         return new Input<MyColor>(cols);
+    }
+
+    public static float[,] GetFloat2D(
+        this JsonElement self,
+        string IdSelf,
+        Dictionary<string, object> contex,
+        string propName
+    )
+    {
+        string img = self.GetString(propName, "");
+        if (!contex.TryGetValue(img, out var obj) || obj is not float[,] cols)
+        {
+            throw new FileNotFoundException($"Node {IdSelf} could not find input: {img}");
+        }
+        return cols;
     }
 
     public static Input<float> GetInputFloat(

@@ -1,5 +1,7 @@
 using System.Drawing;
 using System.Numerics;
+using System.Text.Json;
+using blenderShaderGraph.Types;
 using blenderShaderGraph.Util;
 
 namespace blenderShaderGraph.Nodes.VectorNodes;
@@ -11,17 +13,96 @@ public enum NormalMapFormat
     ,
 }
 
-public class BumpNode
+public class BumpProps(
+    float[,] heightMap,
+    Input<float>? strength = null,
+    Input<float>? distance = null,
+    bool invert = false,
+    NormalMapFormat format = NormalMapFormat.OpenGL
+)
 {
-    public static Bitmap GenerateBump(BumpProps props)
+    public float[,] HeightMap { get; } = heightMap;
+    public Input<float>? Strength { get; } = strength;
+    public Input<float>? Distance { get; } = distance;
+    public bool Invert { get; } = invert;
+    public NormalMapFormat Format { get; } = format;
+}
+
+public class BumpNode : Node<BumpProps, MyColor[,]>
+{
+    readonly MyColor flatNormalColor = new(127, 127, 255);
+
+    public BumpNode()
+        : base() { }
+
+    public BumpNode(string Id, JsonElement element)
+        : base(Id, element) { }
+
+    protected override BumpProps SafeProps(BumpProps props)
     {
-        int width = props.HeightMap.Width;
-        int height = props.HeightMap.Height;
+        Input<float> dist;
+        if (props.Distance is null)
+        {
+            System.Console.WriteLine("props.Distance is null, default to 1");
+            dist = new(1);
+        }
+        else if (props.Distance.useArray)
+        {
+            float[,] dists = new float[props.Distance.Width, props.Distance.Height];
+            for (int x = 0; x < props.Distance.Width; x++)
+            {
+                for (int y = 0; y < props.Distance.Height; y++)
+                {
+                    dists[x, y] = Math.Clamp(props.Distance[x, y], 0, 1000);
+                }
+            }
+            dist = new(dists);
+        }
+        else
+        {
+            dist = new(Math.Clamp(props.Distance.Value, 0, 1000));
+        }
+
+        Input<float> strength;
+        if (props.Strength is null)
+        {
+            System.Console.WriteLine("props.Strength is null, default to 1");
+            strength = new(1);
+        }
+        else if (props.Strength.useArray)
+        {
+            float[,] dists = new float[props.Strength.Width, props.Strength.Height];
+            for (int x = 0; x < props.Strength.Width; x++)
+            {
+                for (int y = 0; y < props.Strength.Height; y++)
+                {
+                    dists[x, y] = MyMath.Clamp01(props.Strength[x, y]);
+                }
+            }
+            strength = new(dists);
+        }
+        else
+        {
+            strength = new(MyMath.Clamp01(props.Strength.Value));
+        }
+
+        return new(props.HeightMap, strength, dist, props.Invert, props.Format);
+    }
+
+    protected override MyColor[,] ExecuteInternal(BumpProps props)
+    {
+        if (props.Strength is null || props.Distance is null)
+        {
+            throw new ArgumentException("props.Strength is null || props.Distance is null");
+        }
+        
+        int width = props.HeightMap.GetLength(0);
+        int height = props.HeightMap.GetLength(1);
 
         Bitmap normalMap = new(width, height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-        Color[,] newColors = new Color[width, height];
-        Color[,] oldColors = props.HeightMap.GetPixles();
-        Color flatNormalColor = Color.FromArgb(127, 127, 255);
+        MyColor[,] newColors = new MyColor[width, height];
+        float[,] oldColors = props.HeightMap;
+
         Parallel.For(
             1,
             height - 1,
@@ -29,13 +110,13 @@ public class BumpNode
             {
                 for (int x = 1; x < width - 1; x++)
                 {
-                    float hL = ColorUtil.ValueFromColor(oldColors[x - 1, y]);
-                    float hR = ColorUtil.ValueFromColor(oldColors[x + 1, y]);
-                    float hD = ColorUtil.ValueFromColor(oldColors[x, y - 1]);
-                    float hU = ColorUtil.ValueFromColor(oldColors[x, y + 1]);
+                    float hL = oldColors[x - 1, y];
+                    float hR = oldColors[x + 1, y];
+                    float hD = oldColors[x, y - 1];
+                    float hU = oldColors[x, y + 1];
 
-                    float dx = (hR - hL) * props.Strength;
-                    float dy = (hU - hD) * props.Strength;
+                    float dx = (hR - hL) * props.Strength[x, y];
+                    float dy = (hU - hD) * props.Strength[x, y];
 
                     if (dx == 0 && dy == 0)
                     {
@@ -48,7 +129,7 @@ public class BumpNode
                         dy = -dy;
                     }
 
-                    Vector3 normal = new Vector3(-dx, -dy, 1.0f / props.Distance);
+                    Vector3 normal = new Vector3(-dx, -dy, 1.0f / props.Distance[x, y]);
                     normal = Vector3.Normalize(normal);
 
                     // from -1 - 1 to 0 - 1
@@ -62,7 +143,7 @@ public class BumpNode
                         ny = 1.0f - ny;
                     }
 
-                    Color normalColor = Color.FromArgb(
+                    MyColor normalColor = new MyColor(
                         (byte)Math.Clamp(nx * 255, 0, 255),
                         (byte)Math.Clamp(ny * 255, 0, 255),
                         (byte)Math.Clamp(nz * 255, 0, 255)
@@ -72,7 +153,23 @@ public class BumpNode
                 }
             }
         );
-        normalMap.SetPixles(newColors);
-        return normalMap;
+        return newColors;
+    }
+
+    protected override BumpProps ConvertJSONToProps(Dictionary<string, object> contex)
+    {
+        JsonElement p = element.GetProperty("params");
+        return new(
+            p.GetFloat2D(Id, contex, "heightMap"),
+            strength: p.GetInputFloat(Id, contex, "strength"),
+            distance: p.GetInputFloat(Id, contex, "distance"),
+            invert: p.GetBool("invert"),
+            format: p.GetBool("isDX") == true ? NormalMapFormat.DirectX : NormalMapFormat.OpenGL
+        );
+    }
+
+    protected override void AddDataToContext(MyColor[,] data, Dictionary<string, object> contex)
+    {
+        contex[Id] = data;
     }
 }
