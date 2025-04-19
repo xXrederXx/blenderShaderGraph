@@ -39,7 +39,7 @@ public class ColorRampNode : Node<ColorRampProps, MyColor[,]>
             props.ColorStops[0] = new ColorStop(Color.Black, 0);
         }
 
-        return base.SafeProps(props);
+        return props;
     }
 
     protected override MyColor[,] ExecuteInternal(ColorRampProps props)
@@ -83,7 +83,7 @@ public class ColorRampNode : Node<ColorRampProps, MyColor[,]>
     protected override ColorRampProps ConvertJSONToProps(Dictionary<string, object> contex)
     {
         JsonElement p = element.GetProperty("params");
-        MyColor[,] bmp = p.GetMyColor2D(Id, contex, "image");
+        Input<MyColor> bmp = p.GetMyColor2D(Id, contex, "image");
         List<ColorStop> stops = [];
         foreach (JsonElement x in p.GetProperty("colorStops").EnumerateArray())
         {
@@ -100,7 +100,7 @@ public class ColorRampNode : Node<ColorRampProps, MyColor[,]>
         };
         return new ColorRampProps()
         {
-            Image = bmp,
+            Image = bmp.Array,
             ColorStops = stops.ToArray(),
             Mode = mode,
         };

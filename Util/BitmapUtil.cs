@@ -159,4 +159,40 @@ public static class BitmapUtil
         Marshal.Copy(pixelBytes, 0, bmpData.Scan0, byteCount);
         self.UnlockBits(bmpData);
     }
+    public static void SetMyPixles(this Bitmap self, MyColor[,] pixels)
+    {
+        int width = self.Width;
+        int height = self.Height;
+
+        if (pixels.GetLength(0) != width || pixels.GetLength(1) != height)
+            throw new ArgumentException("Pixel array size does not match bitmap dimensions.");
+
+        Rectangle rect = new Rectangle(0, 0, width, height);
+        BitmapData bmpData = self.LockBits(
+            rect,
+            ImageLockMode.WriteOnly,
+            PixelFormat.Format32bppArgb
+        );
+
+        int byteCount = Math.Abs(bmpData.Stride) * height;
+        byte[] pixelBytes = new byte[byteCount];
+
+        int stride = bmpData.Stride;
+        for (int y = 0; y < height; y++)
+        {
+            int rowOffset = y * stride;
+            for (int x = 0; x < width; x++)
+            {
+                Color c = pixels[x, y];
+                int index = rowOffset + x * 4;
+                pixelBytes[index] = c.B;
+                pixelBytes[index + 1] = c.G;
+                pixelBytes[index + 2] = c.R;
+                pixelBytes[index + 3] = c.A;
+            }
+        }
+
+        Marshal.Copy(pixelBytes, 0, bmpData.Scan0, byteCount);
+        self.UnlockBits(bmpData);
+    }
 }

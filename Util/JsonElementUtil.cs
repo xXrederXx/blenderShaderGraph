@@ -65,7 +65,8 @@ public static class JsonElementUtil
         }
         return new(bmp);
     }
-    public static MyColor[,] GetMyColor2D(
+
+    public static Input<MyColor> GetMyColor2D(
         this JsonElement self,
         string IdSelf,
         Dictionary<string, object> contex,
@@ -78,13 +79,36 @@ public static class JsonElementUtil
         if (img.StartsWith('#') && (img.Length == 7 || img.Length == 9))
         {
             Color col = ColorTranslator.FromHtml(img);
-            return BitmapUtil.FilledBitmap(WidthIfCol, heightIfCol, col).GetMyPixles();
+            return new Input<MyColor>(col);
         }
         if (!contex.TryGetValue(img, out var obj) || obj is not MyColor[,] cols)
         {
             throw new FileNotFoundException($"Node {IdSelf} could not find input: {img}");
         }
-        return cols;
+        return new Input<MyColor>(cols);
+    }
+
+    public static Input<float> GetInputFloat(
+        this JsonElement self,
+        string IdSelf,
+        Dictionary<string, object> contex,
+        string propName
+    )
+    {
+        string img = self.GetString(propName, "");
+        if (!contex.TryGetValue(img, out var obj))
+        {
+            throw new FileNotFoundException($"Node {IdSelf} could not find input: {img}");
+        }
+        if (obj is not float[,] floats)
+        {
+            if (obj is not float f)
+            {
+                throw new FileNotFoundException($"Node {IdSelf} could not find input: {img}");
+            }
+            return new(f);
+        }
+        return new(floats);
     }
 
     public static Color GetColor(this JsonElement self, string propName, string def = "#000000")

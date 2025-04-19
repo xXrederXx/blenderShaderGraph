@@ -1,53 +1,113 @@
 using System.Drawing;
+using System.Text.Json;
+using blenderShaderGraph.Types;
 using blenderShaderGraph.Util;
 
 namespace blenderShaderGraph.Nodes.ColorNodes;
 
-public static class MixColorNode
+public enum MixColorMode
 {
-    public static Bitmap Generate(
-        Bitmap a,
-        Bitmap b,
-        float factor = 0.5f,
-        MixColorMode mode = MixColorMode.Mix
-    )
+    Mix,
+    Hue,
+    Saturation,
+    Value,
+    Darken,
+    LinearLight,
+    Lighten,
+}
+
+public record MixColorProps
+{
+    public Input<MyColor>? a { get; set; }
+    public Input<MyColor>? b { get; set; }
+    public Input<float>? factor { get; set; }
+    public MixColorMode Mode { get; set; } = MixColorMode.Mix;
+}
+
+public class MixColorNode : Node<MixColorProps, MyColor[,]>
+{
+    public MixColorNode()
+        : base() { }
+
+    public MixColorNode(string Id, JsonElement element)
+        : base(Id, element) { }
+
+    protected override MixColorProps SafeProps(MixColorProps props)
     {
-        int width = Math.Min(a.Width, b.Width);
-        int height = Math.Min(a.Height, b.Height);
-        var facBitmap = BitmapUtil.FilledBitmap(
-            width,
-            height,
-            ColorUtil.ColorFromValue(factor, false)
-        );
-        return GenerateInternal(a, b, facBitmap, mode, width, height);
+        if (props.a is null)
+            System.Console.WriteLine("a props is null");
+        if (props.b is null)
+            System.Console.WriteLine("b props is null");
+
+        return props;
     }
 
-    public static Bitmap Generate(
-        Bitmap a,
-        Bitmap b,
-        Bitmap factor,
-        MixColorMode mode = MixColorMode.Mix
-    )
+    protected override MyColor[,] ExecuteInternal(MixColorProps props)
     {
-        int width = Math.Min(a.Width, b.Width);
-        int height = Math.Min(a.Height, b.Height);
-        return GenerateInternal(a, b, factor, mode, width, height);
+        if (props.a is null)
+        {
+            props.a = new Input<MyColor>(new MyColor(0, 0, 0));
+        }
+        if (props.b is null)
+        {
+            props.b = new Input<MyColor>(new MyColor(0, 0, 0));
+        }
+        if (props.factor is null)
+        {
+            props.factor = new(0);
+        }
+
+        int widthA = props.a.Width;
+        int heightA = props.a.Height;
+        int widthB = props.b.Width;
+        int heightB = props.b.Height;
+
+        int width = Math.Min(widthA, widthB);
+        int height = Math.Min(heightA, heightB);
+
+        return GenerateInternal(props.a, props.b, props.factor, props.Mode, width, height);
     }
 
-    private static Bitmap GenerateInternal(
-        Bitmap a,
-        Bitmap b,
-        Bitmap factor,
+    protected override MixColorProps ConvertJSONToProps(Dictionary<string, object> contex)
+    {
+        JsonElement p = element.GetProperty("params");
+
+        string modeStr = p.GetString("mode", "mix");
+        MixColorMode mode = modeStr switch
+        {
+            "mix" => MixColorMode.Mix,
+            "hue" => MixColorMode.Hue,
+            "saturation" => MixColorMode.Saturation,
+            "value" => MixColorMode.Value,
+            "darken" => MixColorMode.Darken,
+            "lighten" => MixColorMode.Lighten,
+            "linearlight" => MixColorMode.LinearLight,
+            _ => MixColorMode.Mix,
+        };
+        return new MixColorProps()
+        {
+            a = p.GetMyColor2D(Id, contex, "a"),
+            b = p.GetMyColor2D(Id, contex, "b"),
+            factor = p.GetInputFloat(Id, contex, "factor"),
+            Mode = mode,
+        };
+    }
+
+    protected override void AddDataToContext(MyColor[,] data, Dictionary<string, object> contex)
+    {
+        contex[Id] = data;
+    }
+
+    // NODE SPESIFIC
+    private static MyColor[,] GenerateInternal(
+        Input<MyColor> a,
+        Input<MyColor> b,
+        Input<float> factor,
         MixColorMode mode,
         int width,
         int height
     )
     {
-        Color[,] aCols = a.GetPixles();
-        Color[,] bCols = b.GetPixles();
-        Color[,] facCols = factor.GetPixles();
-        Bitmap res = new(width, height);
-
         Func<Color, Color, float, Color> blendFunc = mode switch
         {
             MixColorMode.Mix => MixBlend,
@@ -60,15 +120,20 @@ public static class MixColorNode
             _ => (ac, bc, f) => ac,
         };
 
-        res.ForPixelParralel(
-            (x, y) =>
+        MyColor[,] newColors = new MyColor[width, height];
+        Parallel.For(
+            0,
+            width,
+            (x) =>
             {
-                float fac = ColorUtil.ValueFromColor(facCols[x, y]);
-                return blendFunc(aCols[x, y], bCols[x, y], fac);
+                for (int y = 0; y < height; y++)
+                {
+                    newColors[x, y] = blendFunc(a[x, y], b[x, y], factor[x, y]);
+                }
             }
         );
 
-        return res;
+        return newColors;
     }
 
     private static Color MixBlend(Color a, Color b, float fac)
@@ -139,15 +204,4 @@ public static class MixColorNode
 
         return Color.FromArgb(255, Blend(a.R, b.R), Blend(a.G, b.G), Blend(a.B, b.B));
     }
-}
-
-public enum MixColorMode
-{
-    Mix,
-    Hue,
-    Saturation,
-    Value,
-    Darken,
-    LinearLight,
-    Lighten,
 }
