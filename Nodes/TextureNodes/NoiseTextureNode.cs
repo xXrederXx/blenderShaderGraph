@@ -34,7 +34,7 @@ public class NoiseTextureNode : Node<NoiseTextureProps, float[,]>
     {
         props.Detail = Math.Clamp(props.Detail, 0, 8);
         props.Roughness = Math.Clamp(props.Roughness, 0, 8);
-        return base.SafeProps(props);
+        return props;
     }
 
     protected override float[,] ExecuteInternal(NoiseTextureProps props)
