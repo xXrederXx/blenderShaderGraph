@@ -138,7 +138,7 @@ public class ColorRampNode : Node<ColorRampProps, MyColor[,]>
 
     private static MyColor GetColorConstant(float value, ColorStop[] sortedStops)
     {
-        (ColorStop low, ColorStop high, bool exactMatch, MyColor? exactColor) =
+        (ColorStop? low, ColorStop? high, bool exactMatch, MyColor? exactColor) =
             FindSurroundingStops(value, sortedStops);
         if (exactMatch && exactColor.HasValue)
         {
@@ -163,7 +163,7 @@ public class ColorRampNode : Node<ColorRampProps, MyColor[,]>
 
     private static MyColor GetColorLinear(float value, ColorStop[] sortedStops)
     {
-        (ColorStop low, ColorStop high, bool exactMatch, MyColor? exactColor) =
+        (ColorStop? low, ColorStop? high, bool exactMatch, MyColor? exactColor) =
             FindSurroundingStops(value, sortedStops);
         if (exactMatch && exactColor.HasValue)
         {
