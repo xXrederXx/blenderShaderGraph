@@ -2,6 +2,8 @@ using System.Text.Json;
 using blenderShaderGraph.Types;
 using blenderShaderGraph.Util;
 
+namespace blenderShaderGraph.Nodes.InputNodes;
+
 public enum TextureCoordinateType
 {
     Object,
