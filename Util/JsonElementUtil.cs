@@ -65,6 +65,27 @@ public static class JsonElementUtil
         }
         return new(bmp);
     }
+    public static MyColor[,] GetMyColor2D(
+        this JsonElement self,
+        string IdSelf,
+        Dictionary<string, object> contex,
+        string propName,
+        int WidthIfCol = 1024,
+        int heightIfCol = 1024
+    )
+    {
+        string img = self.GetString(propName, "");
+        if (img.StartsWith('#') && (img.Length == 7 || img.Length == 9))
+        {
+            Color col = ColorTranslator.FromHtml(img);
+            return BitmapUtil.FilledBitmap(WidthIfCol, heightIfCol, col).GetMyPixles();
+        }
+        if (!contex.TryGetValue(img, out var obj) || obj is not MyColor[,] cols)
+        {
+            throw new FileNotFoundException($"Node {IdSelf} could not find input: {img}");
+        }
+        return cols;
+    }
 
     public static Color GetColor(this JsonElement self, string propName, string def = "#000000")
     {

@@ -16,7 +16,9 @@ public class GraphRunner
 
     public static void Run(string path)
     {
-        sw1.Restart();
+        System.Console.WriteLine("NOT IN USE");
+
+        /* sw1.Restart();
 
         System.Console.WriteLine(
             "\n------------------------ Generation Starting ------------------------\n"
@@ -40,7 +42,7 @@ public class GraphRunner
                 "NoiseTexture" => new NoiseTextureJSON(id, element),
                 "MixColor" => new MixColorJSON(id, element),
                 "Bump" => new BumpJSON(id, element),
-                "ColorRamp" => new ColorRampJSON(id, element),
+                "ColorRamp" => new ColorRampNode(id, element),
                 "Output" => new OutputNodeJson(id, element),
                 "TileFixer" => new TileFixerJSON(id, element),
                 "Resize" => new ResizeJSON(id, element),
@@ -69,6 +71,6 @@ public class GraphRunner
 
         System.Console.WriteLine(
             $"\n------------------------ Finished in {sw1.ElapsedMilliseconds}ms ------------------------\n"
-        );
+        ); */
     }
 }

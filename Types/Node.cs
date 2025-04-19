@@ -1,11 +1,16 @@
 using System.Text.Json;
 
 namespace blenderShaderGraph.Types;
-
 public class Node<T, U>
 {
     protected string Id = string.Empty;
     protected JsonElement element;
+
+    public Node(string Id = "", JsonElement element = new())
+    {
+        this.Id = Id;
+        this.element = element;
+    }
 
     // Public
     public U ExecuteNode(T props)

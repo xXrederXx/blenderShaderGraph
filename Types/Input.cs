@@ -1,4 +1,6 @@
-public class Input<T>
+public class Input { }
+
+public class Input<T> : Input
 {
     public T this[int x, int y]
     {
@@ -15,6 +17,7 @@ public class Input<T>
     private T? Value;
     private T[,]? Values;
     private bool useArray;
+
     public Input(T value)
     {
         Value = value;

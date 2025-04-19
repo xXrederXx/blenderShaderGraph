@@ -40,9 +40,12 @@ public static class ExampleTile
     private static Bitmap CalcD((Bitmap color, Bitmap fac) brick)
     {
         Bitmap brickNoise = NoiseTextureNode.Generate(new(Scale: 10));
-        ColorRampNode.Apply(
-            brickNoise,
-            [new(Color.Black, 0), new(Color.FromArgb(113, 113, 113), 1)]
+        new ColorRampNode().ExecuteNode(
+            new ColorRampProps()
+            {
+                Image = brickNoise.GetMyPixles(),
+                ColorStops = [new(Color.Black, 0), new(Color.FromArgb(113, 113, 113), 1)],
+            }
         );
         Bitmap brickMixed = MixColorNode.Generate(
             brick.color,
@@ -50,63 +53,68 @@ public static class ExampleTile
             0.442f,
             MixColorMode.Value
         );
-        ColorRampNode.Apply(
-            brickMixed,
-            [
-                new(
-                    Color.FromArgb(
-                        (byte)Math.Clamp(0.1 * 255, 0, 255),
-                        (byte)Math.Clamp(0.24 * 255, 0, 255),
-                        (byte)Math.Clamp(0.2 * 255, 0, 255)
+        new ColorRampNode().ExecuteNode(
+            new ColorRampProps()
+            {
+                Image = brickMixed.GetMyPixles(),
+                ColorStops =
+                [
+                    new(
+                        Color.FromArgb(
+                            (byte)Math.Clamp(0.1 * 255, 0, 255),
+                            (byte)Math.Clamp(0.24 * 255, 0, 255),
+                            (byte)Math.Clamp(0.2 * 255, 0, 255)
+                        ),
+                        0
                     ),
-                    0
-                ),
-                new(
-                    Color.FromArgb(
-                        (byte)Math.Clamp(0.13 * 255, 0, 255),
-                        (byte)Math.Clamp(0.3 * 255, 0, 255),
-                        (byte)Math.Clamp(0.35 * 255, 0, 255)
+                    new(
+                        Color.FromArgb(
+                            (byte)Math.Clamp(0.13 * 255, 0, 255),
+                            (byte)Math.Clamp(0.3 * 255, 0, 255),
+                            (byte)Math.Clamp(0.35 * 255, 0, 255)
+                        ),
+                        0.313f
                     ),
-                    0.313f
-                ),
-                new(
-                    Color.FromArgb(
-                        (byte)Math.Clamp(0.035 * 255, 0, 255),
-                        (byte)Math.Clamp(0.031 * 255, 0, 255),
-                        (byte)Math.Clamp(0.175 * 255, 0, 255)
+                    new(
+                        Color.FromArgb(
+                            (byte)Math.Clamp(0.035 * 255, 0, 255),
+                            (byte)Math.Clamp(0.031 * 255, 0, 255),
+                            (byte)Math.Clamp(0.175 * 255, 0, 255)
+                        ),
+                        0.476f
                     ),
-                    0.476f
-                ),
-                new(
-                    Color.FromArgb(
-                        (byte)Math.Clamp(0.27 * 255, 0, 255),
-                        (byte)Math.Clamp(0.22 * 255, 0, 255),
-                        (byte)Math.Clamp(0.41 * 255, 0, 255)
+                    new(
+                        Color.FromArgb(
+                            (byte)Math.Clamp(0.27 * 255, 0, 255),
+                            (byte)Math.Clamp(0.22 * 255, 0, 255),
+                            (byte)Math.Clamp(0.41 * 255, 0, 255)
+                        ),
+                        1
                     ),
-                    1
-                ),
-            ]
+                ],
+            }
         );
 
         Bitmap lineNoise = NoiseTextureNode.Generate(
             new(Scale: 14.6f, Detail: 5.9f, Roughness: 0.767f)
         );
-        ColorRampNode.Apply(
-            lineNoise,
-            [
-                new(
-                    Color.Black,
-                    0
-                ),
-                new(
-                    Color.FromArgb(
-                        (byte)Math.Clamp(0.242 * 255, 0, 255),
-                        (byte)Math.Clamp(0.242 * 255, 0, 255),
-                        (byte)Math.Clamp(0.242 * 255, 0, 255)
+        new ColorRampNode().ExecuteNode(
+            new()
+            {
+                Image = lineNoise.GetMyPixles(),
+                ColorStops =
+                [
+                    new(Color.Black, 0),
+                    new(
+                        Color.FromArgb(
+                            (byte)Math.Clamp(0.242 * 255, 0, 255),
+                            (byte)Math.Clamp(0.242 * 255, 0, 255),
+                            (byte)Math.Clamp(0.242 * 255, 0, 255)
+                        ),
+                        1
                     ),
-                    1
-                )
-            ]
+                ],
+            }
         );
 
         return MixColorNode.Generate(brickMixed, lineNoise, brick.fac);
@@ -126,10 +134,13 @@ public static class ExampleTile
     private static Bitmap CalcR((Bitmap color, Bitmap fac) brick)
     {
         Bitmap Roughness = new(brick.fac);
-        ColorRampNode.Apply(
-            Roughness,
-            [new(Color.White, 0.01f), new(Color.Black, 0f)],
-            ColorRampMode.Constant
+        new ColorRampNode().ExecuteNode(
+            new()
+            {
+                Image = Roughness.GetMyPixles(),
+                ColorStops = [new(Color.White, 0.01f), new(Color.Black, 0f)],
+                Mode = ColorRampMode.Constant,
+            }
         );
         return Roughness;
     }

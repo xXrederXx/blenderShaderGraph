@@ -1,30 +1,117 @@
 using System.Drawing;
+using System.Text.Json;
+using blenderShaderGraph.Types;
 using blenderShaderGraph.Util;
 
 namespace blenderShaderGraph.Nodes.ConverterNodes;
 
-public static class ColorRampNode
+public enum ColorRampMode
 {
-    public static Bitmap Apply(
-        Bitmap bitmap,
-        ColorStop[] colorStops,
-        ColorRampMode mode = ColorRampMode.Linear
-    )
+    Linear,
+    Constant,
+}
+
+public record ColorStop(Color color, float pos);
+
+public record ColorRampProps
+{
+    public MyColor[,]? Image { get; set; }
+    public ColorStop[]? ColorStops { get; set; }
+    public ColorRampMode Mode { get; set; } = ColorRampMode.Linear;
+}
+
+public class ColorRampNode : Node<ColorRampProps, MyColor[,]>
+{
+    public ColorRampNode()
+        : base() { }
+
+    public ColorRampNode(string Id, JsonElement element)
+        : base(Id, element) { }
+
+    protected override ColorRampProps SafeProps(ColorRampProps props)
     {
-        Bitmap res = new Bitmap(bitmap.Width, bitmap.Height);
-        Color[,] colors = bitmap.GetPixles();
-        ColorStop[] sortedStops = colorStops.OrderBy(cs => cs.pos).ToArray();
-        res.ForPixelParralel(
-            (x, y) =>
-            {
-                Color color = colors[x, y];
-                float value = ColorUtil.ValueFromColor(color);
-                return GetColor(value, sortedStops, mode);
-            }
-        );
-        return res;
+        if (props.Image is null)
+            System.Console.WriteLine("Birmap is null");
+        if (props.ColorStops is null || props.ColorStops.Length == 0)
+        {
+            System.Console.WriteLine("Colorstops is null or empty");
+            props.ColorStops = new ColorStop[1];
+            props.ColorStops[0] = new ColorStop(Color.Black, 0);
+        }
+
+        return base.SafeProps(props);
     }
 
+    protected override MyColor[,] ExecuteInternal(ColorRampProps props)
+    {
+        if (props.Image is null)
+        {
+            return new MyColor[0, 0];
+        }
+        if (props.ColorStops is null)
+        {
+            throw new ArgumentException(
+                "props.Colorstops is null. Check SafeProps function and make sure you run the function before caling this function."
+            );
+        }
+
+        int width = props.Image.GetLength(0);
+        int height = props.Image.GetLength(1);
+
+        MyColor[,] oldColors = props.Image;
+        MyColor[,] newColors = new MyColor[width, height];
+
+        ColorStop[] sortedStops = props.ColorStops.OrderBy(cs => cs.pos).ToArray();
+
+        Parallel.For(
+            0,
+            width,
+            (x) =>
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    Color color = oldColors[x, y];
+                    float value = ColorUtil.ValueFromColor(color);
+                    newColors[x, y] = GetColor(value, sortedStops, props.Mode);
+                }
+            }
+        );
+
+        return newColors;
+    }
+
+    protected override ColorRampProps ConvertJSONToProps(Dictionary<string, object> contex)
+    {
+        JsonElement p = element.GetProperty("params");
+        MyColor[,] bmp = p.GetMyColor2D(Id, contex, "image");
+        List<ColorStop> stops = [];
+        foreach (JsonElement x in p.GetProperty("colorStops").EnumerateArray())
+        {
+            var col = ColorTranslator.FromHtml(x.GetString("color", "black"));
+            var pos = x.GetFloat("position", 0);
+            stops.Add(new(col, pos));
+        }
+        string modeStr = p.GetString("mode", "linear");
+        ColorRampMode mode = modeStr switch
+        {
+            "linear" => ColorRampMode.Linear,
+            "constant" => ColorRampMode.Constant,
+            _ => ColorRampMode.Linear,
+        };
+        return new ColorRampProps()
+        {
+            Image = bmp,
+            ColorStops = stops.ToArray(),
+            Mode = mode,
+        };
+    }
+
+    protected override void AddDataToContext(MyColor[,] data, Dictionary<string, object> contex)
+    {
+        contex[Id] = data;
+    }
+
+    // NODE SPESIFIC
     private static Color GetColor(
         float value,
         ColorStop[] sortedStops,
@@ -89,6 +176,7 @@ public static class ColorRampNode
         {
             low = high;
         }
+        // only one of both can be null
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
         return ColorUtil.LerpColor(
             low.color,
@@ -145,11 +233,3 @@ public static class ColorRampNode
         return (low, high, false, null);
     }
 }
-
-public enum ColorRampMode
-{
-    Linear,
-    Constant,
-}
-
-public record ColorStop(Color color, float pos);
