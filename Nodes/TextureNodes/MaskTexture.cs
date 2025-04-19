@@ -1,4 +1,5 @@
-using System.Drawing;
+using System.Text.Json;
+using blenderShaderGraph.Types;
 using blenderShaderGraph.Util;
 
 namespace blenderShaderGraph.Nodes.TextureNodes;
@@ -11,31 +12,50 @@ public enum MaskTextureType
     Cube,
 }
 
-public class MaskTexture
+public record MaskTextureProps
+{
+    public int Width { get; set; }
+    public int Height { get; set; }
+    public int NumDots { get; set; }
+    public int MaxDotSize { get; set; }
+    public int MinDotSize { get; set; }
+    public MaskTextureType Type { get; set; } = MaskTextureType.Square;
+    public bool BetterDistCalc { get; set; } = false;
+}
+
+public class MaskTextureNode : Node<MaskTextureProps, float[,]>
 {
     private static Random rng = new();
     private const float halfPI = (float)(Math.PI / 2);
 
-    public static Bitmap Generate(
-        int Width,
-        int Height,
-        int numDots,
-        int maxSize,
-        int minSize,
-        MaskTextureType type = MaskTextureType.Square,
-        bool betterDistCalc = false
-    )
+    public MaskTextureNode()
+        : base() { }
+
+    public MaskTextureNode(string Id, JsonElement element)
+        : base(Id, element) { }
+
+    protected override MaskTextureProps SafeProps(MaskTextureProps props)
     {
-        Bitmap res = BitmapUtil.FilledBitmap(Width, Height, Color.Black);
-        var dots = GetDotsList(Width, Height, numDots, maxSize, minSize);
-        var cols = res.GetPixles();
+        return props;
+    }
+
+    protected override float[,] ExecuteInternal(MaskTextureProps props)
+    {
+        float[,] res = new float[props.Width, props.Height];
+        var dots = GetDotsList(
+            props.Width,
+            props.Height,
+            props.NumDots,
+            props.MaxDotSize,
+            props.MinDotSize
+        );
 
         foreach (var (xCenter, yCenter, size) in dots)
         {
             int startX = Math.Max(0, xCenter - size);
-            int endX = Math.Min(Width, xCenter + size);
+            int endX = Math.Min(props.Width, xCenter + size);
             int startY = Math.Max(0, yCenter - size);
-            int endY = Math.Min(Height, yCenter + size);
+            int endY = Math.Min(props.Height, yCenter + size);
 
             for (int x = startX; x < endX; x++)
             {
@@ -44,18 +64,48 @@ public class MaskTexture
                 for (int y = startY; y < endY; y++)
                 {
                     float yNorm = Math.Abs((y - yCenter) / (float)size);
-                    float value = GetMaskValue(xNorm, yNorm, type, betterDistCalc);
+                    float value = GetMaskValue(xNorm, yNorm, props.Type, props.BetterDistCalc);
                     value = MyMath.Clamp01(value);
 
-                    cols[x, y] = ColorUtil.LerpColor(cols[x, y], Color.White, value);
+                    res[x, y] = MyMath.Lerp(res[x, y], 1, value);
                 }
             }
         }
 
-        res.SetPixles(cols);
         return res;
     }
 
+    protected override MaskTextureProps ConvertJSONToProps(Dictionary<string, object> contex)
+    {
+        JsonElement p = element.GetProperty("params");
+
+        string modeStr = p.GetString("mode", "square");
+        MaskTextureType mode = modeStr switch
+        {
+            "squareFade" => MaskTextureType.SquareFade,
+            "easeInSine" => MaskTextureType.EaseInSine,
+            "square" => MaskTextureType.Square,
+            "cube" => MaskTextureType.Cube,
+            _ => MaskTextureType.Square,
+        };
+        return new MaskTextureProps()
+        {
+            Width = p.GetInt("width", 1024),
+            Height = p.GetInt("height", 1024),
+            NumDots = p.GetInt("dots", 1024),
+            MaxDotSize = p.GetInt("maxSize", 124),
+            MinDotSize = p.GetInt("minSize", 24),
+            Type = mode,
+            BetterDistCalc = p.GetBool("betterDistCalc"),
+        };
+    }
+
+    protected override void AddDataToContext(float[,] data, Dictionary<string, object> contex)
+    {
+        contex[Id] = data;
+    }
+
+    // NODE SPESIFIC
     private static float GetMaskValue(
         float xNorm,
         float yNorm,
