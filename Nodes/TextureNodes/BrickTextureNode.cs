@@ -1,9 +1,11 @@
 using System.Drawing;
+using System.Text.Json;
+using blenderShaderGraph.Types;
 using blenderShaderGraph.Util;
 
 namespace blenderShaderGraph.Nodes.TextureNodes;
 
-public static class BrickTextureNode
+public class BrickTextureNode : Node<BrickTextureProps, (MyColor[,] color, float[,] fac)>
 {
     private static readonly Random rng = Random.Shared;
     private static readonly int seedForTile;
@@ -13,25 +15,65 @@ public static class BrickTextureNode
         seedForTile = new Random().Next();
     }
 
-    public static (Bitmap color, Bitmap fac) Generate(BrickTextureProps props)
-    {
-        Bitmap imgColor = new(props.imgWidth, props.imgHeight);
-        Bitmap imgFactor = new(props.imgWidth, props.imgHeight);
+    public BrickTextureNode()
+        : base() { }
 
-        Color[,] imgC = new Color[props.imgWidth, props.imgHeight];
-        Color[,] imgF = new Color[props.imgWidth, props.imgHeight];
+    public BrickTextureNode(string Id, JsonElement element)
+        : base(Id, element) { }
+
+    protected override BrickTextureProps SafeProps(BrickTextureProps props)
+    {
+        // Allready built into the class
+        return props;
+    }
+
+    protected override (MyColor[,] color, float[,] fac) ExecuteInternal(BrickTextureProps props)
+    {
+        MyColor[,] imgC = new MyColor[props.imgWidth, props.imgHeight];
+        float[,] imgF = new float[props.imgWidth, props.imgHeight];
 
         ApplyColorsRow(props, imgC, imgF);
 
-        imgColor.SetPixles(imgC);
-        imgFactor.SetPixles(imgF);
-        return (imgColor, imgFactor);
+        return (imgC, imgF);
     }
 
+    protected override BrickTextureProps ConvertJSONToProps(Dictionary<string, object> contex)
+    {
+        JsonElement p = element.GetProperty("params");
+        return new(
+            imgWidth: p.GetInt("width", 1024),
+            imgHeight: p.GetInt("height", 1024),
+            offset: p.GetFloat("offset", 0.5f),
+            offsetFrequency: p.GetInt("offsetFrequency", 2),
+            squash: p.GetFloat("squash", 1),
+            squashFrequency: p.GetInt("squashFrequency", 0),
+            color1: ColorTranslator.FromHtml(p.GetString("color1", "black")),
+            color2: ColorTranslator.FromHtml(p.GetString("color2", "black")),
+            colorMotar: ColorTranslator.FromHtml(p.GetString("colorMotar", "white")),
+            motarSize: p.GetFloat("motarSize", 5),
+            motarSmoothness: p.GetFloat("motarSmoothness", 0),
+            bias: p.GetFloat("bias", 0),
+            brickWidth: p.GetFloat("brickWidth", 30),
+            rowHeight: p.GetFloat("rowHeight", 12),
+            forceTilable: p.GetBool("forceTilable")
+        );
+    }
+
+    protected override void AddDataToContext(
+        (MyColor[,] color, float[,] fac) data,
+        Dictionary<string, object> contex
+    )
+    {
+        contex[Id + ".color"] = data.color;
+        contex[Id + ".fac"] = data.fac;
+        contex[Id] = data.color;
+    }
+
+    //NODE SPESIFIC
     private static void ApplyColorsRow(
         BrickTextureProps props,
-        Color[,] imgColor,
-        Color[,] imgFactor
+        MyColor[,] imgColor,
+        float[,] imgFactor
     )
     {
         Parallel.For(
@@ -67,8 +109,8 @@ public static class BrickTextureNode
 
     private static void ApplyColorColumns(
         BrickTextureProps props,
-        Color[,] imgColor,
-        Color[,] imgFactor,
+        MyColor[,] imgColor,
+        float[,] imgFactor,
         bool isOffset,
         bool isSquashed,
         int yStart,
@@ -99,8 +141,8 @@ public static class BrickTextureNode
 
     private static void GenerateSquare(
         BrickTextureProps props,
-        Color[,] imgColor,
-        Color[,] imgFactor,
+        MyColor[,] imgColor,
+        float[,] imgFactor,
         int yStart,
         int yEnd,
         int xStart,
@@ -124,8 +166,8 @@ public static class BrickTextureNode
 
     private static void SetPixel(
         BrickTextureProps props,
-        Color[,] imgColor,
-        Color[,] imgFactor,
+        MyColor[,] imgColor,
+        float[,] imgFactor,
         int yStart,
         int yEnd,
         int xStart,
@@ -166,15 +208,15 @@ public static class BrickTextureNode
 
         if (isMotar)
         {
-            Color MotarC = ColorUtil.LerpColor(props.colorMotar, brickColor, blend);
-            Color MotarF = ColorUtil.LerpColor(Color.White, Color.Black, blend);
+            MyColor MotarC = ColorUtil.LerpColor(props.colorMotar, brickColor, blend);
+            float MotarF = MyMath.Lerp(1, 0, blend);
             imgColor[x, y] = MotarC;
             imgFactor[x, y] = MotarF;
         }
         else
         {
             imgColor[x, y] = brickColor;
-            imgFactor[x, y] = Color.Black;
+            imgFactor[x, y] = 0;
         }
     }
 
