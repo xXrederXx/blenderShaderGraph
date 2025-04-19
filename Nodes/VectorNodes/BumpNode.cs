@@ -95,7 +95,7 @@ public class BumpNode : Node<BumpProps, MyColor[,]>
         {
             throw new ArgumentException("props.Strength is null || props.Distance is null");
         }
-        
+
         int width = props.HeightMap.GetLength(0);
         int height = props.HeightMap.GetLength(1);
 

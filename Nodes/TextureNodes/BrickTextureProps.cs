@@ -1,4 +1,5 @@
 using System.Drawing;
+using blenderShaderGraph.Types;
 using blenderShaderGraph.Util;
 
 namespace blenderShaderGraph.Nodes.TextureNodes;
@@ -11,9 +12,9 @@ public record BrickTextureProps
     public readonly int offsetFrequency;
     public readonly float squash;
     public readonly int squashFrequency;
-    public readonly Color color1;
-    public readonly Color color2;
-    public readonly Color colorMotar;
+    public readonly MyColor color1;
+    public readonly MyColor color2;
+    public readonly MyColor colorMotar;
     public readonly float motarSize;
     public readonly float motarSmoothness; // 0 - 1
     public readonly float bias; // -1 - 1
@@ -37,9 +38,9 @@ public record BrickTextureProps
         int offsetFrequency = 2,
         float squash = 1,
         int squashFrequency = 0,
-        Color? color1 = null,
-        Color? color2 = null,
-        Color? colorMotar = null,
+        MyColor? color1 = null,
+        MyColor? color2 = null,
+        MyColor? colorMotar = null,
         float motarSize = 5,
         float motarSmoothness = 0, // 0 - 1
         float bias = 0, // -1 - 1
@@ -54,9 +55,9 @@ public record BrickTextureProps
         this.offsetFrequency = offsetFrequency;
         this.squash = squash;
         this.squashFrequency = squashFrequency;
-        this.color1 = color1 ?? Color.White;
-        this.color2 = color2 ?? Color.Beige;
-        this.colorMotar = colorMotar ?? Color.DarkGoldenrod;
+        this.color1 = color1 ?? new MyColor(255, 255, 255);
+        this.color2 = color2 ?? new MyColor(255, 240, 240);
+        this.colorMotar = colorMotar ?? new MyColor(50, 40, 40);
         this.motarSize = motarSize;
         this.motarSmoothness = MyMath.Clamp01(motarSmoothness);
         this.bias = Math.Clamp(bias, -1, 1);
@@ -66,9 +67,7 @@ public record BrickTextureProps
         this.cols = (int)(imgHeight / rowHeight) + 1;
         this.rows = (int)(imgWidth / brickWidth) + 1;
         this.halfMotarSize = (int)Math.Ceiling(motarSize / 2);
-        this.MotarLerpDist = this.motarSmoothness > 0 
-            ? motarSmoothness / halfMotarSize 
-            : 0f;
+        this.MotarLerpDist = this.motarSmoothness > 0 ? motarSmoothness / halfMotarSize : 0f;
         offsetWidth = (int)Math.Ceiling(offset * brickWidth);
         squashedBrickWidth = brickWidth * squash;
 

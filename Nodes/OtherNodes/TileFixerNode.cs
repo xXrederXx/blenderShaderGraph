@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Text.Json;
 using blenderShaderGraph.Types;
 using blenderShaderGraph.Util;
@@ -45,15 +44,15 @@ public class TileFixerNode : Node<TileFixerProps, MyColor[,]>
             for (int y = 0; y < height; y++)
             {
                 // Left side
-                Color origLeft = props.Image[x, y];
-                Color mirrorRight = props.Image[width - props.BlendBandSize + x, y];
-                Color blendL = ColorUtil.LerpColor(mirrorRight, origLeft, t);
+                MyColor origLeft = props.Image[x, y];
+                MyColor mirrorRight = props.Image[width - props.BlendBandSize + x, y];
+                MyColor blendL = ColorUtil.LerpColor(mirrorRight, origLeft, t);
                 newColors[x, y] = blendL;
 
                 // Right side
-                Color origRight = props.Image[width - 1 - x, y];
-                Color mirrorLeft = props.Image[props.BlendBandSize - 1 - x, y];
-                Color blendR = ColorUtil.LerpColor(mirrorLeft, origRight, t);
+                MyColor origRight = props.Image[width - 1 - x, y];
+                MyColor mirrorLeft = props.Image[props.BlendBandSize - 1 - x, y];
+                MyColor blendR = ColorUtil.LerpColor(mirrorLeft, origRight, t);
                 newColors[width - 1 - x, y] = blendR;
             }
         }
@@ -66,15 +65,15 @@ public class TileFixerNode : Node<TileFixerProps, MyColor[,]>
             for (int x = 0; x < width; x++)
             {
                 // Top side
-                Color origTop = props.Image[x, y];
-                Color mirrorBottom = props.Image[x, height - props.BlendBandSize + y];
-                Color blendT = ColorUtil.LerpColor(mirrorBottom, origTop, t);
+                MyColor origTop = props.Image[x, y];
+                MyColor mirrorBottom = props.Image[x, height - props.BlendBandSize + y];
+                MyColor blendT = ColorUtil.LerpColor(mirrorBottom, origTop, t);
                 newColors[x, y] = blendT;
 
                 // Bottom side
-                Color origBottom = props.Image[x, height - 1 - y];
-                Color mirrorTop = props.Image[x, props.BlendBandSize - 1 - y];
-                Color blendB = ColorUtil.LerpColor(mirrorTop, origBottom, t);
+                MyColor origBottom = props.Image[x, height - 1 - y];
+                MyColor mirrorTop = props.Image[x, props.BlendBandSize - 1 - y];
+                MyColor blendB = ColorUtil.LerpColor(mirrorTop, origBottom, t);
                 newColors[x, height - 1 - y] = blendB;
             }
         }
@@ -86,7 +85,7 @@ public class TileFixerNode : Node<TileFixerProps, MyColor[,]>
         JsonElement p = element.GetProperty("params");
         return new TileFixerProps()
         {
-            Image = p.GetMyColor2D(Id, contex, "image").Array,
+            Image = p.GetInputMyColor(Id, contex, "image").Array,
             BlendBandSize = p.GetInt("blur", 16),
         };
     }

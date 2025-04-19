@@ -42,7 +42,7 @@ public class MaskTextureNode : Node<MaskTextureProps, float[,]>
     protected override float[,] ExecuteInternal(MaskTextureProps props)
     {
         float[,] res = new float[props.Width, props.Height];
-        var dots = GetDotsList(
+        List<(int x, int y, int size)> dots = GetDotsList(
             props.Width,
             props.Height,
             props.NumDots,
@@ -50,7 +50,7 @@ public class MaskTextureNode : Node<MaskTextureProps, float[,]>
             props.MinDotSize
         );
 
-        foreach (var (xCenter, yCenter, size) in dots)
+        foreach ((int xCenter, int yCenter, int size) in dots)
         {
             int startX = Math.Max(0, xCenter - size);
             int endX = Math.Min(props.Width, xCenter + size);

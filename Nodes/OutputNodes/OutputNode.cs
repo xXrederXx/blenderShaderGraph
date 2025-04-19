@@ -3,7 +3,7 @@ using System.Text.Json;
 using blenderShaderGraph.Types;
 using blenderShaderGraph.Util;
 
-namespace blenderShaderGraph.Nodes.OtherNodes;
+namespace blenderShaderGraph.Nodes.OutputNodes;
 
 public record OutputProps
 {
@@ -49,7 +49,7 @@ public class OutputNode : Node<OutputProps, bool>
 
         return new OutputProps()
         {
-            Image = p.GetMyColor2D(Id, context, "image").Array,
+            Image = p.GetInputMyColor(Id, context, "image").Array,
             FileName = p.GetString("filename", "out.png"),
         };
     }

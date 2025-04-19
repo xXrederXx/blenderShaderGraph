@@ -132,7 +132,7 @@ public class BrickTextureNode : Node<BrickTextureProps, (MyColor[,] color, float
                 xEnd += props.offsetWidth;
             }
 
-            Color brickColor = props.forceTilable
+            MyColor brickColor = props.forceTilable
                 ? GetTileableColor(props, r, c, isSquashed)
                 : GetColor(props.color1, props.color2, props.bias);
             GenerateSquare(props, imgColor, imgFactor, yStart, yEnd, xStart, xEnd, brickColor);
@@ -147,7 +147,7 @@ public class BrickTextureNode : Node<BrickTextureProps, (MyColor[,] color, float
         int yEnd,
         int xStart,
         int xEnd,
-        Color brickColor
+        MyColor brickColor
     )
     {
         int yStartLoop = Math.Max(yStart, 0);
@@ -172,7 +172,7 @@ public class BrickTextureNode : Node<BrickTextureProps, (MyColor[,] color, float
         int yEnd,
         int xStart,
         int xEnd,
-        Color brickColor,
+        MyColor brickColor,
         int y,
         int x
     )
@@ -259,13 +259,13 @@ public class BrickTextureNode : Node<BrickTextureProps, (MyColor[,] color, float
         return Math.Clamp(Math.Max(vBlend, hBlend), 0, 1);
     }
 
-    private static Color GetColor(Color color1, Color color2, float bias)
+    private static MyColor GetColor(MyColor color1, MyColor color2, float bias)
     {
         double val = rng.NextDouble();
         return ColorUtil.LerpColor(color1, color2, (float)Math.Clamp(val + bias, 0, 1));
     }
 
-    private static Color GetTileableColor(
+    private static MyColor GetTileableColor(
         BrickTextureProps props,
         int row,
         int col,

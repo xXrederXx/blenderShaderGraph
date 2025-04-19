@@ -11,7 +11,7 @@ public enum ColorRampMode
     Constant,
 }
 
-public record ColorStop(Color color, float pos);
+public record ColorStop(MyColor color, float pos);
 
 public record ColorRampProps
 {
@@ -36,7 +36,7 @@ public class ColorRampNode : Node<ColorRampProps, MyColor[,]>
         {
             System.Console.WriteLine("Colorstops is null or empty");
             props.ColorStops = new ColorStop[1];
-            props.ColorStops[0] = new ColorStop(Color.Black, 0);
+            props.ColorStops[0] = new ColorStop(new MyColor(0, 0, 0), 0);
         }
 
         return props;
@@ -70,7 +70,7 @@ public class ColorRampNode : Node<ColorRampProps, MyColor[,]>
             {
                 for (int y = 0; y < height; y++)
                 {
-                    Color color = oldColors[x, y];
+                    MyColor color = oldColors[x, y];
                     float value = ColorUtil.ValueFromColor(color);
                     newColors[x, y] = GetColor(value, sortedStops, props.Mode);
                 }
@@ -83,12 +83,12 @@ public class ColorRampNode : Node<ColorRampProps, MyColor[,]>
     protected override ColorRampProps ConvertJSONToProps(Dictionary<string, object> contex)
     {
         JsonElement p = element.GetProperty("params");
-        Input<MyColor> bmp = p.GetMyColor2D(Id, contex, "image");
+        Input<MyColor> bmp = p.GetInputMyColor(Id, contex, "image");
         List<ColorStop> stops = [];
         foreach (JsonElement x in p.GetProperty("colorStops").EnumerateArray())
         {
-            var col = ColorTranslator.FromHtml(x.GetString("color", "black"));
-            var pos = x.GetFloat("position", 0);
+            MyColor col = ColorTranslator.FromHtml(x.GetString("color", "black"));
+            float pos = x.GetFloat("position", 0);
             stops.Add(new(col, pos));
         }
         string modeStr = p.GetString("mode", "linear");
@@ -112,7 +112,7 @@ public class ColorRampNode : Node<ColorRampProps, MyColor[,]>
     }
 
     // NODE SPESIFIC
-    private static Color GetColor(
+    private static MyColor GetColor(
         float value,
         ColorStop[] sortedStops,
         ColorRampMode mode = ColorRampMode.Linear
@@ -121,7 +121,7 @@ public class ColorRampNode : Node<ColorRampProps, MyColor[,]>
         value = Math.Clamp(value, 0, 1);
         if (sortedStops.Length == 0)
         {
-            return Color.FromKnownColor(KnownColor.Black);
+            return new MyColor(0, 0, 0);
         }
         if (sortedStops.Length == 1)
         {
@@ -132,13 +132,14 @@ public class ColorRampNode : Node<ColorRampProps, MyColor[,]>
         {
             ColorRampMode.Linear => GetColorLinear(value, sortedStops),
             ColorRampMode.Constant => GetColorConstant(value, sortedStops),
-            _ => Color.FromKnownColor(KnownColor.Black),
+            _ => new MyColor(0, 0, 0),
         };
     }
 
-    private static Color GetColorConstant(float value, ColorStop[] sortedStops)
+    private static MyColor GetColorConstant(float value, ColorStop[] sortedStops)
     {
-        var (low, high, exactMatch, exactColor) = FindSurroundingStops(value, sortedStops);
+        (ColorStop low, ColorStop high, bool exactMatch, MyColor? exactColor) =
+            FindSurroundingStops(value, sortedStops);
         if (exactMatch && exactColor.HasValue)
         {
             return exactColor.Value;
@@ -160,9 +161,10 @@ public class ColorRampNode : Node<ColorRampProps, MyColor[,]>
         return low.color;
     }
 
-    private static Color GetColorLinear(float value, ColorStop[] sortedStops)
+    private static MyColor GetColorLinear(float value, ColorStop[] sortedStops)
     {
-        var (low, high, exactMatch, exactColor) = FindSurroundingStops(value, sortedStops);
+        (ColorStop low, ColorStop high, bool exactMatch, MyColor? exactColor) =
+            FindSurroundingStops(value, sortedStops);
         if (exactMatch && exactColor.HasValue)
         {
             return exactColor.Value;
@@ -190,7 +192,7 @@ public class ColorRampNode : Node<ColorRampProps, MyColor[,]>
         ColorStop? low,
         ColorStop? high,
         bool exactMatch,
-        Color? exactColor
+        MyColor? exactColor
     ) FindSurroundingStops(float value, ColorStop[] sortedStops)
     {
         int left = 0;

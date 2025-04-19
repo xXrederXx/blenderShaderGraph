@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Text.Json;
 using blenderShaderGraph.Types;
 using blenderShaderGraph.Util;

@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Text.Json;
+using blenderShaderGraph.Types;
 
 namespace blenderShaderGraph.Util;
 
@@ -9,26 +10,27 @@ public static class JsonElementUtil
     {
         if (!self.TryGetProperty(propName, out JsonElement element))
         {
+            System.Console.WriteLine($"Property {propName} not found, using default");
             return def;
         }
-        int val = element.GetInt32();
-        return val == 0 ? def : val;
+        return element.GetInt32();
     }
 
     public static float GetFloat(this JsonElement self, string propName, float def = 0)
     {
         if (!self.TryGetProperty(propName, out JsonElement element))
         {
+            System.Console.WriteLine($"Property {propName} not found, using default");
             return def;
         }
-        float val = (float)element.GetDouble();
-        return val == 0f ? def : val;
+        return (float)element.GetDouble();
     }
 
     public static string GetString(this JsonElement self, string propName, string def = "")
     {
         if (!self.TryGetProperty(propName, out JsonElement element))
         {
+            System.Console.WriteLine($"Property {propName} not found, using default");
             return def;
         }
         string? val = element.GetString();
@@ -39,6 +41,7 @@ public static class JsonElementUtil
     {
         if (!self.TryGetProperty(propName, out JsonElement element))
         {
+            System.Console.WriteLine($"Property {propName} not found, using false");
             return false;
         }
         return element.GetBoolean();
@@ -53,20 +56,20 @@ public static class JsonElementUtil
         int heightIfCol = 1024
     )
     {
-        string img = self.GetString(propName, "");
-        if (img.StartsWith('#') && (img.Length == 7 || img.Length == 9))
+        string dataKey = self.GetString(propName, "");
+        if (dataKey.StartsWith('#') && (dataKey.Length == 7 || dataKey.Length == 9))
         {
-            Color col = ColorTranslator.FromHtml(img);
+            Color col = ColorTranslator.FromHtml(dataKey);
             return BitmapUtil.FilledBitmap(WidthIfCol, heightIfCol, col);
         }
-        if (!contex.TryGetValue(img, out var obj) || obj is not Bitmap bmp)
+        if (!contex.TryGetValue(dataKey, out object? obj) || obj is not Bitmap bmp)
         {
-            throw new FileNotFoundException($"Node {IdSelf} could not find input: {img}");
+            throw new FileNotFoundException($"Node {IdSelf} could not find input: {dataKey}");
         }
         return new(bmp);
     }
 
-    public static Input<MyColor> GetMyColor2D(
+    public static Input<MyColor> GetInputMyColor(
         this JsonElement self,
         string IdSelf,
         Dictionary<string, object> contex,
@@ -79,7 +82,7 @@ public static class JsonElementUtil
             Color col = ColorTranslator.FromHtml(img);
             return new Input<MyColor>(col);
         }
-        if (!contex.TryGetValue(img, out var obj) || obj is not MyColor[,] cols)
+        if (!contex.TryGetValue(img, out object? obj) || obj is not MyColor[,] cols)
         {
             throw new FileNotFoundException($"Node {IdSelf} could not find input: {img}");
         }
@@ -94,7 +97,7 @@ public static class JsonElementUtil
     )
     {
         string img = self.GetString(propName, "");
-        if (!contex.TryGetValue(img, out var obj) || obj is not float[,] cols)
+        if (!contex.TryGetValue(img, out object? obj) || obj is not float[,] cols)
         {
             throw new FileNotFoundException($"Node {IdSelf} could not find input: {img}");
         }
@@ -109,7 +112,7 @@ public static class JsonElementUtil
     )
     {
         string img = self.GetString(propName, "");
-        if (!contex.TryGetValue(img, out var obj))
+        if (!contex.TryGetValue(img, out object? obj))
         {
             throw new FileNotFoundException($"Node {IdSelf} could not find input: {img}");
         }
@@ -124,7 +127,7 @@ public static class JsonElementUtil
         return new(floats);
     }
 
-    public static Color GetColor(this JsonElement self, string propName, string def = "#000000")
+    public static MyColor GetColor(this JsonElement self, string propName, string def = "#000000")
     {
         if (!self.TryGetProperty(propName, out JsonElement element))
         {

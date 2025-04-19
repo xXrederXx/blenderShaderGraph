@@ -1,14 +1,15 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using blenderShaderGraph.Types;
 
 namespace blenderShaderGraph.Util;
 
 public static class BitmapUtil
 {
-    public static void ForPixel(this Bitmap self, Func<int, int, Color> func)
+    public static void ForPixel(this Bitmap self, Func<int, int, MyColor> func)
     {
-        Color[,] colors = new Color[self.Width, self.Height];
+        MyColor[,] colors = new MyColor[self.Width, self.Height];
         for (int x = 0; x < self.Width; x++)
         {
             for (int y = 0; y < self.Height; y++)
@@ -16,12 +17,12 @@ public static class BitmapUtil
                 colors[x, y] = func.Invoke(x, y);
             }
         }
-        self.SetPixles(colors);
+        self.SetMyPixles(colors);
     }
 
-    public static void ForPixelParralel(this Bitmap self, Func<int, int, Color> func)
+    public static void ForPixelParralel(this Bitmap self, Func<int, int, MyColor> func)
     {
-        Color[,] colors = new Color[self.Width, self.Height];
+        MyColor[,] colors = new MyColor[self.Width, self.Height];
         int h = self.Height;
         Parallel.For(
             0,
@@ -34,19 +35,14 @@ public static class BitmapUtil
                 }
             }
         );
-        self.SetPixles(colors);
+        self.SetMyPixles(colors);
     }
 
-    public static Bitmap FilledBitmap(int width, int height, Color color)
+    public static Bitmap FilledBitmap(int width, int height, MyColor color)
     {
         Bitmap ret = new(width, height);
         ret.ForPixelParralel((x, y) => color);
         return ret;
-    }
-
-    public static Bitmap ScaleToSize(int width, int height, Bitmap original)
-    {
-        return new Bitmap(original, width, height);
     }
 
     public static Color[,] GetPixles(this Bitmap self)
@@ -159,6 +155,7 @@ public static class BitmapUtil
         Marshal.Copy(pixelBytes, 0, bmpData.Scan0, byteCount);
         self.UnlockBits(bmpData);
     }
+
     public static void SetMyPixles(this Bitmap self, MyColor[,] pixels)
     {
         int width = self.Width;
@@ -183,7 +180,7 @@ public static class BitmapUtil
             int rowOffset = y * stride;
             for (int x = 0; x < width; x++)
             {
-                Color c = pixels[x, y];
+                MyColor c = pixels[x, y];
                 int index = rowOffset + x * 4;
                 pixelBytes[index] = c.B;
                 pixelBytes[index + 1] = c.G;

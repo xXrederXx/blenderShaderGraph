@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Text.Json;
 using blenderShaderGraph.Types;
 using blenderShaderGraph.Util;
@@ -86,8 +85,8 @@ public class MixColorNode : Node<MixColorProps, MyColor[,]>
         };
         return new MixColorProps()
         {
-            a = p.GetMyColor2D(Id, contex, "a"),
-            b = p.GetMyColor2D(Id, contex, "b"),
+            a = p.GetInputMyColor(Id, contex, "a"),
+            b = p.GetInputMyColor(Id, contex, "b"),
             factor = p.GetInputFloat(Id, contex, "factor"),
             Mode = mode,
         };
@@ -108,7 +107,7 @@ public class MixColorNode : Node<MixColorProps, MyColor[,]>
         int height
     )
     {
-        Func<Color, Color, float, Color> blendFunc = mode switch
+        Func<MyColor, MyColor, float, MyColor> blendFunc = mode switch
         {
             MixColorMode.Mix => MixBlend,
             MixColorMode.Hue => HueBlend,
@@ -136,63 +135,60 @@ public class MixColorNode : Node<MixColorProps, MyColor[,]>
         return newColors;
     }
 
-    private static Color MixBlend(Color a, Color b, float fac)
+    private static MyColor MixBlend(MyColor a, MyColor b, float fac)
     {
-        return Color.FromArgb(
-            255,
+        return new MyColor(
             MyMath.ClampByte(a.R * (1 - fac) + b.R * fac),
             MyMath.ClampByte(a.G * (1 - fac) + b.G * fac),
             MyMath.ClampByte(a.B * (1 - fac) + b.B * fac)
         );
     }
 
-    private static Color HueBlend(Color a, Color b, float fac)
+    private static MyColor HueBlend(MyColor a, MyColor b, float fac)
     {
-        ColorUtil.ColorToHSV(a, out double ah, out double asat, out double av);
-        ColorUtil.ColorToHSVOnlyV(b, out double bh);
-        double nh = ah * (1 - fac) + bh * fac;
-        return ColorUtil.ColorFromHSV(nh, asat, av);
+        (float ah, float asat, float av) = a.GetHSV();
+        float bh = b.GetHSVOnlyH();
+        float nh = ah * (1 - fac) + bh * fac;
+        return MyColor.FromHSV(nh, asat, av);
     }
 
-    private static Color SaturationBlend(Color a, Color b, float fac)
+    private static MyColor SaturationBlend(MyColor a, MyColor b, float fac)
     {
-        ColorUtil.ColorToHSV(a, out double ah, out double asat, out double av);
-        ColorUtil.ColorToHSVOnlyS(b, out double bsat);
-        double ns = asat * (1 - fac) + bsat * fac;
-        return ColorUtil.ColorFromHSV(ah, ns, av);
+        (float ah, float asat, float av) = a.GetHSV();
+        float bsat = b.GetHSVOnlyS();
+        float ns = asat * (1 - fac) + bsat * fac;
+        return MyColor.FromHSV(ah, ns, av);
     }
 
-    private static Color ValueBlend(Color a, Color b, float fac)
+    private static MyColor ValueBlend(MyColor a, MyColor b, float fac)
     {
-        ColorUtil.ColorToHSV(a, out double ah, out double asat, out double av);
-        ColorUtil.ColorToHSVOnlyV(b, out double bv);
-        double nv = av * (1 - fac) + bv * fac;
-        return ColorUtil.ColorFromHSV(ah, asat, nv);
+        (float ah, float asat, float av) = a.GetHSV();
+        float bv = b.GetHSVOnlyV();
+        float nv = av * (1 - fac) + bv * fac;
+        return MyColor.FromHSV(ah, asat, nv);
     }
 
-    private static Color DarkenBlend(Color a, Color b, float fac)
+    private static MyColor DarkenBlend(MyColor a, MyColor b, float fac)
     {
-        var c = Color.FromArgb(255, Math.Min(a.R, b.R), Math.Min(a.G, b.G), Math.Min(a.B, b.B));
-        return Color.FromArgb(
-            255,
+        MyColor c = new MyColor(Math.Min(a.R, b.R), Math.Min(a.G, b.G), Math.Min(a.B, b.B));
+        return new MyColor(
             MyMath.ClampByte(a.R * (1 - fac) + c.R * fac),
             MyMath.ClampByte(a.G * (1 - fac) + c.G * fac),
             MyMath.ClampByte(a.B * (1 - fac) + c.B * fac)
         );
     }
 
-    private static Color LightenBlend(Color a, Color b, float fac)
+    private static MyColor LightenBlend(MyColor a, MyColor b, float fac)
     {
-        var c = a.GetBrightness() > b.GetBrightness() ? a : b;
-        return Color.FromArgb(
-            255,
+        MyColor c = a.GetGrayscale() > b.GetGrayscale() ? a : b;
+        return new MyColor(
             MyMath.ClampByte(a.R * (1 - fac) + c.R * fac),
             MyMath.ClampByte(a.G * (1 - fac) + c.G * fac),
             MyMath.ClampByte(a.B * (1 - fac) + c.B * fac)
         );
     }
 
-    private static Color LinearLightBlend(Color a, Color b, float fac)
+    private static MyColor LinearLightBlend(MyColor a, MyColor b, float fac)
     {
         byte Blend(byte ac, byte bc)
         {
@@ -202,6 +198,6 @@ public class MixColorNode : Node<MixColorProps, MyColor[,]>
             return MyMath.ClampByte((af * (1f - fac) + result * fac) * 255f);
         }
 
-        return Color.FromArgb(255, Blend(a.R, b.R), Blend(a.G, b.G), Blend(a.B, b.B));
+        return new MyColor(Blend(a.R, b.R), Blend(a.G, b.G), Blend(a.B, b.B));
     }
 }

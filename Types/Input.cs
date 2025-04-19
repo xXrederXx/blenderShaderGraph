@@ -1,3 +1,5 @@
+namespace blenderShaderGraph.Types;
+
 public class Input { }
 
 public class Input<T> : Input
