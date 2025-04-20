@@ -1,14 +1,19 @@
 ﻿using System.Drawing;
+using BenchmarkDotNet.Running;
+using blenderShaderGraph.Benchmarks;
 using blenderShaderGraph.Nodes.TextureNodes;
 using blenderShaderGraph.Types;
 using blenderShaderGraph.Util;
 
-float[,] noise = new NoiseTextureNode().ExecuteNode(new NoiseTextureProps(){});
+BenchmarkRunner.Run<NodeBenchTileFixer>();
+return;
+float[,] noise = new NoiseTextureNode().ExecuteNode(new NoiseTextureProps() { });
 MyColor[,] col = Converter.ConvertToColor(noise);
 Bitmap img = new Bitmap(col.GetLength(0), col.GetLength(1));
 img.SetMyPixles(col);
 img.Save("tmp.png");
 return;
+
 string content = "";
 string newContent = "";
 string fp = "./graph.sg.json";
