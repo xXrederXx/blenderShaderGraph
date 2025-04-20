@@ -9,6 +9,7 @@ public record OutputProps
 {
     public MyColor[,]? Image { get; set; }
     public string? FileName { get; set; }
+    public bool WriteLine { get; set; } = true;
 }
 
 public class OutputNode : Node<OutputProps, bool>
@@ -39,7 +40,8 @@ public class OutputNode : Node<OutputProps, bool>
         }
         Bitmap res = new Bitmap(props.Image.GetLength(0), props.Image.GetLength(1));
         res.Save(props.FileName);
-        Console.WriteLine($"\t- Saved: {props.FileName}");
+        if (props.WriteLine)
+            Console.WriteLine($"\t- Saved: {props.FileName}");
         return true;
     }
 

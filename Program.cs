@@ -5,7 +5,7 @@ using blenderShaderGraph.Nodes.TextureNodes;
 using blenderShaderGraph.Types;
 using blenderShaderGraph.Util;
 
-BenchmarkRunner.Run<NodeBenchTileFixer>();
+BenchmarkRunner.Run<NodeBenchBump>();
 return;
 float[,] noise = new NoiseTextureNode().ExecuteNode(new NoiseTextureProps() { });
 MyColor[,] col = Converter.ConvertToColor(noise);
