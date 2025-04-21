@@ -15,12 +15,12 @@ public record ColorStop(MyColor color, float pos);
 
 public record ColorRampProps
 {
-    public MyColor[,]? Image { get; set; }
+    public Input<float>? Image { get; set; }
     public ColorStop[]? ColorStops { get; set; }
     public ColorRampMode Mode { get; set; } = ColorRampMode.Linear;
 }
 
-public class ColorRampNode : Node<ColorRampProps, MyColor[,]>
+public class ColorRampNode : Node<ColorRampProps, Input<MyColor>>
 {
     public ColorRampNode()
         : base() { }
@@ -42,11 +42,11 @@ public class ColorRampNode : Node<ColorRampProps, MyColor[,]>
         return props;
     }
 
-    protected override MyColor[,] ExecuteInternal(ColorRampProps props)
+    protected override Input<MyColor> ExecuteInternal(ColorRampProps props)
     {
         if (props.Image is null)
         {
-            return new MyColor[0, 0];
+            return new Input<MyColor>(new MyColor[0, 0]);
         }
         if (props.ColorStops is null)
         {
@@ -55,13 +55,23 @@ public class ColorRampNode : Node<ColorRampProps, MyColor[,]>
             );
         }
 
-        int width = props.Image.GetLength(0);
-        int height = props.Image.GetLength(1);
-
-        MyColor[,] oldColors = props.Image;
-        MyColor[,] newColors = new MyColor[width, height];
-
         ColorStop[] sortedStops = props.ColorStops.OrderBy(cs => cs.pos).ToArray();
+        if (!props.Image.useArray)
+        {
+            GetColor(props.Image.Value, sortedStops, props.Mode);
+        }
+        if (props.Image.Array is null)
+        {
+            throw new ArgumentException(
+                "props.Image.Array is null. Even if it is signalied it uses the array."
+            );
+        }
+
+        int width = props.Image.Array.GetLength(0);
+        int height = props.Image.Array.GetLength(1);
+
+        float[,] oldColors = props.Image.Array;
+        MyColor[,] newColors = new MyColor[width, height];
 
         Parallel.For(
             0,
@@ -70,20 +80,18 @@ public class ColorRampNode : Node<ColorRampProps, MyColor[,]>
             {
                 for (int y = 0; y < height; y++)
                 {
-                    MyColor color = oldColors[x, y];
-                    float value = ColorUtil.ValueFromColor(color);
+                    float value = oldColors[x, y];
                     newColors[x, y] = GetColor(value, sortedStops, props.Mode);
                 }
             }
         );
 
-        return newColors;
+        return new(newColors);
     }
 
     protected override ColorRampProps ConvertJSONToProps(Dictionary<string, object> contex)
     {
         JsonElement p = element.GetProperty("params");
-        Input<MyColor> bmp = p.GetInputMyColor(Id, contex, "image");
         List<ColorStop> stops = [];
         foreach (JsonElement x in p.GetProperty("colorStops").EnumerateArray())
         {
@@ -100,13 +108,13 @@ public class ColorRampNode : Node<ColorRampProps, MyColor[,]>
         };
         return new ColorRampProps()
         {
-            Image = bmp.Array,
+            Image = p.GetInputFloat(Id, contex, "image"),
             ColorStops = stops.ToArray(),
             Mode = mode,
         };
     }
 
-    protected override void AddDataToContext(MyColor[,] data, Dictionary<string, object> contex)
+    protected override void AddDataToContext(Input<MyColor> data, Dictionary<string, object> contex)
     {
         contex[Id] = data;
     }

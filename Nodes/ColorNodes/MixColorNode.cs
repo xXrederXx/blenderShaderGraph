@@ -23,7 +23,7 @@ public record MixColorProps
     public MixColorMode Mode { get; set; } = MixColorMode.Mix;
 }
 
-public class MixColorNode : Node<MixColorProps, MyColor[,]>
+public class MixColorNode : Node<MixColorProps, Input<MyColor>>
 {
     public MixColorNode()
         : base() { }
@@ -41,7 +41,7 @@ public class MixColorNode : Node<MixColorProps, MyColor[,]>
         return props;
     }
 
-    protected override MyColor[,] ExecuteInternal(MixColorProps props)
+    protected override Input<MyColor> ExecuteInternal(MixColorProps props)
     {
         if (props.a is null)
         {
@@ -92,13 +92,13 @@ public class MixColorNode : Node<MixColorProps, MyColor[,]>
         };
     }
 
-    protected override void AddDataToContext(MyColor[,] data, Dictionary<string, object> contex)
+    protected override void AddDataToContext(Input<MyColor> data, Dictionary<string, object> contex)
     {
         contex[Id] = data;
     }
 
     // NODE SPESIFIC
-    private static MyColor[,] GenerateInternal(
+    private static Input<MyColor> GenerateInternal(
         Input<MyColor> a,
         Input<MyColor> b,
         Input<float> factor,
@@ -118,7 +118,10 @@ public class MixColorNode : Node<MixColorProps, MyColor[,]>
             MixColorMode.Lighten => LightenBlend,
             _ => (ac, bc, f) => ac,
         };
-
+        if (!a.useArray && !b.useArray && !factor.useArray)
+        {
+            return new Input<MyColor>(blendFunc(a.Value, b.Value, factor.Value));
+        }
         MyColor[,] newColors = new MyColor[width, height];
         Parallel.For(
             0,
@@ -132,7 +135,7 @@ public class MixColorNode : Node<MixColorProps, MyColor[,]>
             }
         );
 
-        return newColors;
+        return new Input<MyColor>(newColors);
     }
 
     private static MyColor MixBlend(MyColor a, MyColor b, float fac)

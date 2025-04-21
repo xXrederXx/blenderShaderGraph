@@ -1,9 +1,4 @@
 using BenchmarkDotNet.Attributes;
-using blenderShaderGraph.Nodes.ColorNodes;
-using blenderShaderGraph.Nodes.ConverterNodes;
-using blenderShaderGraph.Nodes.InputNodes;
-using blenderShaderGraph.Nodes.TextureNodes;
-using blenderShaderGraph.Nodes.VectorNodes;
 using blenderShaderGraph.Types;
 
 namespace blenderShaderGraph.Benchmarks;
@@ -23,7 +18,7 @@ namespace blenderShaderGraph.Benchmarks;
  */
 
 [MediumRunJob, MemoryDiagnoser]
-public partial class TmpBench
+public class TmpBench
 {
     [Benchmark]
     public (MyColor[,], MyColor[,]) MassivBench()
