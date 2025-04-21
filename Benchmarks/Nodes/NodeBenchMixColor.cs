@@ -67,6 +67,7 @@ public class NodeBenchMixColor
     [Benchmark]
     public MyColor[,] MixColor()
     {
+#pragma warning disable CS8604 // Possible null reference argument.
         return new MixColorNode().ExecuteNode(
             new()
             {
@@ -76,5 +77,6 @@ public class NodeBenchMixColor
                 Mode = mode,
             }
         );
+#pragma warning restore CS8604 // Possible null reference argument.
     }
 }

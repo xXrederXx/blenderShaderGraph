@@ -21,7 +21,9 @@ public class NodeBenchBump
     [Params(128, 512, 1024, 2024)]
     public int size;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     float[,] img;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
     [GlobalSetup]
     public void Setup()

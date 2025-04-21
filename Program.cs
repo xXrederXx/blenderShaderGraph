@@ -1,11 +1,11 @@
 ﻿using System.Drawing;
 using BenchmarkDotNet.Running;
-using blenderShaderGraph.Benchmarks;
+using blenderShaderGraph.Benchmarks.Util;
 using blenderShaderGraph.Nodes.TextureNodes;
 using blenderShaderGraph.Types;
 using blenderShaderGraph.Util;
 
-BenchmarkRunner.Run<TmpBench>();
+BenchmarkRunner.Run<MyMathBench>();
 return;
 float[,] noise = new NoiseTextureNode().ExecuteNode(new NoiseTextureProps() { });
 MyColor[,] col = Converter.ConvertToColor(noise);

@@ -37,6 +37,7 @@ namespace blenderShaderGraph.Benchmarks;
 [MemoryDiagnoser]
 public class NodeBenchColorRamp
 {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     public MyColor[,] image;
 
     [Params(128, 512, 1024, 2024)]
@@ -48,6 +49,7 @@ public class NodeBenchColorRamp
     static ColorStop[] stops2;
     static ColorStop[] stops8;
     static ColorStop[] stops16;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
     [GlobalSetup]
     public void Setup()
