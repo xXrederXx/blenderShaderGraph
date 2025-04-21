@@ -11,8 +11,9 @@ var uniforms = new Dictionary<string, float>
             { "sizeX", 3.0f },
             { "sizeY", 2.0f }
         };
+ShaderRunner.RunShaderToColorArray("./shaders/tmp.frag", 1024, 1024, uniforms);
 Stopwatch sw = new(); sw.Start();
-ShaderRunner.RunShaderToBitmap("./shaders/tmp.frag", 1024, 1024, uniforms);
+ShaderRunner.RunShaderToColorArray("./shaders/tmp.frag", 1024, 1024, uniforms);
 sw.Stop();
 System.Console.WriteLine(sw.ElapsedMilliseconds);
 return;

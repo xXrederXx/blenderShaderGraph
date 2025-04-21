@@ -1,17 +1,22 @@
-using System.Drawing;
-using System.Drawing.Imaging;
 using blenderShaderGraph.Types;
-using blenderShaderGraph.Util;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Desktop;
 
 public static class ShaderRunner
 {
-    static GameWindow? _window;
+    static GameWindow _window;
     static bool _initialized = false;
 
-    public static MyColor[,] RunShaderToBitmap(
+    static int _fbo = -1;
+    static int _tex = -1;
+    static int _quadVAO = -1;
+    static int _currentWidth = 0;
+    static int _currentHeight = 0;
+
+    static Dictionary<string, int> _shaderCache = new();
+
+    public static MyColor[,] RunShaderToColorArray(
         string fragShaderPath,
         int width,
         int height,
@@ -19,10 +24,9 @@ public static class ShaderRunner
     )
     {
         InitOpenGLContext(width, height);
+        EnsureFramebuffer(width, height);
 
-        int shader = CompileShader(fragShaderPath);
-        int quadVAO = CreateQuad();
-
+        int shader = LoadOrGetShader(fragShaderPath);
         GL.UseProgram(shader);
 
         foreach (var kv in uniforms)
@@ -35,75 +39,31 @@ public static class ShaderRunner
         GL.Uniform1(GL.GetUniformLocation(shader, "width"), (float)width);
         GL.Uniform1(GL.GetUniformLocation(shader, "height"), (float)height);
 
-        int fbo = GL.GenFramebuffer();
-        GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
-
-        int tex = GL.GenTexture();
-        GL.BindTexture(TextureTarget.Texture2D, tex);
-        GL.TexImage2D(
-            TextureTarget.Texture2D,
-            0,
-            PixelInternalFormat.Rgba,
-            width,
-            height,
-            0,
-            OpenTK.Graphics.OpenGL4.PixelFormat.Rgba,
-            PixelType.UnsignedByte,
-            IntPtr.Zero
-        );
-        GL.TexParameter(
-            TextureTarget.Texture2D,
-            TextureParameterName.TextureMinFilter,
-            (int)TextureMinFilter.Linear
-        );
-        GL.TexParameter(
-            TextureTarget.Texture2D,
-            TextureParameterName.TextureMagFilter,
-            (int)TextureMagFilter.Linear
-        );
-
-        GL.FramebufferTexture2D(
-            FramebufferTarget.Framebuffer,
-            FramebufferAttachment.ColorAttachment0,
-            TextureTarget.Texture2D,
-            tex,
-            0
-        );
-
         GL.Viewport(0, 0, width, height);
+        GL.BindFramebuffer(FramebufferTarget.Framebuffer, _fbo);
         GL.Clear(ClearBufferMask.ColorBufferBit);
-        GL.BindVertexArray(quadVAO);
+        GL.BindVertexArray(_quadVAO);
         GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
         GL.Flush();
 
         byte[] pixels = new byte[width * height * 4];
-        GL.ReadPixels(
-            0,
-            0,
-            width,
-            height,
-            OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,
-            PixelType.UnsignedByte,
-            pixels
-        );
+        GL.ReadPixels(0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
 
-        Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-        var data = bmp.LockBits(
-            new Rectangle(0, 0, width, height),
-            ImageLockMode.WriteOnly,
-            bmp.PixelFormat
-        );
-        System.Runtime.InteropServices.Marshal.Copy(pixels, 0, data.Scan0, pixels.Length);
-        bmp.UnlockBits(data);
-        bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
+        var result = new MyColor[width, height];
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                int index = ((height - 1 - y) * width + x) * 4; // flip Y
+                byte b = pixels[index + 0];
+                byte g = pixels[index + 1];
+                byte r = pixels[index + 2];
+                byte a = pixels[index + 3];
+                result[x, y] = new MyColor(a, r, g, b);
+            }
+        }
 
-        // Cleanup
-        GL.DeleteFramebuffer(fbo);
-        GL.DeleteTexture(tex);
-        GL.DeleteVertexArray(quadVAO);
-        GL.DeleteProgram(shader);
-
-        return bmp.GetMyPixles();
+        return result;
     }
 
     private static void InitOpenGLContext(int width, int height)
@@ -123,8 +83,63 @@ public static class ShaderRunner
         _initialized = true;
     }
 
-    private static int CompileShader(string fragPath)
+    private static void EnsureFramebuffer(int width, int height)
     {
+        if (_fbo == -1 || _tex == -1 || _currentWidth != width || _currentHeight != height)
+        {
+            if (_fbo != -1)
+                GL.DeleteFramebuffer(_fbo);
+            if (_tex != -1)
+                GL.DeleteTexture(_tex);
+
+            _fbo = GL.GenFramebuffer();
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, _fbo);
+
+            _tex = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, _tex);
+            GL.TexImage2D(
+                TextureTarget.Texture2D,
+                0,
+                PixelInternalFormat.Rgba,
+                width,
+                height,
+                0,
+                PixelFormat.Rgba,
+                PixelType.UnsignedByte,
+                IntPtr.Zero
+            );
+            GL.TexParameter(
+                TextureTarget.Texture2D,
+                TextureParameterName.TextureMinFilter,
+                (int)TextureMinFilter.Linear
+            );
+            GL.TexParameter(
+                TextureTarget.Texture2D,
+                TextureParameterName.TextureMagFilter,
+                (int)TextureMagFilter.Linear
+            );
+
+            GL.FramebufferTexture2D(
+                FramebufferTarget.Framebuffer,
+                FramebufferAttachment.ColorAttachment0,
+                TextureTarget.Texture2D,
+                _tex,
+                0
+            );
+
+            _currentWidth = width;
+            _currentHeight = height;
+
+            if (_quadVAO == -1)
+                _quadVAO = CreateQuad();
+        }
+    }
+
+    private static int LoadOrGetShader(string fragPath)
+    {
+        if (_shaderCache.TryGetValue(fragPath, out int cached))
+            return cached;
+
         string vertexSource =
             @"
             #version 330 core
@@ -163,6 +178,7 @@ public static class ShaderRunner
         GL.DeleteShader(vertexShader);
         GL.DeleteShader(fragShader);
 
+        _shaderCache[fragPath] = program;
         return program;
     }
 
