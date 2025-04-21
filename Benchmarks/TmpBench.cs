@@ -15,6 +15,10 @@ namespace blenderShaderGraph.Benchmarks;
 | Method      | Mean     | Error    | StdDev   | Gen0     | Gen1     | Gen2     | Allocated |
 |------------ |---------:|---------:|---------:|---------:|---------:|---------:|----------:|
 | MassivBench | 15.67 ms | 0.176 ms | 0.247 ms | 843.7500 | 843.7500 | 843.7500 |  28.04 MB |
+
+| Method      | Mean     | Error    | StdDev   | Gen0      | Gen1      | Gen2      | Allocated |
+|------------ |---------:|---------:|---------:|----------:|----------:|----------:|----------:|
+| MassivBench | 14.16 ms | 0.146 ms | 0.214 ms | 1859.3750 | 1859.3750 | 1859.3750 |  24.08 MB |
  */
 
 [MediumRunJob, MemoryDiagnoser]
@@ -42,7 +46,7 @@ public class TmpBench
             }
         );
         MyColor[,] bump = NodeInstances.bump.ExecuteNode(
-            new(Converter.ConvertToFloat(ramp.Array ?? new MyColor[0,0]), new(1), new(1))
+            new(Converter.ConvertToFloat(ramp.Array ?? new MyColor[0, 0]), new(1), new(1))
         );
         return (bump, mix);
     }

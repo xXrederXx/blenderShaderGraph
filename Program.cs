@@ -1,10 +1,21 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics;
+using System.Drawing;
 using BenchmarkDotNet.Running;
 using blenderShaderGraph.Benchmarks;
 using blenderShaderGraph.Nodes.TextureNodes;
 using blenderShaderGraph.Types;
 using blenderShaderGraph.Util;
 
+var uniforms = new Dictionary<string, float>
+        {
+            { "sizeX", 3.0f },
+            { "sizeY", 2.0f }
+        };
+Stopwatch sw = new(); sw.Start();
+ShaderRunner.RunShaderToBitmap("./shaders/tmp.frag", 1024, 1024, uniforms);
+sw.Stop();
+System.Console.WriteLine(sw.ElapsedMilliseconds);
+return;
 BenchmarkRunner.Run<TmpBench>();
 return;
 float[,] noise = new NoiseTextureNode().ExecuteNode(new NoiseTextureProps() { });
