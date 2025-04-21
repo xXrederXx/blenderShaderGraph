@@ -6,10 +6,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Optimize>true</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
+    <PackageReference Include="ComputeSharp" Version="3.2.0+9a7c9e0c755bf68447f7293e5729547750fe6be3" />
     <PackageReference Include="System.Drawing.Common" Version="10.0.0-preview.2.25163.9" />
   </ItemGroup>
   
