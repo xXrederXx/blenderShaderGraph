@@ -1,25 +1,22 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
-using BenchmarkDotNet.Running;
-using blenderShaderGraph.Benchmarks;
-using blenderShaderGraph.Nodes.TextureNodes;
 using blenderShaderGraph.Types;
 using blenderShaderGraph.Util;
 
-var uniforms = new Dictionary<string, float>
-        {
-            { "sizeX", 3.0f },
-            { "sizeY", 2.0f }
-        };
-ShaderRunner.RunShaderToColorArray("./shaders/tmp.frag", 1024, 1024, uniforms);
-Stopwatch sw = new(); sw.Start();
-ShaderRunner.RunShaderToColorArray("./shaders/tmp.frag", 1024, 1024, uniforms);
-sw.Stop();
-System.Console.WriteLine(sw.ElapsedMilliseconds);
-return;
-BenchmarkRunner.Run<TmpBench>();
-return;
-float[,] noise = new NoiseTextureNode().ExecuteNode(new NoiseTextureProps() { });
+Dictionary<string, object> uniforms = new Dictionary<string, object>
+{
+    { "sizeX", 3.0f },
+    { "sizeY", 2.0f },
+    { "inputTex", NodeInstances.noiseTexture.ExecuteNode(new()) },
+};
+ShaderRunner.PreloadShaders(["./shaders/tmp.frag"]);
+Bitmap bitmap = new(2024, 2024);
+var pix = ShaderRunner.RunShaderToColorArray("./shaders/tmp.frag", 2024, 2024, uniforms);
+bitmap.SetMyPixles(pix);
+bitmap.Save("tmp.png");
+
+/* BenchmarkRunner.Run<TmpBench>(); */
+/* float[,] noise = new NoiseTextureNode().ExecuteNode(new NoiseTextureProps() { });
 MyColor[,] col = Converter.ConvertToColor(noise);
 Bitmap img = new Bitmap(col.GetLength(0), col.GetLength(1));
 img.SetMyPixles(col);
@@ -49,3 +46,4 @@ while (true)
         x.Close();
     }
 }
+ */
