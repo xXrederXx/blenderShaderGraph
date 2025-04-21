@@ -38,7 +38,7 @@ namespace blenderShaderGraph.Benchmarks;
 public class NodeBenchColorRamp
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-    public MyColor[,] image;
+    public Input<float> image;
 
     [Params(128, 512, 1024, 2024)]
     public int size;
@@ -57,15 +57,15 @@ public class NodeBenchColorRamp
         Random rng = new(696969696);
         if (image is null)
         {
-            image = new MyColor[size, size];
+            float[,] flots = new float[size, size];
             for (int i = 0; i < size; i++)
             {
                 for (int j = 0; j < size; j++)
                 {
-                    byte v = MyMath.ClampByte((float)rng.NextDouble() * 255);
-                    image[i, j] = new(v, v, v);
+                    flots[i, j] = MyMath.ClampByte((float)rng.NextDouble() * 255);
                 }
             }
+            image = new(flots);
         }
         stops2 = [new(new(255, 255, 255), 0), new(new(0, 255, 0), 0.8f)];
         stops8 =
@@ -101,7 +101,7 @@ public class NodeBenchColorRamp
     }
 
     [Benchmark]
-    public MyColor[,] ColorRamp2Stops()
+    public Input<MyColor> ColorRamp2Stops()
     {
         return new ColorRampNode().ExecuteNode(
             new()
@@ -114,7 +114,7 @@ public class NodeBenchColorRamp
     }
 
     [Benchmark]
-    public MyColor[,] ColorRamp8Stops()
+    public Input<MyColor> ColorRamp8Stops()
     {
         return new ColorRampNode().ExecuteNode(
             new()
@@ -127,7 +127,7 @@ public class NodeBenchColorRamp
     }
 
     [Benchmark]
-    public MyColor[,] ColorRamp16Stops()
+    public Input<MyColor> ColorRamp16Stops()
     {
         return new ColorRampNode().ExecuteNode(
             new()

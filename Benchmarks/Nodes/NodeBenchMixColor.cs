@@ -65,7 +65,7 @@ public class NodeBenchMixColor
     }
 
     [Benchmark]
-    public MyColor[,] MixColor()
+    public Input<MyColor> MixColor()
     {
 #pragma warning disable CS8604 // Possible null reference argument.
         return new MixColorNode().ExecuteNode(
