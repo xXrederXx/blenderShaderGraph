@@ -46,6 +46,7 @@ img.SetMyPixles(col);
 img.Save("tmp.png");
 return; */
 
+ShaderRunner.PreloadShaders(["./shaders/tmp.frag", "./shaders/Nodes/MixColor.frag"]);
 string content = "";
 string newContent = "";
 string fp = "./graph.sg.json";

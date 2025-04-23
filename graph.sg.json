@@ -40,7 +40,7 @@
 			"a": "m1",
 			"b": "m2",
 			"factor": 0.5,
-			"mode": "lighten"
+			"mode": "mix" 
 		}
 	},
 	{

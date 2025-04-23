@@ -42,7 +42,7 @@ public static class ShaderRunner
         int shader = LoadOrGetShader(fragShaderPath);
         GL.UseProgram(shader);
 
-        SetUniforms(shader, uniforms);
+        SetUniforms(shader, uniforms, width, height);
 
         // Pass resolution as uniforms
         GL.Uniform1(GL.GetUniformLocation(shader, "width"), (float)width);
@@ -78,7 +78,12 @@ public static class ShaderRunner
         return result;
     }
 
-    private static void SetUniforms(int shader, Dictionary<string, object> uniforms)
+    private static void SetUniforms(
+        int shader,
+        Dictionary<string, object> uniforms,
+        int width,
+        int height
+    )
     {
         foreach (var (key, val) in uniforms)
         {
@@ -115,11 +120,23 @@ public static class ShaderRunner
                 case float[,] floats:
                     UploadUniformTexture(key, floats);
                     break;
+                case Input<float> floats:
+                    UploadUniformTexture(
+                        key,
+                        floats.useArray ? floats.Array! : new float[width, height]
+                    );
+                    break;
                 case bool[,] bools:
                     UploadUniformTexture(key, ConvertBoolToFloatArray(bools));
                     break;
                 case MyColor[,] colors:
                     UploadUniformTexture(key, colors);
+                    break;
+                case Input<MyColor> colors:
+                    UploadUniformTexture(
+                        key,
+                        colors.useArray ? colors.Array! : new MyColor[width, height]
+                    );
                     break;
                 default:
                     throw new Exception($"Unsupported uniform type for '{key}': {val?.GetType()}");
