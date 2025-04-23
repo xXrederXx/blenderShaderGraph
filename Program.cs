@@ -1,4 +1,6 @@
 ﻿using System.Drawing;
+using BenchmarkDotNet.Running;
+using blenderShaderGraph.Benchmarks;
 using blenderShaderGraph.Nodes.ColorNodes;
 using blenderShaderGraph.Types;
 using blenderShaderGraph.Util;
@@ -34,8 +36,9 @@ var pix = ShaderRunner.RunShaderToColorArray("./shaders/Nodes/MixColor.frag", 20
 bitmap.SetMyPixles(pix);
 bitmap.Save("tmp.png");
  */
-/* BenchmarkRunner.Run<TmpBench>(); */
-
+ 
+/* BenchmarkRunner.Run<TmpBench>();
+ */
 /* float[,] noise = new NoiseTextureNode().ExecuteNode(new NoiseTextureProps() { });
 MyColor[,] col = Converter.ConvertToColor(noise);
 Bitmap img = new Bitmap(col.GetLength(0), col.GetLength(1));

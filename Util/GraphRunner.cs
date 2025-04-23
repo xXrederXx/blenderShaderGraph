@@ -67,14 +67,14 @@ public class GraphRunner
             node.ExecuteNodeJSON(context);
             sw2.Stop();
             System.Console.WriteLine(
-                $"\t  --> Executed Node {node.Id} ({node.GetType().Name}) in {sw2.ElapsedMilliseconds}ms"
+                $"\t  --> Executed Node {node.Id} ({node.GetType().Name}) in {sw2.Elapsed.TotalMicroseconds:#,##0.##}us"
             );
         }
 
         sw1.Stop();
 
         System.Console.WriteLine(
-            $"\n------------------------ Finished in {sw1.ElapsedMilliseconds}ms ------------------------\n"
+            $"\n------------------------ Finished in {sw1.Elapsed.TotalMicroseconds:#,##0.##}us ------------------------\n"
         );
     }
 }
