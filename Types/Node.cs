@@ -9,11 +9,19 @@ using blenderShaderGraph.Nodes.VectorNodes;
 
 namespace blenderShaderGraph.Types;
 
-public class Node<T, U>
+public class Node
 {
-    protected string Id = string.Empty;
+    public string Id { get; protected set; } = string.Empty;
     protected JsonElement element;
 
+    public virtual void ExecuteNodeJSON(Dictionary<string, object> context)
+    {
+        throw new NotImplementedException("ExecuteNodeJSON not implemented on base Node");
+    }
+}
+
+public class Node<T, U> : Node
+{
     public Node(string Id = "", JsonElement element = new())
     {
         this.Id = Id;
@@ -26,11 +34,8 @@ public class Node<T, U>
         return ExecuteInternal(SafeProps(props));
     }
 
-    public void ExecuteNodeJSON(Dictionary<string, object> contex, JsonElement element, string Id)
+    public override void ExecuteNodeJSON(Dictionary<string, object> contex)
     {
-        this.Id = Id;
-        this.element = element;
-
         T props = ConvertJSONToProps(contex);
         U res = ExecuteInternal(SafeProps(props));
         AddDataToContext(res, contex);

@@ -14,7 +14,7 @@ public record NoiseTextureProps
     public float Lacunarity { get; set; } = 2;
 };
 
-public class NoiseTextureNode : Node<NoiseTextureProps, float[,]>
+public class NoiseTextureNode : Node<NoiseTextureProps, Input<float>>
 {
     static readonly FastNoise noiseGen = new();
 
@@ -37,7 +37,7 @@ public class NoiseTextureNode : Node<NoiseTextureProps, float[,]>
         return props;
     }
 
-    protected override float[,] ExecuteInternal(NoiseTextureProps props)
+    protected override Input<float> ExecuteInternal(NoiseTextureProps props)
     {
         float[,] values = new float[props.ImgWidth, props.ImgHeight];
 
@@ -63,7 +63,7 @@ public class NoiseTextureNode : Node<NoiseTextureProps, float[,]>
                 }
             }
         );
-        return values;
+        return new Input<float>(values);
     }
 
     protected override NoiseTextureProps ConvertJSONToProps(Dictionary<string, object> contex)
@@ -80,7 +80,7 @@ public class NoiseTextureNode : Node<NoiseTextureProps, float[,]>
         };
     }
 
-    protected override void AddDataToContext(float[,] data, Dictionary<string, object> contex)
+    protected override void AddDataToContext(Input<float> data, Dictionary<string, object> contex)
     {
         contex[Id] = data;
     }

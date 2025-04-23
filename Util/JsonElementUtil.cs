@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using blenderShaderGraph.Types;
 
@@ -134,5 +135,88 @@ public static class JsonElementUtil
             return ColorTranslator.FromHtml(def);
         }
         return ColorTranslator.FromHtml(element.GetString(propName, def));
+    }
+
+    public static T GetT<T>(
+        this JsonElement self,
+        Dictionary<string, object> context,
+        string propName,
+        T def
+    )
+    {
+        if (!self.TryGetProperty(propName, out JsonElement element))
+        {
+            System.Console.WriteLine($"Property {propName} not found");
+            return def;
+        }
+        return element.ValueKind switch
+        {
+            JsonValueKind.String => element.HandleString(def, context),
+            JsonValueKind.Number => element.HandleNumber(def),
+            _ => def,
+        };
+    }
+
+    private static T HandleString<T>(
+        this JsonElement self,
+        T def,
+        Dictionary<string, object> context
+    )
+    {
+        string contextKey = self.GetString() ?? string.Empty;
+        if (typeof(T) == typeof(string))
+        {
+            return Unsafe.As<string, T>(ref contextKey);
+        }
+        if (context.TryGetValue(contextKey, out object? val)) {
+            
+        }
+        return def;
+    }
+
+    private static T HandleNumber<T>(this JsonElement self, T def)
+    {
+        Type type = typeof(T);
+        if (type == typeof(byte) && self.TryGetByte(out byte valB))
+        {
+            return Unsafe.As<byte, T>(ref valB);
+        }
+        if (type == typeof(sbyte) && self.TryGetSByte(out sbyte valBS))
+        {
+            return Unsafe.As<sbyte, T>(ref valBS);
+        }
+        if (type == typeof(short) && self.TryGetInt16(out short valS))
+        {
+            return Unsafe.As<short, T>(ref valS);
+        }
+        if (type == typeof(ushort) && self.TryGetUInt16(out ushort valUS))
+        {
+            return Unsafe.As<ushort, T>(ref valUS);
+        }
+        if (type == typeof(int) && self.TryGetInt32(out int valI))
+        {
+            return Unsafe.As<int, T>(ref valI);
+        }
+        if (type == typeof(uint) && self.TryGetUInt32(out uint valUI))
+        {
+            return Unsafe.As<uint, T>(ref valUI);
+        }
+        if (type == typeof(long) && self.TryGetInt64(out long valL))
+        {
+            return Unsafe.As<long, T>(ref valL);
+        }
+        if (type == typeof(ulong) && self.TryGetUInt64(out ulong valUL))
+        {
+            return Unsafe.As<ulong, T>(ref valUL);
+        }
+        if (type == typeof(float) && self.TryGetSingle(out float valF))
+        {
+            return Unsafe.As<float, T>(ref valF);
+        }
+        if (type == typeof(double) && self.TryGetDouble(out double valD))
+        {
+            return Unsafe.As<double, T>(ref valD);
+        }
+        return def;
     }
 }

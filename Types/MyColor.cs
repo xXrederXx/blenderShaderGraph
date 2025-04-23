@@ -17,6 +17,11 @@ public readonly struct MyColor : IEquatable<MyColor>
         rgba = ((uint)a << 24) | ((uint)b << 16) | ((uint)g << 8) | r;
     }
 
+    public MyColor(byte rgb, byte a = 255)
+    {
+        rgba = ((uint)a << 24) | ((uint)rgb << 16) | ((uint)rgb << 8) | rgb;
+    }
+
     public bool Equals(MyColor other) => rgba == other.rgba;
 
     // --- HSV Conversion Helpers ---

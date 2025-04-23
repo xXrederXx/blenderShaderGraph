@@ -16,7 +16,7 @@ public record TextureCoordinateProps
     public TextureCoordinateType Mode { get; set; } = TextureCoordinateType.Object;
 }
 
-public class TextureCoordinateNode : Node<TextureCoordinateProps, MyColor[,]>
+public class TextureCoordinateNode : Node<TextureCoordinateProps, Input<MyColor>>
 {
     public TextureCoordinateNode()
         : base() { }
@@ -29,13 +29,13 @@ public class TextureCoordinateNode : Node<TextureCoordinateProps, MyColor[,]>
         return props;
     }
 
-    protected override MyColor[,] ExecuteInternal(TextureCoordinateProps props)
+    protected override Input<MyColor> ExecuteInternal(TextureCoordinateProps props)
     {
         MyColor[,] res = new MyColor[props.Width, props.Height];
         return props.Mode switch
         {
-            TextureCoordinateType.Object => Object(res),
-            _ => res,
+            TextureCoordinateType.Object => new Input<MyColor>(Object(res)),
+            _ => new Input<MyColor>(res),
         };
     }
 
@@ -56,7 +56,7 @@ public class TextureCoordinateNode : Node<TextureCoordinateProps, MyColor[,]>
         };
     }
 
-    protected override void AddDataToContext(MyColor[,] data, Dictionary<string, object> contex)
+    protected override void AddDataToContext(Input<MyColor> data, Dictionary<string, object> contex)
     {
         contex[Id] = data;
     }

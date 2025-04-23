@@ -23,7 +23,7 @@ public record MaskTextureProps
     public bool BetterDistCalc { get; set; } = false;
 }
 
-public class MaskTextureNode : Node<MaskTextureProps, float[,]>
+public class MaskTextureNode : Node<MaskTextureProps, Input<float>>
 {
     private static Random rng = new();
     private const float halfPI = (float)(Math.PI / 2);
@@ -39,7 +39,7 @@ public class MaskTextureNode : Node<MaskTextureProps, float[,]>
         return props;
     }
 
-    protected override float[,] ExecuteInternal(MaskTextureProps props)
+    protected override Input<float> ExecuteInternal(MaskTextureProps props)
     {
         float[,] res = new float[props.Width, props.Height];
         List<(int x, int y, int size)> dots = GetDotsList(
@@ -72,7 +72,7 @@ public class MaskTextureNode : Node<MaskTextureProps, float[,]>
             }
         }
 
-        return res;
+        return new Input<float>(res);
     }
 
     protected override MaskTextureProps ConvertJSONToProps(Dictionary<string, object> contex)
@@ -100,7 +100,7 @@ public class MaskTextureNode : Node<MaskTextureProps, float[,]>
         };
     }
 
-    protected override void AddDataToContext(float[,] data, Dictionary<string, object> contex)
+    protected override void AddDataToContext(Input<float> data, Dictionary<string, object> contex)
     {
         contex[Id] = data;
     }

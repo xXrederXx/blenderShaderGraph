@@ -28,7 +28,7 @@ public class BumpProps(
     public NormalMapFormat Format { get; } = format;
 }
 
-public class BumpNode : Node<BumpProps, MyColor[,]>
+public class BumpNode : Node<BumpProps, Input<MyColor>>
 {
     readonly MyColor flatNormalColor = new(127, 127, 255);
 
@@ -89,7 +89,7 @@ public class BumpNode : Node<BumpProps, MyColor[,]>
         return new(props.HeightMap, strength, dist, props.Invert, props.Format);
     }
 
-    protected override MyColor[,] ExecuteInternal(BumpProps props)
+    protected override Input<MyColor> ExecuteInternal(BumpProps props)
     {
         if (props.Strength is null || props.Distance is null)
         {
@@ -153,7 +153,7 @@ public class BumpNode : Node<BumpProps, MyColor[,]>
                 }
             }
         );
-        return newColors;
+        return new Input<MyColor>(newColors);
     }
 
     protected override BumpProps ConvertJSONToProps(Dictionary<string, object> contex)
@@ -168,7 +168,7 @@ public class BumpNode : Node<BumpProps, MyColor[,]>
         );
     }
 
-    protected override void AddDataToContext(MyColor[,] data, Dictionary<string, object> contex)
+    protected override void AddDataToContext(Input<MyColor> data, Dictionary<string, object> contex)
     {
         contex[Id] = data;
     }

@@ -10,7 +10,7 @@ public record TileFixerProps
     public int BlendBandSize { get; set; }
 }
 
-public class TileFixerNode : Node<TileFixerProps, MyColor[,]>
+public class TileFixerNode : Node<TileFixerProps, Input<MyColor>>
 {
     public TileFixerNode()
         : base() { }
@@ -25,11 +25,11 @@ public class TileFixerNode : Node<TileFixerProps, MyColor[,]>
         return props;
     }
 
-    protected override MyColor[,] ExecuteInternal(TileFixerProps props)
+    protected override Input<MyColor> ExecuteInternal(TileFixerProps props)
     {
         if (props.Image is null)
         {
-            return new MyColor[0, 0];
+            return new Input<MyColor>(new MyColor());
         }
         int width = props.Image.GetLength(0);
         int height = props.Image.GetLength(1);
@@ -77,7 +77,7 @@ public class TileFixerNode : Node<TileFixerProps, MyColor[,]>
                 newColors[x, height - 1 - y] = blendB;
             }
         }
-        return newColors;
+        return new Input<MyColor>(newColors);
     }
 
     protected override TileFixerProps ConvertJSONToProps(Dictionary<string, object> contex)
@@ -90,7 +90,7 @@ public class TileFixerNode : Node<TileFixerProps, MyColor[,]>
         };
     }
 
-    protected override void AddDataToContext(MyColor[,] data, Dictionary<string, object> contex)
+    protected override void AddDataToContext(Input<MyColor> data, Dictionary<string, object> contex)
     {
         contex[Id] = data;
     }
