@@ -1,7 +1,3 @@
-// Cleaned-up and enhanced version of ShaderRunner.cs
-// Issues fixed, resources managed, additional uniform support added
-
-using System.Runtime.InteropServices;
 using blenderShaderGraph.Types;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
