@@ -58,7 +58,7 @@
 		"type": "Output",
 		"params": {
 			"image": "mix2", 
-			"filename": "./tmp.png"
+			"filename": "./tmp.png" 
 		}
 	}
 ]

@@ -39,6 +39,7 @@ public class OutputNode : Node<OutputProps, bool>
             throw new ArgumentException("Could not save image, one argument was null");
         }
         Bitmap res = new Bitmap(props.Image.GetLength(0), props.Image.GetLength(1));
+        res.SetMyPixles(props.Image);
         res.Save(props.FileName);
         if (props.WriteLine)
             Console.WriteLine($"\t- Saved: {props.FileName}");

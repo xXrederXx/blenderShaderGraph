@@ -83,11 +83,21 @@ public static class JsonElementUtil
             Color col = ColorTranslator.FromHtml(img);
             return new Input<MyColor>(col);
         }
-        if (!contex.TryGetValue(img, out Input? obj) || obj is not Input<MyColor> cols)
+        if (!contex.TryGetValue(img, out Input? obj))
         {
             throw new FileNotFoundException($"Node {IdSelf} could not find input: {img}");
         }
-        return cols;
+        if (obj is Input<MyColor> cols)
+        {
+            return cols;
+        }
+        if (obj is Input<float> flots)
+        {
+            return Converter.ToColor(flots);
+        }
+        throw new FileNotFoundException(
+            $"Node {IdSelf} could not find input: {img} or convert it to the right format: {obj.GetType()}"
+        );
     }
 
     public static Input<float> GetInputFloat(
@@ -97,6 +107,14 @@ public static class JsonElementUtil
         string propName
     )
     {
+        if (!self.TryGetProperty(propName, out JsonElement element))
+        {
+            throw new FileNotFoundException($"Node {IdSelf} could not find property: {propName}");
+        }
+        if (element.ValueKind == JsonValueKind.Number)
+        {
+            return new Input<float>(element.GetSingle());
+        }
         string img = self.GetString(propName, "");
         if (!contex.TryGetValue(img, out Input? obj) || obj is not Input<float> flot)
         {
