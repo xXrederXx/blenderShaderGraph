@@ -25,19 +25,19 @@ namespace blenderShaderGraph.Benchmarks;
 public class TmpBench
 {
     [Benchmark]
-    public (MyColor[,], Input<MyColor>) MassivBench()
+    public (Input<MyColor>, Input<MyColor>) MassivBench()
     {
         float[,] fac = NodeInstances.brickTexture.ExecuteNode(new()).fac;
-        MyColor[,] obj = NodeInstances.textureCoordinate.ExecuteNode(new());
+        Input<MyColor> obj = NodeInstances.textureCoordinate.ExecuteNode(new());
         Input<MyColor> mix = NodeInstances.mixColor.ExecuteNode(
             new()
             {
                 a = new(new Types.MyColor(20, 46, 145)),
-                b = new(obj),
+                b = obj,
                 factor = new(fac),
             }
         );
-        Input<float> noise = new(NodeInstances.noiseTexture.ExecuteNode(new()));
+        Input<float> noise = NodeInstances.noiseTexture.ExecuteNode(new());
         Input<MyColor> ramp = NodeInstances.colorRamp.ExecuteNode(
             new()
             {
@@ -45,7 +45,7 @@ public class TmpBench
                 ColorStops = [new(new(0, 0, 0), 0.3f), new(new(255, 255, 255), 0.7f)],
             }
         );
-        MyColor[,] bump = NodeInstances.bump.ExecuteNode(
+        Input<MyColor> bump = NodeInstances.bump.ExecuteNode(
             new(Converter.ConvertToFloat(ramp.Array ?? new MyColor[0, 0]), new(1), new(1))
         );
         return (bump, mix);

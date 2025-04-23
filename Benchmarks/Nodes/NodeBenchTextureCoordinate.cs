@@ -32,7 +32,7 @@ public class NodeBenchTextureCoordinate
     }
 
     [Benchmark]
-    public MyColor[,] TextureCoordinate()
+    public Input<MyColor> TextureCoordinate()
     {
         return new TextureCoordinateNode().ExecuteNode(
             new()

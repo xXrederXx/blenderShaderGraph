@@ -1,5 +1,6 @@
 using BenchmarkDotNet.Attributes;
 using blenderShaderGraph.Nodes.TextureNodes;
+using blenderShaderGraph.Types;
 
 namespace blenderShaderGraph.Benchmarks;
 
@@ -158,7 +159,7 @@ public class NodeBenchMaskTexture
     public bool distCalc;
 
     [Benchmark]
-    public float[,] MaskTexture()
+    public Input<float> MaskTexture()
     {
         return new MaskTextureNode().ExecuteNode(
             new()

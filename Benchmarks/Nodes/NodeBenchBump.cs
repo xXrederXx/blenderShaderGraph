@@ -28,11 +28,11 @@ public class NodeBenchBump
     [GlobalSetup]
     public void Setup()
     {
-        img = new NoiseTextureNode().ExecuteNode(new() { ImgWidth = size, ImgHeight = size });
+        img = new NoiseTextureNode().ExecuteNode(new() { ImgWidth = size, ImgHeight = size }).Array!;
     }
 
     [Benchmark]
-    public MyColor[,] Bump()
+    public Input<MyColor> Bump()
     {
         return new BumpNode().ExecuteNode(new(img, new(1.52f), new(2.7f), true, NormalMapFormat.OpenGL));
     }

@@ -1,5 +1,6 @@
 using BenchmarkDotNet.Attributes;
 using blenderShaderGraph.Nodes.TextureNodes;
+using blenderShaderGraph.Types;
 
 namespace blenderShaderGraph.Benchmarks;
 
@@ -20,7 +21,7 @@ public class NodeBenchNoiseTexture
     public int size;
 
     [Benchmark]
-    public float[,] NoiseTexture()
+    public Input<float> NoiseTexture()
     {
         return new NoiseTextureNode().ExecuteNode(
             new()

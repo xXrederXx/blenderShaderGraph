@@ -94,7 +94,7 @@ public class NodeBenchTileFixer
     }
 
     [Benchmark]
-    public MyColor[,] TileFixer()
+    public Input<MyColor> TileFixer()
     {
         return new TileFixerNode().ExecuteNode(
             new() { Image = image, BlendBandSize = blendBandSize }
