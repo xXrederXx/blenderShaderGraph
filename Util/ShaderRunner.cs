@@ -253,7 +253,7 @@ public static class ShaderRunner
 
     private static void EnsureFramebuffer(int width, int height)
     {
-        if (_fbo != -1 && (_currentWidth == width && _currentHeight == height))
+        if (_fbo != -1 && _currentWidth == width && _currentHeight == height)
             return;
 
         if (_fbo != -1)
