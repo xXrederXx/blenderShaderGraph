@@ -80,7 +80,7 @@ public class TileFixerNode : Node<TileFixerProps, Input<MyColor>>
         return new Input<MyColor>(newColors);
     }
 
-    protected override TileFixerProps ConvertJSONToProps(Dictionary<string, object> contex)
+    protected override TileFixerProps ConvertJSONToProps(Dictionary<string, Input> contex)
     {
         JsonElement p = element.GetProperty("params");
         return new TileFixerProps()
@@ -90,7 +90,7 @@ public class TileFixerNode : Node<TileFixerProps, Input<MyColor>>
         };
     }
 
-    protected override void AddDataToContext(Input<MyColor> data, Dictionary<string, object> contex)
+    protected override void AddDataToContext(Input<MyColor> data, Dictionary<string, Input> contex)
     {
         contex[Id] = data;
     }

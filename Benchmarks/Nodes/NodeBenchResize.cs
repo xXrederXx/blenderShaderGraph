@@ -50,14 +50,14 @@ public class NodeBenchResize
     }
 
     [Benchmark]
-    public Bitmap Resize()
+    public Input<Bitmap> Resize()
     {
         return new ResizeNode().ExecuteNode(
             new()
             {
                 Width = size,
                 Height = size,
-                Image = image1,
+                Image = new(image1!),
             }
         );
     }

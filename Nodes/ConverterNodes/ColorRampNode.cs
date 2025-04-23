@@ -89,7 +89,7 @@ public class ColorRampNode : Node<ColorRampProps, Input<MyColor>>
         return new(newColors);
     }
 
-    protected override ColorRampProps ConvertJSONToProps(Dictionary<string, object> contex)
+    protected override ColorRampProps ConvertJSONToProps(Dictionary<string, Input> contex)
     {
         JsonElement p = element.GetProperty("params");
         List<ColorStop> stops = [];
@@ -114,7 +114,7 @@ public class ColorRampNode : Node<ColorRampProps, Input<MyColor>>
         };
     }
 
-    protected override void AddDataToContext(Input<MyColor> data, Dictionary<string, object> contex)
+    protected override void AddDataToContext(Input<MyColor> data, Dictionary<string, Input> contex)
     {
         contex[Id] = data;
     }

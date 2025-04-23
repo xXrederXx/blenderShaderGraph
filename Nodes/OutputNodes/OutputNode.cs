@@ -45,7 +45,7 @@ public class OutputNode : Node<OutputProps, bool>
         return true;
     }
 
-    protected override OutputProps ConvertJSONToProps(Dictionary<string, object> context)
+    protected override OutputProps ConvertJSONToProps(Dictionary<string, Input> context)
     {
         JsonElement p = element.GetProperty("params");
 
@@ -56,5 +56,5 @@ public class OutputNode : Node<OutputProps, bool>
         };
     }
 
-    protected override void AddDataToContext(bool data, Dictionary<string, object> contex) { }
+    protected override void AddDataToContext(bool data, Dictionary<string, Input> contex) { }
 }

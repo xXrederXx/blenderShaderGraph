@@ -24,7 +24,7 @@ public static class JsonElementUtil
             System.Console.WriteLine($"Property {propName} not found, using default");
             return def;
         }
-        return (float)element.GetDouble();
+        return element.GetSingle();
     }
 
     public static string GetString(this JsonElement self, string propName, string def = "")
@@ -48,10 +48,10 @@ public static class JsonElementUtil
         return element.GetBoolean();
     }
 
-    public static Bitmap GetBitmap(
+    public static Input<Bitmap> GetBitmap(
         this JsonElement self,
         string IdSelf,
-        Dictionary<string, object> contex,
+        Dictionary<string, Input> contex,
         string propName,
         int WidthIfCol = 1024,
         int heightIfCol = 1024
@@ -61,19 +61,19 @@ public static class JsonElementUtil
         if (dataKey.StartsWith('#') && (dataKey.Length == 7 || dataKey.Length == 9))
         {
             Color col = ColorTranslator.FromHtml(dataKey);
-            return BitmapUtil.FilledBitmap(WidthIfCol, heightIfCol, col);
+            return new(BitmapUtil.FilledBitmap(WidthIfCol, heightIfCol, col));
         }
-        if (!contex.TryGetValue(dataKey, out object? obj) || obj is not Bitmap bmp)
+        if (!contex.TryGetValue(dataKey, out Input? obj) || obj is not Input<Bitmap> bmp)
         {
             throw new FileNotFoundException($"Node {IdSelf} could not find input: {dataKey}");
         }
-        return new(bmp);
+        return bmp;
     }
 
     public static Input<MyColor> GetInputMyColor(
         this JsonElement self,
         string IdSelf,
-        Dictionary<string, object> contex,
+        Dictionary<string, Input> contex,
         string propName
     )
     {
@@ -83,22 +83,7 @@ public static class JsonElementUtil
             Color col = ColorTranslator.FromHtml(img);
             return new Input<MyColor>(col);
         }
-        if (!contex.TryGetValue(img, out object? obj) || obj is not MyColor[,] cols)
-        {
-            throw new FileNotFoundException($"Node {IdSelf} could not find input: {img}");
-        }
-        return new Input<MyColor>(cols);
-    }
-
-    public static float[,] GetFloat2D(
-        this JsonElement self,
-        string IdSelf,
-        Dictionary<string, object> contex,
-        string propName
-    )
-    {
-        string img = self.GetString(propName, "");
-        if (!contex.TryGetValue(img, out object? obj) || obj is not float[,] cols)
+        if (!contex.TryGetValue(img, out Input? obj) || obj is not Input<MyColor> cols)
         {
             throw new FileNotFoundException($"Node {IdSelf} could not find input: {img}");
         }
@@ -108,24 +93,16 @@ public static class JsonElementUtil
     public static Input<float> GetInputFloat(
         this JsonElement self,
         string IdSelf,
-        Dictionary<string, object> contex,
+        Dictionary<string, Input> contex,
         string propName
     )
     {
         string img = self.GetString(propName, "");
-        if (!contex.TryGetValue(img, out object? obj))
+        if (!contex.TryGetValue(img, out Input? obj) || obj is not Input<float> flot)
         {
             throw new FileNotFoundException($"Node {IdSelf} could not find input: {img}");
         }
-        if (obj is not float[,] floats)
-        {
-            if (obj is not float f)
-            {
-                throw new FileNotFoundException($"Node {IdSelf} could not find input: {img}");
-            }
-            return new(f);
-        }
-        return new(floats);
+        return flot;
     }
 
     public static MyColor GetColor(this JsonElement self, string propName, string def = "#000000")
@@ -139,7 +116,7 @@ public static class JsonElementUtil
 
     public static T GetT<T>(
         this JsonElement self,
-        Dictionary<string, object> context,
+        Dictionary<string, Input> context,
         string propName,
         T def
     )
@@ -160,7 +137,7 @@ public static class JsonElementUtil
     private static T HandleString<T>(
         this JsonElement self,
         T def,
-        Dictionary<string, object> context
+        Dictionary<string, Input> context
     )
     {
         string contextKey = self.GetString() ?? string.Empty;
@@ -168,9 +145,7 @@ public static class JsonElementUtil
         {
             return Unsafe.As<string, T>(ref contextKey);
         }
-        if (context.TryGetValue(contextKey, out object? val)) {
-            
-        }
+        if (context.TryGetValue(contextKey, out Input? val)) { }
         return def;
     }
 

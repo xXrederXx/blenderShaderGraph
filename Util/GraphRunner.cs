@@ -60,7 +60,7 @@ public class GraphRunner
 
         System.Console.WriteLine("\t- Executing Nodes");
 
-        Dictionary<string, object> context = new Dictionary<string, object>();
+        Dictionary<string, Input> context = new Dictionary<string, Input>();
         foreach (Node node in nodes)
         {
             sw2.Restart();

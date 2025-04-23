@@ -34,6 +34,6 @@ public class NodeBenchBump
     [Benchmark]
     public Input<MyColor> Bump()
     {
-        return new BumpNode().ExecuteNode(new(img, new(1.52f), new(2.7f), true, NormalMapFormat.OpenGL));
+        return new BumpNode().ExecuteNode(new(new Input<float>(img), new(1.52f), new(2.7f), true, NormalMapFormat.OpenGL));
     }
 }

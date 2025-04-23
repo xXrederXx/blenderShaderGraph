@@ -37,7 +37,7 @@ public class BrickTextureNode : Node<BrickTextureProps, (MyColor[,] color, float
         return (imgC, imgF);
     }
 
-    protected override BrickTextureProps ConvertJSONToProps(Dictionary<string, object> contex)
+    protected override BrickTextureProps ConvertJSONToProps(Dictionary<string, Input> contex)
     {
         JsonElement p = element.GetProperty("params");
         return new(
@@ -61,12 +61,12 @@ public class BrickTextureNode : Node<BrickTextureProps, (MyColor[,] color, float
 
     protected override void AddDataToContext(
         (MyColor[,] color, float[,] fac) data,
-        Dictionary<string, object> contex
+        Dictionary<string, Input> contex
     )
     {
-        contex[Id + ".color"] = data.color;
-        contex[Id + ".fac"] = data.fac;
-        contex[Id] = data.color;
+        contex[Id + ".color"] = new Input<MyColor>(data.color);
+        contex[Id + ".fac"] = new Input<float>(data.fac);
+        contex[Id] = new Input<MyColor>(data.color);
     }
 
     //NODE SPESIFIC

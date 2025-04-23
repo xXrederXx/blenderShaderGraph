@@ -67,7 +67,7 @@ public class MixColorNode : Node<MixColorProps, Input<MyColor>>
         return GenerateInternal(props.a, props.b, props.factor, props.Mode, width, height);
     }
 
-    protected override MixColorProps ConvertJSONToProps(Dictionary<string, object> contex)
+    protected override MixColorProps ConvertJSONToProps(Dictionary<string, Input> contex)
     {
         JsonElement p = element.GetProperty("params");
 
@@ -92,7 +92,7 @@ public class MixColorNode : Node<MixColorProps, Input<MyColor>>
         };
     }
 
-    protected override void AddDataToContext(Input<MyColor> data, Dictionary<string, object> contex)
+    protected override void AddDataToContext(Input<MyColor> data, Dictionary<string, Input> contex)
     {
         contex[Id] = data;
     }

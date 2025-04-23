@@ -39,7 +39,7 @@ public class TextureCoordinateNode : Node<TextureCoordinateProps, Input<MyColor>
         };
     }
 
-    protected override TextureCoordinateProps ConvertJSONToProps(Dictionary<string, object> contex)
+    protected override TextureCoordinateProps ConvertJSONToProps(Dictionary<string, Input> contex)
     {
         JsonElement p = element.GetProperty("params");
 
@@ -56,7 +56,7 @@ public class TextureCoordinateNode : Node<TextureCoordinateProps, Input<MyColor>
         };
     }
 
-    protected override void AddDataToContext(Input<MyColor> data, Dictionary<string, object> contex)
+    protected override void AddDataToContext(Input<MyColor> data, Dictionary<string, Input> contex)
     {
         contex[Id] = data;
     }

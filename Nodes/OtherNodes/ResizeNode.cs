@@ -7,12 +7,12 @@ namespace blenderShaderGraph.Nodes.OtherNodes;
 
 public record ResizeProps
 {
-    public Bitmap? Image { get; set; }
+    public Input<Bitmap>? Image { get; set; }
     public int Width { get; set; }
     public int Height { get; set; }
 }
 
-public class ResizeNode : Node<ResizeProps, Bitmap>
+public class ResizeNode : Node<ResizeProps, Input<Bitmap>>
 {
     public ResizeNode()
         : base() { }
@@ -27,16 +27,16 @@ public class ResizeNode : Node<ResizeProps, Bitmap>
         return props;
     }
 
-    protected override Bitmap ExecuteInternal(ResizeProps props)
+    protected override Input<Bitmap> ExecuteInternal(ResizeProps props)
     {
-        if (props.Image is null)
+        if (props.Image is null || props.Image.Value is null)
         {
-            return new Bitmap(1024, 1024);
+            return new(new Bitmap(1024, 1024));
         }
-        return new Bitmap(props.Image, props.Width, props.Height);
+        return new(new Bitmap(props.Image.Value, props.Width, props.Height));
     }
 
-    protected override ResizeProps ConvertJSONToProps(Dictionary<string, object> contex)
+    protected override ResizeProps ConvertJSONToProps(Dictionary<string, Input> contex)
     {
         JsonElement p = element.GetProperty("params");
         return new()
@@ -47,7 +47,7 @@ public class ResizeNode : Node<ResizeProps, Bitmap>
         };
     }
 
-    protected override void AddDataToContext(Bitmap data, Dictionary<string, object> contex)
+    protected override void AddDataToContext(Input<Bitmap> data, Dictionary<string, Input> contex)
     {
         contex[Id] = data;
     }

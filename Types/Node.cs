@@ -14,7 +14,7 @@ public class Node
     public string Id { get; protected set; } = string.Empty;
     protected JsonElement element;
 
-    public virtual void ExecuteNodeJSON(Dictionary<string, object> context)
+    public virtual void ExecuteNodeJSON(Dictionary<string, Input> context)
     {
         throw new NotImplementedException("ExecuteNodeJSON not implemented on base Node");
     }
@@ -34,7 +34,7 @@ public class Node<T, U> : Node
         return ExecuteInternal(SafeProps(props));
     }
 
-    public override void ExecuteNodeJSON(Dictionary<string, object> contex)
+    public override void ExecuteNodeJSON(Dictionary<string, Input> contex)
     {
         T props = ConvertJSONToProps(contex);
         U res = ExecuteInternal(SafeProps(props));
@@ -53,12 +53,12 @@ public class Node<T, U> : Node
         throw new NotImplementedException("ExecuteInternal on Node<T, U>");
     }
 
-    protected virtual T ConvertJSONToProps(Dictionary<string, object> contex)
+    protected virtual T ConvertJSONToProps(Dictionary<string, Input> contex)
     {
         throw new NotImplementedException("ExecuteInternalJSON on Node<T, U>");
     }
 
-    protected virtual void AddDataToContext(U data, Dictionary<string, object> contex)
+    protected virtual void AddDataToContext(U data, Dictionary<string, Input> contex)
     {
         throw new NotImplementedException("AddDataToContext on Node<T, U>");
     }

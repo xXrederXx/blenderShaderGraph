@@ -75,7 +75,7 @@ public class MaskTextureNode : Node<MaskTextureProps, Input<float>>
         return new Input<float>(res);
     }
 
-    protected override MaskTextureProps ConvertJSONToProps(Dictionary<string, object> contex)
+    protected override MaskTextureProps ConvertJSONToProps(Dictionary<string, Input> contex)
     {
         JsonElement p = element.GetProperty("params");
 
@@ -100,7 +100,7 @@ public class MaskTextureNode : Node<MaskTextureProps, Input<float>>
         };
     }
 
-    protected override void AddDataToContext(Input<float> data, Dictionary<string, object> contex)
+    protected override void AddDataToContext(Input<float> data, Dictionary<string, Input> contex)
     {
         contex[Id] = data;
     }

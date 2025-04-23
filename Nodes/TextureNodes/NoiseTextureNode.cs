@@ -66,7 +66,7 @@ public class NoiseTextureNode : Node<NoiseTextureProps, Input<float>>
         return new Input<float>(values);
     }
 
-    protected override NoiseTextureProps ConvertJSONToProps(Dictionary<string, object> contex)
+    protected override NoiseTextureProps ConvertJSONToProps(Dictionary<string, Input> contex)
     {
         JsonElement p = element.GetProperty("params");
         return new()
@@ -80,7 +80,7 @@ public class NoiseTextureNode : Node<NoiseTextureProps, Input<float>>
         };
     }
 
-    protected override void AddDataToContext(Input<float> data, Dictionary<string, object> contex)
+    protected override void AddDataToContext(Input<float> data, Dictionary<string, Input> contex)
     {
         contex[Id] = data;
     }

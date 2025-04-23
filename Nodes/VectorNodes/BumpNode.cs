@@ -14,14 +14,14 @@ public enum NormalMapFormat
 }
 
 public class BumpProps(
-    float[,] heightMap,
+    Input<float> heightMap,
     Input<float>? strength = null,
     Input<float>? distance = null,
     bool invert = false,
     NormalMapFormat format = NormalMapFormat.OpenGL
 )
 {
-    public float[,] HeightMap { get; } = heightMap;
+    public Input<float> HeightMap { get; } = heightMap;
     public Input<float>? Strength { get; } = strength;
     public Input<float>? Distance { get; } = distance;
     public bool Invert { get; } = invert;
@@ -93,15 +93,22 @@ public class BumpNode : Node<BumpProps, Input<MyColor>>
     {
         if (props.Strength is null || props.Distance is null)
         {
-            throw new ArgumentException("props.Strength is null || props.Distance is null");
+            throw new ArgumentNullException("props.Strength is null || props.Distance is null");
         }
-
-        int width = props.HeightMap.GetLength(0);
-        int height = props.HeightMap.GetLength(1);
+        if(!props.HeightMap.useArray)
+        {
+            return new (flatNormalColor);
+        }
+        if(props.HeightMap.Array is null)
+        {
+            throw new ArgumentNullException("props.HeightMap.Array is null");
+        }
+        int width = props.HeightMap.Array.GetLength(0);
+        int height = props.HeightMap.Array.GetLength(1);
 
         Bitmap normalMap = new(width, height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
         MyColor[,] newColors = new MyColor[width, height];
-        float[,] oldColors = props.HeightMap;
+        float[,] oldColors = props.HeightMap.Array;
 
         Parallel.For(
             1,
@@ -156,11 +163,11 @@ public class BumpNode : Node<BumpProps, Input<MyColor>>
         return new Input<MyColor>(newColors);
     }
 
-    protected override BumpProps ConvertJSONToProps(Dictionary<string, object> contex)
+    protected override BumpProps ConvertJSONToProps(Dictionary<string, Input> contex)
     {
         JsonElement p = element.GetProperty("params");
         return new(
-            p.GetFloat2D(Id, contex, "heightMap"),
+            p.GetInputFloat(Id, contex, "heightMap"),
             strength: p.GetInputFloat(Id, contex, "strength"),
             distance: p.GetInputFloat(Id, contex, "distance"),
             invert: p.GetBool("invert"),
@@ -168,7 +175,7 @@ public class BumpNode : Node<BumpProps, Input<MyColor>>
         );
     }
 
-    protected override void AddDataToContext(Input<MyColor> data, Dictionary<string, object> contex)
+    protected override void AddDataToContext(Input<MyColor> data, Dictionary<string, Input> contex)
     {
         contex[Id] = data;
     }

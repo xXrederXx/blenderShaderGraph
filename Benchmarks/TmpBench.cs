@@ -46,7 +46,7 @@ public class TmpBench
             }
         );
         Input<MyColor> bump = NodeInstances.bump.ExecuteNode(
-            new(Converter.ConvertToFloat(ramp.Array ?? new MyColor[0, 0]), new(1), new(1))
+            new(new(Converter.ConvertToFloat(ramp.Array ?? new MyColor[0, 0])), new(1), new(1))
         );
         return (bump, mix);
     }
