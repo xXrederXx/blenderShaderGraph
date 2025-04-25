@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Text.Json;
 using blenderShaderGraph.Types;
 using blenderShaderGraph.Util;
@@ -15,11 +16,26 @@ public enum MixColorMode
     Lighten,
 }
 
-public record MixColorProps
+public class MixColorProps
 {
-    public Input<MyColor>? a { get; set; }
-    public Input<MyColor>? b { get; set; }
-    public Input<float>? factor { get; set; }
+    public MixColorProps() { }
+
+    public MixColorProps(
+        Input<MyColor>? a,
+        Input<MyColor>? b,
+        Input<float>? factor,
+        MixColorMode Mode
+    )
+    {
+        this.ImageA = a;
+        this.ImageB = b;
+        this.Factor = factor;
+        this.Mode = Mode;
+    }
+
+    public Input<MyColor>? ImageA { get; set; }
+    public Input<MyColor>? ImageB { get; set; }
+    public Input<float>? Factor { get; set; }
     public MixColorMode Mode { get; set; } = MixColorMode.Mix;
 }
 
@@ -33,9 +49,9 @@ public class MixColorNode : Node<MixColorProps, Input<MyColor>>
 
     protected override MixColorProps SafeProps(MixColorProps props)
     {
-        if (props.a is null)
+        if (props.ImageA is null)
             System.Console.WriteLine("a props is null");
-        if (props.b is null)
+        if (props.ImageB is null)
             System.Console.WriteLine("b props is null");
 
         return props;
@@ -43,28 +59,30 @@ public class MixColorNode : Node<MixColorProps, Input<MyColor>>
 
     protected override Input<MyColor> ExecuteInternal(MixColorProps props)
     {
-        if (props.a is null)
+        if (props.ImageA is null)
         {
-            props.a = new Input<MyColor>(new MyColor(0, 0, 0));
+            props.ImageA = InputDefaults.colorBlackInput;
         }
-        if (props.b is null)
+        if (props.ImageB is null)
         {
-            props.b = new Input<MyColor>(new MyColor(0, 0, 0));
+            props.ImageB = InputDefaults.colorBlackInput;
         }
-        if (props.factor is null)
+        if (props.Factor is null)
         {
-            props.factor = new(0);
+            props.Factor = InputDefaults.floatInput;
         }
 
-        int widthA = props.a.Width;
-        int heightA = props.a.Height;
-        int widthB = props.b.Width;
-        int heightB = props.b.Height;
+        int width = Math.Min(props.ImageA.Width, props.ImageB.Width);
+        int height = Math.Min(props.ImageA.Height, props.ImageB.Height);
 
-        int width = Math.Min(widthA, widthB);
-        int height = Math.Min(heightA, heightB);
-
-        return GenerateInternal(props.a, props.b, props.factor, props.Mode, width, height);
+        return GenerateInternal(
+            props.ImageA,
+            props.ImageB,
+            props.Factor,
+            props.Mode,
+            width,
+            height
+        );
     }
 
     protected override MixColorProps ConvertJSONToProps(Dictionary<string, Input> contex)
@@ -85,9 +103,9 @@ public class MixColorNode : Node<MixColorProps, Input<MyColor>>
         };
         return new MixColorProps()
         {
-            a = p.GetInputMyColor(Id, contex, "a"),
-            b = p.GetInputMyColor(Id, contex, "b"),
-            factor = p.GetInputFloat(Id, contex, "factor"),
+            ImageA = p.GetInputMyColor(Id, contex, "a"),
+            ImageB = p.GetInputMyColor(Id, contex, "b"),
+            Factor = p.GetInputFloat(Id, contex, "factor"),
             Mode = mode,
         };
     }

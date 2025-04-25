@@ -32,9 +32,9 @@ public class TmpBench
         Input<MyColor> mix = NodeInstances.mixColor.ExecuteNode(
             new()
             {
-                a = new(new Types.MyColor(20, 46, 145)),
-                b = obj,
-                factor = new(fac),
+                ImageA = new(new Types.MyColor(20, 46, 145)),
+                ImageB = obj,
+                Factor = new(fac),
             }
         );
         Input<float> noise = NodeInstances.noiseTexture.ExecuteNode(new());

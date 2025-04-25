@@ -71,9 +71,9 @@ public class NodeBenchMixColor
         return new MixColorNode().ExecuteNode(
             new()
             {
-                a = new(image1),
-                b = new(image2),
-                factor = new(0.69420f),
+                ImageA = new(image1),
+                ImageB = new(image2),
+                Factor = new(0.69420f),
                 Mode = mode,
             }
         );

@@ -2,6 +2,15 @@ using System.Drawing;
 
 namespace blenderShaderGraph.Types;
 
+public static class MyColors
+{
+    public static readonly MyColor Black = new MyColor(0);
+    public static readonly MyColor Red = new MyColor(255, 0, 0);
+    public static readonly MyColor Green = new MyColor(0, 255, 0);
+    public static readonly MyColor Blue = new MyColor(0, 0, 255);
+    public static readonly MyColor White = new MyColor(255);
+}
+
 public readonly struct MyColor : IEquatable<MyColor>
 {
     public readonly uint rgba;

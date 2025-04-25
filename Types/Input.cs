@@ -1,5 +1,11 @@
 namespace blenderShaderGraph.Types;
 
+public static class InputDefaults
+{
+    public static readonly Input<float> floatInput = new Input<float>(0);
+    public static readonly Input<MyColor> colorBlackInput = new Input<MyColor>(MyColors.Black);
+}
+
 public class Input { }
 
 public class Input<T> : Input
