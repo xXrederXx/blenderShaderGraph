@@ -1,7 +1,10 @@
+using System.Runtime.CompilerServices;
+
 namespace blenderShaderGraph.Util;
 
 public static class MyMath
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Map(float value, float inMin, float inMax, float outMin, float outMax)
     {
         if (value < inMin)
@@ -11,15 +14,19 @@ public static class MyMath
         return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Lerp(float a, float b, float t)
     {
         return a + (b - a) * t;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Clamp01(float val) => Math.Clamp(val, 0, 1);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static byte ClampByte(float value) => (byte)Math.Clamp(value, 0, 255);
 
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public static float SinFast(float x) //x in radians
     {
         float sinn;
@@ -50,6 +57,7 @@ public static class MyMath
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public static float CosFast(float x) //x in radians
     {
         return SinFast(x + 1.5707963f);

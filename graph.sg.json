@@ -52,14 +52,5 @@
 			"factor": 0.15, 
 			"mode": "linearlight"
 		}
-	},
-	{
-		"id": "out1",
-		"type": "Output",
-		"params": {
-			"image": "mix2", 
-			"filename": "./tmp.png" 
-		}
 	}
 ]
- 

@@ -7,6 +7,7 @@ namespace blenderShaderGraph.Util;
 
 public static class JsonElementUtil
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int GetInt(this JsonElement self, string propName, int def = 0)
     {
         if (!self.TryGetProperty(propName, out JsonElement element))
@@ -17,6 +18,7 @@ public static class JsonElementUtil
         return element.GetInt32();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float GetFloat(this JsonElement self, string propName, float def = 0)
     {
         if (!self.TryGetProperty(propName, out JsonElement element))
@@ -27,6 +29,7 @@ public static class JsonElementUtil
         return element.GetSingle();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string GetString(this JsonElement self, string propName, string def = "")
     {
         if (!self.TryGetProperty(propName, out JsonElement element))
@@ -38,6 +41,7 @@ public static class JsonElementUtil
         return val is null ? def : val;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool GetBool(this JsonElement self, string propName)
     {
         if (!self.TryGetProperty(propName, out JsonElement element))
@@ -48,6 +52,7 @@ public static class JsonElementUtil
         return element.GetBoolean();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Input<Bitmap> GetBitmap(
         this JsonElement self,
         string IdSelf,
@@ -70,6 +75,7 @@ public static class JsonElementUtil
         return bmp;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Input<MyColor> GetInputMyColor(
         this JsonElement self,
         string IdSelf,
@@ -100,6 +106,7 @@ public static class JsonElementUtil
         );
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Input<float> GetInputFloat(
         this JsonElement self,
         string IdSelf,
@@ -123,6 +130,7 @@ public static class JsonElementUtil
         return flot;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static MyColor GetColor(this JsonElement self, string propName, string def = "#000000")
     {
         if (!self.TryGetProperty(propName, out JsonElement element))
