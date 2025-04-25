@@ -11,10 +11,19 @@ public enum ColorRampMode
     Constant,
 }
 
-public record ColorStop(MyColor color, float pos);
+public record ColorStop(MyColor Color, float Position);
 
-public record ColorRampProps
+public class ColorRampProps
 {
+    public ColorRampProps() { }
+
+    public ColorRampProps(Input<float>? Image, ColorStop[]? ColorStops, ColorRampMode Mode)
+    {
+        this.Image = Image;
+        this.ColorStops = ColorStops;
+        this.Mode = Mode;
+    }
+
     public Input<float>? Image { get; set; }
     public ColorStop[]? ColorStops { get; set; }
     public ColorRampMode Mode { get; set; } = ColorRampMode.Linear;
@@ -46,7 +55,7 @@ public class ColorRampNode : Node<ColorRampProps, Input<MyColor>>
     {
         if (props.Image is null)
         {
-            return new Input<MyColor>(new MyColor[0, 0]);
+            return InputDefaults.colorBlackInput;
         }
         if (props.ColorStops is null)
         {
@@ -55,10 +64,27 @@ public class ColorRampNode : Node<ColorRampProps, Input<MyColor>>
             );
         }
 
-        ColorStop[] sortedStops = props.ColorStops.OrderBy(cs => cs.pos).ToArray();
+        ColorStop[] sortedStops = props.ColorStops.OrderBy(cs => cs.Position).ToArray();
+
+        if (sortedStops.Length == 0)
+        {
+            return InputDefaults.colorBlackInput;
+        }
+        if (sortedStops.Length == 1)
+        {
+            return new Input<MyColor>(sortedStops[0].Color);
+        }
+
+        Func<float, ColorStop[], MyColor> func = props.Mode switch
+        {
+            ColorRampMode.Linear => GetColorLinear,
+            ColorRampMode.Constant => GetColorConstant,
+            _ => (f, cs) => new MyColor(MyMath.ClampByte(f * 255)),
+        };
+
         if (!props.Image.useArray)
         {
-            GetColor(props.Image.Value, sortedStops, props.Mode);
+            return new Input<MyColor>(func(props.Image.Value, sortedStops));
         }
         if (props.Image.Array is null)
         {
@@ -67,10 +93,9 @@ public class ColorRampNode : Node<ColorRampProps, Input<MyColor>>
             );
         }
 
-        int width = props.Image.Array.GetLength(0);
-        int height = props.Image.Array.GetLength(1);
-
         float[,] oldColors = props.Image.Array;
+        int width = oldColors.GetLength(0);
+        int height = oldColors.GetLength(1);
         MyColor[,] newColors = new MyColor[width, height];
 
         Parallel.For(
@@ -80,8 +105,7 @@ public class ColorRampNode : Node<ColorRampProps, Input<MyColor>>
             {
                 for (int y = 0; y < height; y++)
                 {
-                    float value = oldColors[x, y];
-                    newColors[x, y] = GetColor(value, sortedStops, props.Mode);
+                    newColors[x, y] = func(oldColors[x, y], sortedStops);
                 }
             }
         );
@@ -120,30 +144,6 @@ public class ColorRampNode : Node<ColorRampProps, Input<MyColor>>
     }
 
     // NODE SPESIFIC
-    private static MyColor GetColor(
-        float value,
-        ColorStop[] sortedStops,
-        ColorRampMode mode = ColorRampMode.Linear
-    )
-    {
-        value = Math.Clamp(value, 0, 1);
-        if (sortedStops.Length == 0)
-        {
-            return new MyColor(0, 0, 0);
-        }
-        if (sortedStops.Length == 1)
-        {
-            return sortedStops[0].color;
-        }
-
-        return mode switch
-        {
-            ColorRampMode.Linear => GetColorLinear(value, sortedStops),
-            ColorRampMode.Constant => GetColorConstant(value, sortedStops),
-            _ => new MyColor(0, 0, 0),
-        };
-    }
-
     private static MyColor GetColorConstant(float value, ColorStop[] sortedStops)
     {
         (ColorStop? low, ColorStop? high, bool exactMatch, MyColor? exactColor) =
@@ -163,10 +163,10 @@ public class ColorRampNode : Node<ColorRampProps, Input<MyColor>>
         if (low is null)
         {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-            return high.color;
+            return high.Color;
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
-        return low.color;
+        return low.Color;
     }
 
     private static MyColor GetColorLinear(float value, ColorStop[] sortedStops)
@@ -189,9 +189,9 @@ public class ColorRampNode : Node<ColorRampProps, Input<MyColor>>
         // only one of both can be null
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
         return ColorUtil.LerpColor(
-            low.color,
-            high.color,
-            MyMath.Map(value, low.pos, high.pos, 0, 1)
+            low.Color,
+            high.Color,
+            MyMath.Map(value, low.Position, high.Position, 0, 1)
         );
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
     }
@@ -207,21 +207,21 @@ public class ColorRampNode : Node<ColorRampProps, Input<MyColor>>
         int right = sortedStops.Length - 1;
 
         // Handle edge cases: value is outside the bounds
-        if (value <= sortedStops[0].pos)
+        if (value <= sortedStops[0].Position)
             return (null, sortedStops[0], false, null);
-        if (value >= sortedStops[^1].pos)
+        if (value >= sortedStops[^1].Position)
             return (sortedStops[^1], null, false, null);
 
         // Binary search for the closest lower and upper ColorStops
         while (left <= right)
         {
             int mid = (left + right) / 2;
-            float midPos = sortedStops[mid].pos;
+            float midPos = sortedStops[mid].Position;
 
             // Exact match found
             if (value == midPos)
             {
-                return (null, null, true, sortedStops[mid].color);
+                return (null, null, true, sortedStops[mid].Color);
             }
             // Search left half
             else if (value < midPos)
