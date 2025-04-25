@@ -66,10 +66,6 @@ public class TextureCoordinateNode : Node<TextureCoordinateProps, Input<MyColor>
     {
         int width = img.GetLength(0);
         int height = img.GetLength(1);
-        int halfWidth = width / 2;
-        int halfHeight = height / 2;
-
-        MyColor[,] newColors = new MyColor[width, height];
 
         Parallel.For(
             0,
@@ -78,13 +74,13 @@ public class TextureCoordinateNode : Node<TextureCoordinateProps, Input<MyColor>
             {
                 for (int y = 0; y < height; y++)
                 {
-                    float t = MyMath.Map(x, halfWidth, width, 1, 0);
-                    byte r = MyMath.ClampByte(MyMath.Lerp(1, 0, t) * 255);
+                    float t = MyMath.Map(x, 0, width, 0, 1);
+                    byte r = MyMath.ClampByte(MyMath.Lerp(0, 1, t) * 255);
 
-                    t = MyMath.Map(y, 0, halfHeight, 0, 1);
-                    byte g = MyMath.ClampByte(MyMath.Lerp(1, 0, t) * 255);
+                    t = MyMath.Map(y, 0, height, 0, 1);
+                    byte g = MyMath.ClampByte(MyMath.Lerp(0, 1, t) * 255);
 
-                    newColors[x, y] = new MyColor(r, g, 0);
+                    img[x, y] = new MyColor(r, g, 0);
                 }
             }
         );
