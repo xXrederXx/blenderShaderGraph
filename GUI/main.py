@@ -2,6 +2,7 @@ import customtkinter as ctk
 from typing import List, Optional, Type
 from PIL import Image, ImageTk
 
+from myJson import ToJsonString
 from Nodes import GetDict
 
 # App Settings
@@ -76,7 +77,7 @@ class NodeApp(ctk.CTk):
         ctk.CTkLabel(self.add_node_frame, text="Add New Node",
                      font=ctk.CTkFont(size=20, weight="bold")).pack(pady=10)
 
-        self.node_types: List[str] = ["Noise"]
+        self.node_types: List[str] = ["Noise", "MixColor"]
         self.node_type_var = ctk.StringVar(value=self.node_types[0])
         self.node_type_menu = ctk.CTkOptionMenu(
             self.add_node_frame,
@@ -189,15 +190,15 @@ class NodeApp(ctk.CTk):
         node["descriptionS"] = self.desc_entry.get()
 
         for field_name, entry in self.custom_field_entries.items():
-            if field_name[:-1] == "N":
+            if field_name.endswith("N"):
                 node[field_name] = int(entry.get())
-            elif field_name[:-1] == "S":
+            elif field_name.endswith("S"):
                 node[field_name] = str(entry.get())
             else:
                 node[field_name] = entry.get()
         self.update_node_list()
         self.show_details(self.selected_node_index)
-        print(node)
+        print(ToJsonString(self.nodes))
 
 if __name__ == "__main__":
     app = NodeApp()
