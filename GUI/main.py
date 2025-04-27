@@ -1,7 +1,8 @@
 import customtkinter as ctk
 from typing import List, Optional, Type
-from abc import ABC, abstractmethod
 from PIL import Image, ImageTk
+
+from GUI.Nodes import Node
 
 # App Settings
 ctk.set_appearance_mode("Dark")
@@ -10,44 +11,6 @@ ctk.set_default_color_theme("blue")
 def ReplaceCtkEntryText(entry : ctk.CTkEntry, text: str):
     entry.delete(0, 'end')
     entry.insert(0, text)
-
-# === Base Node Class ===
-class Node(ABC):
-    def __init__(self, name: str, description: str, image_path: Optional[str] = None) -> None:
-        self.name = name
-        self.description = description
-        self.image_path = image_path
-
-    @abstractmethod
-    def get_category(self) -> str:
-        pass
-
-    @abstractmethod
-    def get_custom_fields(self) -> dict[str, any]:
-        """Return dict of field_name -> value."""
-        pass
-
-    @abstractmethod
-    def set_custom_fields(self, fields: dict[str, any]) -> None:
-        """Set field_name -> value."""
-        pass
-
-# === Example subclass
-class SimpleNode(Node):
-    def __init__(self, name: str, description: str, image_path: Optional[str] = None, width: int = 100, height: int = 100) -> None:
-        super().__init__(name, description, image_path)
-        self.width = width
-        self.height = height
-
-    def get_category(self) -> str:
-        return "Simple"
-
-    def get_custom_fields(self) -> dict[str, any]:
-        return {"width": self.width, "height": self.height}
-
-    def set_custom_fields(self, fields: dict[str, any]) -> None:
-        self.width = int(fields.get("width", self.width))
-        self.height = int(fields.get("height", self.height))
 
 # === Main App ===
 class NodeApp(ctk.CTk):
@@ -87,7 +50,7 @@ class NodeApp(ctk.CTk):
         self.category_label.pack(pady=5)
 
         self.custom_fields_frame = ctk.CTkFrame(self.details_frame)
-        self.custom_fields_frame.pack(pady=10, fill='both')
+        self.custom_fields_frame.pack(pady=10, fill='both', expand=True)
 
         self.image_label = ctk.CTkLabel(self.details_frame, text="")
         self.image_label.pack(pady=10)
@@ -168,10 +131,10 @@ class NodeApp(ctk.CTk):
         custom_fields = self.selected_node.get_custom_fields()
         for field_name, value in custom_fields.items():
             field_frame = ctk.CTkFrame(self.custom_fields_frame)
-            field_frame.pack(pady=24, fill="x")  # Stretch across the parent frame
+            field_frame.pack(pady=2, fill="x")  # Stretch across the parent frame
 
             label = ctk.CTkLabel(field_frame, text=field_name, width=120, anchor="w")
-            label.pack(side="left", padx=(24, 1))  # Some padding between label and entry
+            label.pack(side="left", padx=24)  # Some padding between label and entry
 
             entry = ctk.CTkEntry(field_frame, width=200)
             entry.insert(0, str(value))
@@ -196,19 +159,21 @@ class NodeApp(ctk.CTk):
         self.custom_field_entries.clear()
 
     def update_node(self) -> None:
-        if self.selected_node_index is not None:
-            node = self.nodes[self.selected_node_index]
-            node.name = self.name_entry.get()
-            node.description = self.desc_entry.get()
+        if self.selected_node_index is None:
+            return
+        
+        node = self.nodes[self.selected_node_index]
+        node.name = self.name_entry.get()
+        node.description = self.desc_entry.get()
 
-            custom_field_values = {
-                field_name: entry.get()
-                for field_name, entry in self.custom_field_entries.items()
-            }
-            node.set_custom_fields(custom_field_values)
+        custom_field_values = {
+            field_name: entry.get()
+            for field_name, entry in self.custom_field_entries.items()
+        }
+        node.set_custom_fields(custom_field_values)
 
-            self.update_node_list()
-            self.show_details(self.selected_node_index)
+        self.update_node_list()
+        self.show_details(self.selected_node_index)
 
 if __name__ == "__main__":
     app = NodeApp()
