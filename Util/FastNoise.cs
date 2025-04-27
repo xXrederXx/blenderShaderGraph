@@ -1641,7 +1641,7 @@ public class FastNoise
         }
     }
 
-    private float SinglePerlinFractalFBM(float x, float y)
+    public float SinglePerlinFractalFBM(float x, float y)
     {
         int seed = m_seed;
         float sum = SinglePerlin(seed, x, y);

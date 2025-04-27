@@ -58,7 +58,7 @@ public class NoiseTextureNode : Node<NoiseTextureProps, Input<float>>
                 {
                     float nx = x * props.Scale;
                     float ny = y * props.Scale;
-                    float value = noiseGen.GetNoise(nx, ny);
+                    float value = noiseGen.SinglePerlinFractalFBM(nx, ny);
                     values[x, y] = (Math.Clamp(value, -1f, 1f) + 1f) * 0.5f;
                 }
             }

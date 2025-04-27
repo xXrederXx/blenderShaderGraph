@@ -36,9 +36,9 @@ var pix = ShaderRunner.RunShaderToColorArray("./shaders/Nodes/MixColor.frag", 20
 bitmap.SetMyPixles(pix);
 bitmap.Save("tmp.png");
  */
- 
-/* BenchmarkRunner.Run<TmpBench>();
- */
+
+BenchmarkRunner.Run<NodeBenchNoiseTexture>();
+
 /* float[,] noise = new NoiseTextureNode().ExecuteNode(new NoiseTextureProps() { });
 MyColor[,] col = Converter.ConvertToColor(noise);
 Bitmap img = new Bitmap(col.GetLength(0), col.GetLength(1));
@@ -46,7 +46,7 @@ img.SetMyPixles(col);
 img.Save("tmp.png");
 return; */
 
-ShaderRunner.PreloadShaders(["./shaders/tmp.frag", "./shaders/Nodes/MixColor.frag"]);
+/* ShaderRunner.PreloadShaders(["./shaders/tmp.frag", "./shaders/Nodes/MixColor.frag"]);
 string content = "";
 string newContent = "";
 string fp = "./graph.sg.json";
@@ -71,3 +71,4 @@ while (true)
     }
 }
 
+ */
