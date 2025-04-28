@@ -2,8 +2,9 @@ import customtkinter as ctk
 from typing import List, Optional, Type
 from PIL import Image, ImageTk
 
+from CTkLabledEntry import CTkLabledEntry
 from myJson import ToJsonString
-from Nodes import GetDict
+from Nodes import GetDict, NODE_TYPES
 
 # App Settings
 ctk.set_appearance_mode("Dark")
@@ -21,6 +22,80 @@ class NodeApp(ctk.CTk):
     def __init__(self) -> None:
         super().__init__()
 
+        self._SetupWindowAndGrid()
+        self._SetupNodeListFrame()
+        self._SetupConfigFrame()
+        self._SetupAddNodeFrame()
+
+    def _SetupNodeListFrame(self):
+        # Left: Node List
+        self.node_list_frame = ctk.CTkScrollableFrame(self)
+        self.node_list_frame.grid(
+            row=0, column=0, sticky="nswe", padx=10, pady=10)
+        self.node_buttons: List[ctk.CTkButton] = []
+
+    def _SetupConfigFrame(self):
+        # Middle: Details View
+        details_frame = ctk.CTkFrame(self)
+        details_frame.grid(
+            row=0, column=1, sticky="nswe", padx=10, pady=10)
+
+        self.details_label = ctk.CTkLabel(
+            details_frame, text="Select a node", font=ctk.CTkFont(size=20, weight="bold"))
+        self.details_label.pack(pady=10)
+
+        self.name_entry = ctk.CTkEntry(
+            details_frame, placeholder_text="Name")
+        self.name_entry.pack(pady=5)
+
+        self.desc_entry = ctk.CTkEntry(
+            details_frame, placeholder_text="Description")
+        self.desc_entry.pack(pady=5)
+
+        self.category_label = ctk.CTkLabel(
+            details_frame, text="Category: -")
+        self.category_label.pack(pady=5)
+
+        self.custom_fields_frame = ctk.CTkFrame(details_frame)
+        self.custom_fields_frame.pack(pady=10, fill='both', expand=False)
+
+        self.image_label = ctk.CTkLabel(details_frame, text="")
+        self.image_label.pack(pady=10)
+
+        self.update_button = ctk.CTkButton(
+            details_frame, text="Update Node", command=self.update_node)
+        self.update_button.pack(pady=10)
+
+    def _SetupAddNodeFrame(self):
+        # Right: Add Node Form
+        add_node_frame = ctk.CTkFrame(self)
+        add_node_frame.grid(
+            row=0, column=2, sticky="nswe", padx=10, pady=10)
+
+        ctk.CTkLabel(add_node_frame, text="Add New Node",
+                     font=ctk.CTkFont(size=20, weight="bold")).pack(pady=10)
+
+        self.node_types: List[str] = [x[0] for x in NODE_TYPES]
+        self.node_type_var = ctk.StringVar(value=self.node_types[0])
+        self.node_type_menu = ctk.CTkOptionMenu(
+            add_node_frame,
+            variable=self.node_type_var,
+            values=self.node_types
+        )
+        self.node_type_menu.pack(pady=5, padx=24, fill="x")
+
+        self.new_name_entry = ctk.CTkEntry(
+            add_node_frame, placeholder_text="Name")
+        self.new_name_entry.pack(pady=5, padx=24, fill="x")
+        self.new_desc_entry = ctk.CTkEntry(
+            add_node_frame, placeholder_text="Description")
+        self.new_desc_entry.pack(pady=5, padx=24, fill="x")
+
+        self.add_button = ctk.CTkButton(
+            add_node_frame, text="Add Node", command=self.add_node)
+        self.add_button.pack(pady=20, padx=24, fill="x")
+
+    def _SetupWindowAndGrid(self):
         self.title("Node Manager")
         self.geometry("1400x800")
         self.nodes: List[dict[str, any]] = []
@@ -29,74 +104,9 @@ class NodeApp(ctk.CTk):
 
         self.custom_field_entries: dict[str, ctk.CTkEntry] = {}
 
-        self.grid_columnconfigure((0, 1, 2), weight=1)
+        self.grid_columnconfigure((0), weight=1)
+        self.grid_columnconfigure((1, 2), weight=2)
         self.grid_rowconfigure(0, weight=1)
-
-        # Left: Node List
-        self.node_list_frame = ctk.CTkScrollableFrame(self)
-        self.node_list_frame.grid(
-            row=0, column=0, sticky="nswe", padx=10, pady=10)
-        self.node_buttons: List[ctk.CTkButton] = []
-
-        # Middle: Details View
-        self.details_frame = ctk.CTkFrame(self)
-        self.details_frame.grid(
-            row=0, column=1, sticky="nswe", padx=10, pady=10)
-
-        self.details_label = ctk.CTkLabel(
-            self.details_frame, text="Select a node", font=ctk.CTkFont(size=20, weight="bold"))
-        self.details_label.pack(pady=10)
-
-        self.name_entry = ctk.CTkEntry(
-            self.details_frame, placeholder_text="Name")
-        self.name_entry.pack(pady=5)
-
-        self.desc_entry = ctk.CTkEntry(
-            self.details_frame, placeholder_text="Description")
-        self.desc_entry.pack(pady=5)
-
-        self.category_label = ctk.CTkLabel(
-            self.details_frame, text="Category: -")
-        self.category_label.pack(pady=5)
-
-        self.custom_fields_frame = ctk.CTkFrame(self.details_frame)
-        self.custom_fields_frame.pack(pady=10, fill='both', expand=True)
-
-        self.image_label = ctk.CTkLabel(self.details_frame, text="")
-        self.image_label.pack(pady=10)
-
-        self.update_button = ctk.CTkButton(
-            self.details_frame, text="Update Node", command=self.update_node)
-        self.update_button.pack(pady=10)
-
-        # Right: Add Node Form
-        self.add_node_frame = ctk.CTkFrame(self)
-        self.add_node_frame.grid(
-            row=0, column=2, sticky="nswe", padx=10, pady=10)
-
-        ctk.CTkLabel(self.add_node_frame, text="Add New Node",
-                     font=ctk.CTkFont(size=20, weight="bold")).pack(pady=10)
-
-        self.node_types: List[str] = ["Noise", "MixColor"]
-        self.node_type_var = ctk.StringVar(value=self.node_types[0])
-        self.node_type_menu = ctk.CTkOptionMenu(
-            self.add_node_frame,
-            variable=self.node_type_var,
-            values=self.node_types
-        )
-        self.node_type_menu.pack(pady=5)
-
-        self.new_name_entry = ctk.CTkEntry(
-            self.add_node_frame, placeholder_text="Name")
-        self.new_name_entry.pack(pady=5)
-
-        self.new_desc_entry = ctk.CTkEntry(
-            self.add_node_frame, placeholder_text="Description")
-        self.new_desc_entry.pack(pady=5)
-
-        self.add_button = ctk.CTkButton(
-            self.add_node_frame, text="Add Node", command=self.add_node)
-        self.add_button.pack(pady=20)
 
     def add_node(self) -> None:
         name = self.new_name_entry.get()
@@ -138,7 +148,8 @@ class NodeApp(ctk.CTk):
             text=f"Editing: {self.selected_node['idS']}")
 
         ReplaceCtkEntryText(self.name_entry, self.selected_node["idS"])
-        ReplaceCtkEntryText(self.desc_entry, self.selected_node["descriptionS"])
+        ReplaceCtkEntryText(
+            self.desc_entry, self.selected_node["descriptionS"])
 
         self.category_label.configure(
             text=f"Category: {self.selected_node['typeS']}")
@@ -148,21 +159,10 @@ class NodeApp(ctk.CTk):
         for field_name, value in self.selected_node.items():
             if field_name == "typeS" or field_name == "idS" or field_name == "descriptionS":
                 continue
-            field_frame = ctk.CTkFrame(self.custom_fields_frame)
-            # Stretch across the parent frame
-            field_frame.pack(pady=2, fill="x")
-
-            label = ctk.CTkLabel(
-                field_frame, text=field_name[0:-1], width=120, anchor="w")
-            # Some padding between label and entry
-            label.pack(side="left", padx=24)
-
-            entry = ctk.CTkEntry(field_frame, width=200)
-            entry.insert(0, str(value))
-            # Let entry take extra space if needed
-            entry.pack(side="left", fill="x", expand=True)
-
-            self.custom_field_entries[field_name] = entry
+            labled_entry = CTkLabledEntry(
+                self.custom_fields_frame, field_name[0:-1], 180, 100, 24, "x", True)
+            labled_entry.entry.insert(0, str(value))
+            self.custom_field_entries[field_name] = labled_entry.entry
 
         if False:
             try:
@@ -199,6 +199,7 @@ class NodeApp(ctk.CTk):
         self.update_node_list()
         self.show_details(self.selected_node_index)
         print(ToJsonString(self.nodes))
+
 
 if __name__ == "__main__":
     app = NodeApp()
