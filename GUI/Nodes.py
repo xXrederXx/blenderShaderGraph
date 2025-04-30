@@ -20,12 +20,3 @@ NEW_NODE_TYPES: list[NodeTypeGroup] = [
         ]
     )
 ]
-
-
-def GetDict(name: str) -> dict[str, any]:
-    ret: dict[str, any] = {}
-    for types in NODE_TYPES:
-        if types[0] == name:
-            ret = types[1]
-            ret["typeS"] = name
-    return ret
