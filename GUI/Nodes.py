@@ -1,24 +1,23 @@
-import dataclasses as dc
+"""Used for dataclasses (Easy way to stor data)"""
+from dataclasses import dataclass
 
-@dc.dataclass
+
+@dataclass
 class NodeType:
-    """Contains name and params of a Node Type
-    """
-    def __init__(self, type_name: str, params: dict[str, any]):
-        self.name = type_name
-        self.params = params
-        self.params["typeS"] = type_name
+    """Contains name and params of a Node Type"""
+    name: str
+    params: dict[str, any]
+
+    def __post_init__(self):
+        self.params["typeS"] = self.name
 
 
-@dc.dataclass
+@dataclass
 class NodeTypeGroup:
-    """Contains a group name a group color and a list of node types for the group
-    """
-
-    def __init__(self, group_name: str, group_color: str, nodes: list[NodeType]):
-        self.name = group_name
-        self.color = group_color
-        self.nodes = nodes
+    """Contains a group name, a group color, and a list of node types for the group"""
+    name: str
+    color: str
+    nodes: list[NodeType]
 
 
 NEW_NODE_TYPES: list[NodeTypeGroup] = [
