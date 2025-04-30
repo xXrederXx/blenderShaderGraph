@@ -3,7 +3,7 @@ from typing import List, Optional
 from PIL import Image, ImageTk
 
 from CTkLabledEntry import CTkLabledEntry
-from myJson import ToJsonString
+from myJson import to_json_string
 from Nodes import NEW_NODE_TYPES
 
 # App Settings
@@ -11,7 +11,13 @@ ctk.set_appearance_mode("Dark")
 ctk.set_default_color_theme("blue")
 
 
-def ReplaceCtkEntryText(entry: ctk.CTkEntry, text: str):
+def replace_ctkentry_text(entry: ctk.CTkEntry, text: str):
+    """Replaces the text of an entry
+
+    Args:
+        entry (ctk.CTkEntry): The entry
+        text (str): The text to write
+    """
     entry.delete(0, 'end')
     entry.insert(0, text)
 
@@ -19,22 +25,29 @@ def ReplaceCtkEntryText(entry: ctk.CTkEntry, text: str):
 
 
 class NodeApp(ctk.CTk):
+    """The App
+    """
+
     def __init__(self) -> None:
         super().__init__()
 
-        self._SetupWindowAndGrid()
-        self._SetupNodeListFrame()
-        self._SetupConfigFrame()
-        self._SetupAddNodeFrame()
+        self._setup_window_and_grid()
+        self._setup_node_list_frame()
+        self._setup_config_frame()
+        self._setup_add_node_frame()
 
-    def _SetupNodeListFrame(self):
+    def _setup_node_list_frame(self):
+        """Setups the node list frame
+        """
         # Left: Node List
         self.node_list_frame = ctk.CTkScrollableFrame(self)
         self.node_list_frame.grid(
             row=0, column=0, sticky="nswe", padx=10, pady=10)
         self.node_buttons: List[ctk.CTkButton] = []
 
-    def _SetupConfigFrame(self):
+    def _setup_config_frame(self):
+        """Setups the config frame
+        """
         # Middle: Details View
         details_frame = ctk.CTkFrame(self)
         details_frame.grid(
@@ -58,7 +71,9 @@ class NodeApp(ctk.CTk):
         self.image_label = ctk.CTkLabel(details_frame, text="")
         self.image_label.pack(pady=10)
 
-    def _SetupAddNodeFrame(self):
+    def _setup_add_node_frame(self):
+        """Setups the Add node frame
+        """
         # Right: Add Node Form
         right_container = ctk.CTkFrame(self)
         right_container.grid(
@@ -126,7 +141,9 @@ class NodeApp(ctk.CTk):
             image_display_frame, text="No Image Generated", image=None)
         self.generated_image.pack(fill="both", padx=8, pady=8, expand=True)
 
-    def _SetupWindowAndGrid(self):
+    def _setup_window_and_grid(self):
+        """Setups the window and its grid
+        """
         self.title("Node Manager")
         self.geometry("1400x800")
         self.nodes: List[dict[str, any]] = []
@@ -140,6 +157,8 @@ class NodeApp(ctk.CTk):
         self.grid_rowconfigure(0, weight=1)
 
     def add_node(self) -> None:
+        """Adds a node to the system
+        """
         name = self.new_id_entry.get()
         description = self.new_desc_entry.get()
         selected_type_name = self.node_type_var.get()
@@ -147,9 +166,11 @@ class NodeApp(ctk.CTk):
 
         if name and selected_type_name:
             # Find the matching NodeType object
-            node_group = next((group for group in NEW_NODE_TYPES if group.name == selected_group_name), None)
+            node_group = next(
+                (group for group in NEW_NODE_TYPES if group.name == selected_group_name), None)
             if node_group:
-                node_type = next((nt for nt in node_group.nodes if nt.name == selected_type_name), None)
+                node_type = next(
+                    (nt for nt in node_group.nodes if nt.name == selected_type_name), None)
                 if node_type:
                     # Create a copy of the parameters
                     new_node = dict(node_type.params)  # shallow copy
@@ -163,8 +184,9 @@ class NodeApp(ctk.CTk):
         self.new_id_entry.delete(0, 'end')
         self.new_desc_entry.delete(0, 'end')
 
-
     def update_node_list(self) -> None:
+        """Updates the node list
+        """
         for btn in self.node_buttons:
             btn.destroy()
         self.node_buttons.clear()
@@ -176,6 +198,11 @@ class NodeApp(ctk.CTk):
             self.node_buttons.append(btn)
 
     def show_details(self, idx: int) -> None:
+        """Updates the details frame to the selected node
+
+        Args:
+            idx (int): the index of the selected node
+        """
         self.selected_node = self.nodes[idx]
         self.selected_node_index = idx
 
@@ -211,11 +238,15 @@ class NodeApp(ctk.CTk):
             self.image_label.configure(text="No image provided", image="")
 
     def clear_custom_fields(self) -> None:
+        """Clears the custom fields
+        """
         for widget in self.custom_fields_frame.winfo_children():
             widget.destroy()
         self.custom_field_entries.clear()
 
     def update_node(self) -> None:
+        """Updates a node when modifyed
+        """
         if self.selected_node_index is None:
             return
 
@@ -231,7 +262,7 @@ class NodeApp(ctk.CTk):
 
         self.update_node_list()
         self.show_details(self.selected_node_index)
-        print(ToJsonString(self.nodes))
+        print(to_json_string(self.nodes))
 
     def generate_image(self):
         pass
