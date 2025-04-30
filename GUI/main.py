@@ -4,7 +4,7 @@ from PIL import Image, ImageTk
 
 from CTkLabledEntry import CTkLabledEntry
 from myJson import ToJsonString
-from Nodes import GetDict, NODE_TYPES
+from Nodes import NEW_NODE_TYPES
 
 # App Settings
 ctk.set_appearance_mode("Dark")
@@ -47,7 +47,6 @@ class NodeApp(ctk.CTk):
         self.update_button = ctk.CTkButton(
             details_frame, text="Update Node", command=self.update_node)
         self.update_button.pack(pady=10)
-    
 
         self.category_label = ctk.CTkLabel(
             details_frame, text="Category: -")
@@ -66,7 +65,7 @@ class NodeApp(ctk.CTk):
             row=0, column=2, sticky="nswe", padx=10, pady=10)
         right_container.rowconfigure((0, 1), weight=1)
         right_container.columnconfigure(0, weight=1)
-        
+
         add_node_frame = ctk.CTkFrame(right_container)
         add_node_frame.grid(
             row=0, column=0, sticky="nswe", padx=10, pady=10)
@@ -74,14 +73,37 @@ class NodeApp(ctk.CTk):
         ctk.CTkLabel(add_node_frame, text="Add New Node",
                      font=ctk.CTkFont(size=20, weight="bold")).pack(pady=10)
 
-        self.node_types: List[str] = [x[0] for x in NODE_TYPES]
-        self.node_type_var = ctk.StringVar(value=self.node_types[0])
+        # Store group names
+        self.node_groups: List[str] = [group.name for group in NEW_NODE_TYPES]
+        self.node_groups_colors: dict[str, str] = {
+            group.name: group.color for group in NEW_NODE_TYPES}
+        self.node_types_dict: dict[str, List[str]] = {
+            group.name: [node.name for node in group.nodes] for group in NEW_NODE_TYPES
+        }
+
+        # Node group dropdown
+        self.node_groups_var = ctk.StringVar(value=self.node_groups[0])
+        self.node_groups_menu = ctk.CTkOptionMenu(
+            add_node_frame,
+            variable=self.node_groups_var,
+            values=self.node_groups,
+            command=self.update_node_type_menu
+        )
+        self.node_groups_menu.pack(pady=5, padx=24, fill="x")
+
+        # Node type dropdown (initial values)
+        initial_group = self.node_groups[0]
+        self.node_type_var = ctk.StringVar(
+            value=self.node_types_dict[initial_group][0])
         self.node_type_menu = ctk.CTkOptionMenu(
             add_node_frame,
             variable=self.node_type_var,
-            values=self.node_types
+            values=self.node_types_dict[initial_group]
         )
         self.node_type_menu.pack(pady=5, padx=24, fill="x")
+
+        # Apply initial background color
+        self.update_menu_color(initial_group)
 
         self.new_id_entry = ctk.CTkEntry(
             add_node_frame, placeholder_text="Id")
@@ -93,14 +115,16 @@ class NodeApp(ctk.CTk):
         self.add_button = ctk.CTkButton(
             add_node_frame, text="Add Node", command=self.add_node)
         self.add_button.pack(pady=20, padx=24, fill="x")
-        
+
         image_display_frame = ctk.CTkFrame(right_container)
         image_display_frame.grid(
             row=1, column=0, sticky="nswe", padx=10, pady=10)
-        generate_image_button = ctk.CTkButton(image_display_frame, text="Generate Image", command=self.generate_image)
-        generate_image_button.pack(fill="x", padx = 8, pady = 8)
-        self.generated_image = ctk.CTkLabel(image_display_frame, text="No Image Generated", image=None)
-        self.generated_image.pack(fill="both", padx = 8, pady = 8, expand=True)
+        generate_image_button = ctk.CTkButton(
+            image_display_frame, text="Generate Image", command=self.generate_image)
+        generate_image_button.pack(fill="x", padx=8, pady=8)
+        self.generated_image = ctk.CTkLabel(
+            image_display_frame, text="No Image Generated", image=None)
+        self.generated_image.pack(fill="both", padx=8, pady=8, expand=True)
 
     def _SetupWindowAndGrid(self):
         self.title("Node Manager")
@@ -119,19 +143,26 @@ class NodeApp(ctk.CTk):
         name = self.new_id_entry.get()
         description = self.new_desc_entry.get()
         selected_type_name = self.node_type_var.get()
+        selected_group_name = self.node_groups_var.get()
 
         if name and selected_type_name:
-            node_cls = next(
-                (cls for cls in self.node_types if cls == selected_type_name), None)
-            if node_cls:
-                new_node = GetDict(selected_type_name)
-                new_node["idS"] = name
-                new_node["descriptionS"] = description
-                self.nodes.append(new_node)
-                self.update_node_list()
+            # Find the matching NodeType object
+            node_group = next((group for group in NEW_NODE_TYPES if group.name == selected_group_name), None)
+            if node_group:
+                node_type = next((nt for nt in node_group.nodes if nt.name == selected_type_name), None)
+                if node_type:
+                    # Create a copy of the parameters
+                    new_node = dict(node_type.params)  # shallow copy
+                    new_node["idS"] = name
+                    new_node["descriptionS"] = description
 
-            self.new_id_entry.delete(0, 'end')
-            self.new_desc_entry.delete(0, 'end')
+                    self.nodes.append(new_node)
+                    self.update_node_list()
+
+        # Clear input fields regardless of outcome
+        self.new_id_entry.delete(0, 'end')
+        self.new_desc_entry.delete(0, 'end')
+
 
     def update_node_list(self) -> None:
         for btn in self.node_buttons:
@@ -153,7 +184,6 @@ class NodeApp(ctk.CTk):
 
         self.details_label.configure(
             text=f"Editing: {self.selected_node['idS']}")
-
 
         self.category_label.configure(
             text=f"Category: {self.selected_node['typeS']}")
@@ -198,13 +228,26 @@ class NodeApp(ctk.CTk):
                 node[field_name] = str(entry.get())
             else:
                 node[field_name] = entry.get()
-        
+
         self.update_node_list()
         self.show_details(self.selected_node_index)
         print(ToJsonString(self.nodes))
 
     def generate_image(self):
         pass
+
+    def update_node_type_menu(self, selected_group: str):
+        """Update node type values and color based on selected group."""
+        new_types = self.node_types_dict[selected_group]
+        self.node_type_menu.configure(values=new_types)
+        self.node_type_var.set(new_types[0])
+        self.update_menu_color(selected_group)
+
+    def update_menu_color(self, selected_group: str):
+        """Update background color of the group menu."""
+        color = self.node_groups_colors[selected_group]
+        self.node_groups_menu.configure(fg_color=color)
+
 
 if __name__ == "__main__":
     app = NodeApp()

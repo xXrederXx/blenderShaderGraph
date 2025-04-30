@@ -1,18 +1,25 @@
-from typing import Literal
+class NodeType:
+    def __init__(self, type_name:str, params: dict[str, any]):
+        self.name = type_name
+        self.params = params
+        self.params["typeS"] = type_name
 
+class NodeTypeGroup:
+    def __init__(self, group_name:str, group_color:str, nodes: list[NodeType]):
+        self.name = group_name
+        self.color = group_color
+        self.nodes = nodes
 
-def GetNoiseDict() -> dict[str, any]:
-    return {"widthN": 1024, "heightN": 1024, "detailN": 0, "roughnessN": 0, "sizeN": 0}
-
-
-def GetMixColorDict() -> dict[str, any]:
-    return {"aS": 1024, "bS": 1024, "factorS": 0, "modeS": 0}
-
-# The first value is the type of the node, the second is a dict with its Params,
-# The last letter of the key is used to determine the Type: S -> String / N -> Number
-NODE_TYPES: list[tuple[str, dict[str, any]]] = [
-    ("NoiseTexture", {"widthN": 1024, "heightN": 1024, "detailN": 0, "roughnessN": 0, "sizeN": 0}),
-    ("MixColor", {"aS": 1024, "bS": 1024, "factorS": 0, "modeS": 0})]
+NEW_NODE_TYPES: list[NodeTypeGroup] = [
+    NodeTypeGroup("TextureNodes", "Orange", [
+        NodeType("NoiseTexture", {"widthN": 1024, "heightN": 1024, "detailN": 0, "roughnessN": 0, "sizeN": 0})
+        ]
+    ),
+    NodeTypeGroup("Color", "Yellow", [
+        NodeType("MixColor", {"aS": 1024, "bS": 1024, "factorS": 0, "modeS": 0})
+        ]
+    )
+]
 
 
 def GetDict(name: str) -> dict[str, any]:
