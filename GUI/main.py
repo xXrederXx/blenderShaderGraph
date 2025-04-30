@@ -272,5 +272,27 @@ class NodeApp(ctk.CTk):
 
 
 if __name__ == "__main__":
+    import requests
+    json_data = [
+        {
+            "id": "n",
+            "type": "NoiseTexture",
+            "params": {
+                "width": 1024,
+                "height": 1024,
+                "size": 10
+            }
+        }
+    ]
+
+    response = requests.post(
+        "http://localhost:5000/generate-image", json=json_data)
+    print("Status code:", response.status_code)
+    if response.status_code != 200:
+        print(response.text)  # Might contain C# exception string
+
+    with open("output.png", "wb") as f:
+        f.write(response.content)
+
     app = NodeApp()
     app.mainloop()

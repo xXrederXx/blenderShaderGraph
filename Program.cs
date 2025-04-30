@@ -1,10 +1,5 @@
 ﻿using System.Drawing;
-using BenchmarkDotNet.Running;
-using blenderShaderGraph.Benchmarks;
-using blenderShaderGraph.Nodes.ColorNodes;
-using blenderShaderGraph.Types;
-using blenderShaderGraph.Util;
-/* 
+/*
 Input<MyColor> input = NodeInstances.colorRamp.ExecuteNode(
     new()
     {
@@ -37,7 +32,7 @@ bitmap.SetMyPixles(pix);
 bitmap.Save("tmp.png");
  */
 
-BenchmarkRunner.Run<NodeBenchNoiseTexture>();
+/* BenchmarkRunner.Run<NodeBenchNoiseTexture>(); */
 
 /* float[,] noise = new NoiseTextureNode().ExecuteNode(new NoiseTextureProps() { });
 MyColor[,] col = Converter.ConvertToColor(noise);
@@ -72,3 +67,60 @@ while (true)
 }
 
  */
+
+using System.Net;
+using System.Text;
+using BenchmarkDotNet.Running;
+using blenderShaderGraph.Benchmarks;
+using blenderShaderGraph.Nodes.ColorNodes;
+using blenderShaderGraph.Types;
+using blenderShaderGraph.Util;
+
+class Program
+{
+    static void Main()
+    {
+        var listener = new HttpListener();
+        listener.Prefixes.Add("http://localhost:5000/generate-image/");
+        listener.Start();
+        Console.WriteLine("Server listening on http://localhost:5000/generate-image/");
+
+        while (true)
+        {
+            var context = listener.GetContext();
+            Task.Run(() => HandleRequest(context));
+        }
+    }
+
+    static void HandleRequest(HttpListenerContext context)
+    {
+        try
+        {
+            if (context.Request.HttpMethod != "POST")
+            {
+                context.Response.StatusCode = 405;
+                context.Response.Close();
+                return;
+            }
+
+            using var reader = new StreamReader(
+                context.Request.InputStream,
+                context.Request.ContentEncoding
+            );
+            string json = reader.ReadToEnd();
+            byte[] imageBytes = GraphRunner.RunFromJSON(json); // Replace with your logic
+
+            context.Response.ContentType = "image/png";
+            context.Response.OutputStream.Write(imageBytes, 0, imageBytes.Length);
+            context.Response.OutputStream.Close();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error: " + ex.Message);
+            var buffer = Encoding.UTF8.GetBytes("Internal Server Error");
+            context.Response.StatusCode = 500;
+            context.Response.OutputStream.Write(buffer, 0, buffer.Length);
+            context.Response.OutputStream.Close();
+        }
+    }
+}
