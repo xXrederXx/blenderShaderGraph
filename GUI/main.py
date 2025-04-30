@@ -3,6 +3,7 @@ import customtkinter as ctk
 from PIL import Image, ImageTk
 
 from CTkLabledEntry import CTkLabledEntry
+from color_util import dimm_color
 from myJson import to_json_string
 from Nodes import NEW_NODE_TYPES
 
@@ -34,7 +35,7 @@ class NodeListFrame(ctk.CTkScrollableFrame):
         for g in NEW_NODE_TYPES:
             for n in g.nodes:
                 self.node_colors[n.name] = g.color
-        
+
     def update_node_list(self, nodes: List[dict]) -> None:
         """Rebuilds the node list from scratch."""
         for btn in self.node_buttons:
@@ -42,7 +43,7 @@ class NodeListFrame(ctk.CTkScrollableFrame):
         self.node_buttons.clear()
         for idx, node in enumerate(nodes):
             btn = ctk.CTkButton(
-                self, text=node["idS"], fg_color=self.node_colors[node["typeS"]], command=lambda idx=idx: self.on_node_select(idx))
+                self, text=node["idS"], fg_color=self.node_colors[node["typeS"]], hover_color=dimm_color(self.node_colors[node["typeS"]]), command=lambda idx=idx: self.on_node_select(idx))
             btn.pack(fill='x', pady=2)
             self.node_buttons.append(btn)
 
@@ -54,10 +55,12 @@ class NodeConfigFrame(ctk.CTkFrame):
         super().__init__(master)
         self.on_update = on_update
 
-        self.details_label = ctk.CTkLabel(self, text="Select a node", font=ctk.CTkFont(size=20, weight="bold"))
+        self.details_label = ctk.CTkLabel(
+            self, text="Select a node", font=ctk.CTkFont(size=20, weight="bold"))
         self.details_label.pack(pady=10)
 
-        self.update_button = ctk.CTkButton(self, text="Update Node", command=self.on_update)
+        self.update_button = ctk.CTkButton(
+            self, text="Update Node", command=self.on_update)
         self.update_button.pack(pady=10)
 
         self.category_label = ctk.CTkLabel(self, text="Category: -")
@@ -103,7 +106,8 @@ class AddNodeFrame(ctk.CTkFrame):
         self.on_group_change = on_group_change
 
         self.node_groups: List[str] = [group.name for group in NEW_NODE_TYPES]
-        self.node_groups_colors: dict[str, str] = {group.name: group.color for group in NEW_NODE_TYPES}
+        self.node_groups_colors: dict[str, str] = {
+            group.name: group.color for group in NEW_NODE_TYPES}
         self.node_types_dict: dict[str, List[str]] = {
             group.name: [node.name for node in group.nodes] for group in NEW_NODE_TYPES
         }
@@ -127,7 +131,8 @@ class AddNodeFrame(ctk.CTkFrame):
         self.node_groups_menu.pack(pady=5, padx=24, fill="x")
 
         initial_group = self.node_groups[0]
-        self.node_type_var = ctk.StringVar(value=self.node_types_dict[initial_group][0])
+        self.node_type_var = ctk.StringVar(
+            value=self.node_types_dict[initial_group][0])
         self.node_type_menu = ctk.CTkOptionMenu(
             add_node_frame,
             variable=self.node_type_var,
@@ -138,22 +143,26 @@ class AddNodeFrame(ctk.CTkFrame):
         self.new_id_entry = ctk.CTkEntry(add_node_frame, placeholder_text="Id")
         self.new_id_entry.pack(pady=5, padx=24, fill="x")
 
-        self.new_desc_entry = ctk.CTkEntry(add_node_frame, placeholder_text="Description")
+        self.new_desc_entry = ctk.CTkEntry(
+            add_node_frame, placeholder_text="Description")
         self.new_desc_entry.pack(pady=5, padx=24, fill="x")
 
-        self.add_button = ctk.CTkButton(add_node_frame, text="Add Node", command=self.on_add_node)
+        self.add_button = ctk.CTkButton(
+            add_node_frame, text="Add Node", command=self.on_add_node)
         self.add_button.pack(pady=20, padx=24, fill="x")
 
         image_display_frame = ctk.CTkFrame(self)
-        image_display_frame.grid(row=1, column=0, sticky="nswe", padx=10, pady=10)
+        image_display_frame.grid(
+            row=1, column=0, sticky="nswe", padx=10, pady=10)
 
         generate_image_button = ctk.CTkButton(
             image_display_frame, text="Generate Image", command=on_generate_image)
         generate_image_button.pack(fill="x", padx=8, pady=8)
 
-        self.generated_image = ctk.CTkLabel(image_display_frame, text="No Image Generated", image=None)
+        self.generated_image = ctk.CTkLabel(
+            image_display_frame, text="No Image Generated", image=None)
         self.generated_image.pack(fill="both", padx=8, pady=8, expand=True)
-        
+
         self.update_menu_color(self.node_groups_var.get())
 
     def update_node_type_menu(self, selected_group: str):
@@ -185,12 +194,15 @@ class NodeApp(ctk.CTk):
         self.grid_rowconfigure(0, weight=1)
 
         # Left Panel
-        self.node_list_frame = NodeListFrame(self, on_node_select=self.show_details)
-        self.node_list_frame.grid(row=0, column=0, sticky="nswe", padx=10, pady=10)
+        self.node_list_frame = NodeListFrame(
+            self, on_node_select=self.show_details)
+        self.node_list_frame.grid(
+            row=0, column=0, sticky="nswe", padx=10, pady=10)
 
         # Middle Panel
         self.config_frame = NodeConfigFrame(self, on_update=self.update_node)
-        self.config_frame.grid(row=0, column=1, sticky="nswe", padx=10, pady=10)
+        self.config_frame.grid(
+            row=0, column=1, sticky="nswe", padx=10, pady=10)
 
         # Right Panel
         self.add_node_frame = AddNodeFrame(
@@ -199,7 +211,8 @@ class NodeApp(ctk.CTk):
             on_generate_image=self.generate_image,
             on_group_change=self.update_node_type_menu
         )
-        self.add_node_frame.grid(row=0, column=2, sticky="nswe", padx=10, pady=10)
+        self.add_node_frame.grid(
+            row=0, column=2, sticky="nswe", padx=10, pady=10)
 
     def add_node(self) -> None:
         """Adds a new node to the list."""
@@ -209,9 +222,11 @@ class NodeApp(ctk.CTk):
         selected_group_name = self.add_node_frame.node_groups_var.get()
 
         if name and selected_type_name:
-            node_group = next((g for g in NEW_NODE_TYPES if g.name == selected_group_name), None)
+            node_group = next(
+                (g for g in NEW_NODE_TYPES if g.name == selected_group_name), None)
             if node_group:
-                node_type = next((nt for nt in node_group.nodes if nt.name == selected_type_name), None)
+                node_type = next(
+                    (nt for nt in node_group.nodes if nt.name == selected_type_name), None)
                 if node_type:
                     new_node = dict(node_type.params)
                     new_node["idS"] = name

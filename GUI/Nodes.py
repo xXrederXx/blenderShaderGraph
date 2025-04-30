@@ -21,12 +21,12 @@ class NodeTypeGroup:
 
 
 NEW_NODE_TYPES: list[NodeTypeGroup] = [
-    NodeTypeGroup("TextureNodes", "Orange", [
+    NodeTypeGroup("TextureNodes", "#7a4405", [
         NodeType("NoiseTexture", {
                  "widthN": 1024, "heightN": 1024, "detailN": 0, "roughnessN": 0, "sizeN": 0})
     ]
     ),
-    NodeTypeGroup("Color", "Yellow", [
+    NodeTypeGroup("Color", "#9c9c00", [
         NodeType("MixColor", {"aS": 1024, "bS": 1024,
                  "factorS": 0, "modeS": 0})
     ]
