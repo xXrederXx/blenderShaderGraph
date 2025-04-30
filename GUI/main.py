@@ -1,6 +1,7 @@
 from typing import List, Optional
 import customtkinter as ctk
 from PIL import Image, ImageTk
+import requests
 
 from CTkLabledEntry import CTkLabledEntry
 from color_util import dimm_color
@@ -268,31 +269,27 @@ class NodeApp(ctk.CTk):
 
     def generate_image(self) -> None:
         """Stub for generating an image."""
-        pass
+        json = to_json_string(self.nodes)
+        print(json)
+        response = requests.post(
+            "http://localhost:5000/generate-image",
+            data=json,
+            headers={"Content-Type": "application/json"}, 
+            timeout=1000
+        )
+        if response.status_code != 200:
+            print(response.text)  # Might contain C# exception string
+            self.add_node_frame.generated_image.configure(text= response.text)
+            return
+
+        with open("output.png", "wb") as f:
+            f.write(response.content)
+            
+        img = ctk.CTkImage(Image.open("output.png"), size=(512, 512))
+        self.add_node_frame.generated_image.configure(image= img)
+        self.add_node_frame.generated_image.configure(text= "")
 
 
 if __name__ == "__main__":
-    import requests
-    json_data = [
-        {
-            "id": "n",
-            "type": "NoiseTexture",
-            "params": {
-                "width": 1024,
-                "height": 1024,
-                "size": 10
-            }
-        }
-    ]
-
-    response = requests.post(
-        "http://localhost:5000/generate-image", json=json_data)
-    print("Status code:", response.status_code)
-    if response.status_code != 200:
-        print(response.text)  # Might contain C# exception string
-
-    with open("output.png", "wb") as f:
-        f.write(response.content)
-
     app = NodeApp()
     app.mainloop()
