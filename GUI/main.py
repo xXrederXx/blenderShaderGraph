@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Callable
 import customtkinter as ctk
 from PIL import Image, ImageTk
 import requests
@@ -27,10 +27,11 @@ def replace_ctkentry_text(entry: ctk.CTkEntry, text: str):
 class NodeListFrame(ctk.CTkScrollableFrame):
     """Frame that displays a list of nodes as buttons."""
 
-    def __init__(self, master, on_node_select) -> None:
+    def __init__(self, master, on_node_select: Callable[[int], None], on_node_pos_change: Callable[[int, int], None]) -> None:
         super().__init__(master)
         self.on_node_select = on_node_select
-        self.node_buttons: List[ctk.CTkButton] = []
+        self.on_node_pos_change = on_node_pos_change
+        self.node_buttons: List[ctk.CTkFrame] = []
 
         self.node_colors: dict[str, str] = {}
         for g in NEW_NODE_TYPES:
@@ -43,10 +44,28 @@ class NodeListFrame(ctk.CTkScrollableFrame):
             btn.destroy()
         self.node_buttons.clear()
         for idx, node in enumerate(nodes):
+            print(idx)
+            frame = ctk.CTkFrame(self)
+            frame.pack(fill='x', pady=2)
+            frame.columnconfigure(0, weight=1)
+
             btn = ctk.CTkButton(
-                self, text=node["idS"], fg_color=self.node_colors[node["typeS"]], hover_color=dimm_color(self.node_colors[node["typeS"]]), command=lambda idx=idx: self.on_node_select(idx))
-            btn.pack(fill='x', pady=2)
-            self.node_buttons.append(btn)
+                frame, text=node["idS"], fg_color=self.node_colors[node["typeS"]
+                                                                   ], hover_color=dimm_color(self.node_colors[node["typeS"]]),
+                corner_radius=0, command=lambda idx=idx: self.on_node_select(idx))
+            btn.grid(row=0, column=0, sticky='nswe', pady=2)
+
+            up_btn = ctk.CTkButton(
+                frame, text="⬆", width=12, fg_color=self.node_colors[node["typeS"]], hover_color=dimm_color(self.node_colors[node["typeS"]]),
+                corner_radius=0, command=lambda idx=idx: self.on_node_pos_change(idx, -1))
+            up_btn.grid(row=0, column=1)
+
+            down_btn = ctk.CTkButton(
+                frame, text="⬇", width=12, fg_color=self.node_colors[node["typeS"]], hover_color=dimm_color(self.node_colors[node["typeS"]]),
+                corner_radius=0, command=lambda idx=idx: self.on_node_pos_change(idx, 1))
+            down_btn.grid(row=0, column=2)
+
+            self.node_buttons.append(frame)
 
 
 class NodeConfigFrame(ctk.CTkFrame):
@@ -196,7 +215,7 @@ class NodeApp(ctk.CTk):
 
         # Left Panel
         self.node_list_frame = NodeListFrame(
-            self, on_node_select=self.show_details)
+            self, on_node_select=self.show_details, on_node_pos_change=self.change_node_pos)
         self.node_list_frame.grid(
             row=0, column=0, sticky="nswe", padx=10, pady=10)
 
@@ -215,6 +234,15 @@ class NodeApp(ctk.CTk):
         self.add_node_frame.grid(
             row=0, column=2, sticky="nswe", padx=10, pady=10)
 
+    def change_node_pos(self, idx:int, offset:int) -> None:
+        if idx + offset < 0 or idx + offset >= len(self.nodes):
+            return
+        
+        node = self.nodes.pop(idx)
+        self.nodes.insert(idx + offset, node)
+        
+        self.node_list_frame.update_node_list(self.nodes)
+    
     def add_node(self) -> None:
         """Adds a new node to the list."""
         name = self.add_node_frame.new_id_entry.get()
@@ -274,20 +302,20 @@ class NodeApp(ctk.CTk):
         response = requests.post(
             "http://localhost:5000/generate-image",
             data=json,
-            headers={"Content-Type": "application/json"}, 
+            headers={"Content-Type": "application/json"},
             timeout=1000
         )
         if response.status_code != 200:
             print(response.text)  # Might contain C# exception string
-            self.add_node_frame.generated_image.configure(text= response.text)
+            self.add_node_frame.generated_image.configure(text=response.text)
             return
 
         with open("output.png", "wb") as f:
             f.write(response.content)
-            
+
         img = ctk.CTkImage(Image.open("output.png"), size=(512, 512))
-        self.add_node_frame.generated_image.configure(image= img)
-        self.add_node_frame.generated_image.configure(text= "")
+        self.add_node_frame.generated_image.configure(image=img)
+        self.add_node_frame.generated_image.configure(text="")
 
 
 if __name__ == "__main__":

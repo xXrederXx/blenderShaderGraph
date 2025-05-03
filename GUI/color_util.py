@@ -18,5 +18,4 @@ def dimm_color(hex: str, ammount: int = 10) -> str:
     r -= ammount
     g -= ammount
     b -= ammount
-    print(rgb_to_hex((r, g, b)))
     return rgb_to_hex((r, g, b))
