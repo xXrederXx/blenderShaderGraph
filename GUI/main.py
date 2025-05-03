@@ -2,6 +2,9 @@ from typing import List, Optional, Callable
 import customtkinter as ctk
 from PIL import Image, ImageTk
 import requests
+import tempfile as tmpf
+import os
+import time
 
 from CTkLabledEntry import CTkLabledEntry
 from color_util import dimm_color
@@ -71,23 +74,43 @@ class NodeListFrame(ctk.CTkScrollableFrame):
 class NodeConfigFrame(ctk.CTkFrame):
     """Frame for configuring and editing a selected node."""
 
-    def __init__(self, master, on_update) -> None:
+    def __init__(self, master, on_update: Callable[[None], None], on_req_img: Callable[[None], None]) -> None:
         super().__init__(master)
         self.on_update = on_update
+        self.on_req_img = on_req_img
+
+        self.node_colors: dict[str, str] = {}
+        for g in NEW_NODE_TYPES:
+            for n in g.nodes:
+                self.node_colors[n.name] = g.color
+
+        self.top_bar = ctk.CTkFrame(self, border_color="black", border_width=2)
+        self.top_bar.pack(fill="x", padx=4, pady=4)
+        self.top_bar.columnconfigure(0, weight=1)
 
         self.details_label = ctk.CTkLabel(
-            self, text="Select a node", font=ctk.CTkFont(size=20, weight="bold"))
-        self.details_label.pack(pady=10)
+            self.top_bar, text="Select a node", font=ctk.CTkFont(size=20, weight="bold"), anchor="w")
+        self.details_label.grid(
+            row=0, column=0, sticky="nswe", pady=12, padx=8)
 
-        self.update_button = ctk.CTkButton(
-            self, text="Update Node", command=self.on_update)
-        self.update_button.pack(pady=10)
-
-        self.category_label = ctk.CTkLabel(self, text="Category: -")
-        self.category_label.pack(pady=5)
+        self.category_label = ctk.CTkLabel(self.top_bar, text="")
+        self.category_label.grid(
+            row=0, column=1, sticky="nswe", pady=8, padx=8)
 
         self.custom_fields_frame = ctk.CTkFrame(self)
         self.custom_fields_frame.pack(pady=10, fill='both', expand=False)
+
+        bottom_container = ctk.CTkFrame(self)
+        bottom_container.pack(fill="x", padx=4, pady=4)
+        bottom_container.columnconfigure((0, 1), weight=1)
+
+        self.update_button = ctk.CTkButton(
+            bottom_container, text="Update Node", command=self.on_update)
+        self.update_button.grid(row=0, column=0, sticky="nswe", pady=8, padx=4)
+
+        self.gen_img_btn = ctk.CTkButton(
+            bottom_container, text="Generate Image", command=self.on_req_img)
+        self.gen_img_btn.grid(row=0, column=1, sticky="nswe", pady=8, padx=4)
 
         self.image_label = ctk.CTkLabel(self, text="")
         self.image_label.pack(pady=10)
@@ -97,7 +120,8 @@ class NodeConfigFrame(ctk.CTkFrame):
     def show_details(self, node: dict) -> None:
         """Displays details of the selected node in the config frame."""
         self.details_label.configure(text=f"Editing: {node['idS']}")
-        self.category_label.configure(text=f"Category: {node['typeS']}")
+        self.category_label.configure(text=node['typeS'])
+        self.top_bar.configure(border_color=self.node_colors[node["typeS"]])
         self.clear_custom_fields()
 
         for field_name, value in node.items():
@@ -220,7 +244,8 @@ class NodeApp(ctk.CTk):
             row=0, column=0, sticky="nswe", padx=10, pady=10)
 
         # Middle Panel
-        self.config_frame = NodeConfigFrame(self, on_update=self.update_node)
+        self.config_frame = NodeConfigFrame(
+            self, on_update=self.update_node, on_req_img=self.request_node_image)
         self.config_frame.grid(
             row=0, column=1, sticky="nswe", padx=10, pady=10)
 
@@ -234,15 +259,15 @@ class NodeApp(ctk.CTk):
         self.add_node_frame.grid(
             row=0, column=2, sticky="nswe", padx=10, pady=10)
 
-    def change_node_pos(self, idx:int, offset:int) -> None:
+    def change_node_pos(self, idx: int, offset: int) -> None:
         if idx + offset < 0 or idx + offset >= len(self.nodes):
             return
-        
+
         node = self.nodes.pop(idx)
         self.nodes.insert(idx + offset, node)
-        
+
         self.node_list_frame.update_node_list(self.nodes)
-    
+
     def add_node(self) -> None:
         """Adds a new node to the list."""
         name = self.add_node_frame.new_id_entry.get()
@@ -297,7 +322,14 @@ class NodeApp(ctk.CTk):
 
     def generate_image(self) -> None:
         """Stub for generating an image."""
-        json = to_json_string(self.nodes)
+        self._request_image(self.add_node_frame.generated_image, self.nodes)
+
+    def request_node_image(self) -> None:
+        self._request_image(self.config_frame.image_label, [
+                            self.nodes[self.selected_node_index]])
+
+    def _request_image(self, display: ctk.CTkLabel, content: list[dict[str, any]]) -> None:
+        json = to_json_string(content)
         print(json)
         response = requests.post(
             "http://localhost:5000/generate-image",
@@ -307,15 +339,21 @@ class NodeApp(ctk.CTk):
         )
         if response.status_code != 200:
             print(response.text)  # Might contain C# exception string
-            self.add_node_frame.generated_image.configure(text=response.text)
+            display.configure(text=response.text)
             return
-
-        with open("output.png", "wb") as f:
+        
+        filename = time.strftime("%d_%H-%M-%S", time.localtime()) + ".png"
+        directory = os.path.join(os.getcwd(), "tmp", "img")
+        os.makedirs(directory, exist_ok=True)
+        path = os.path.join(directory, filename)
+        print(path)
+            
+        with open(path, "wb") as f:
             f.write(response.content)
 
-        img = ctk.CTkImage(Image.open("output.png"), size=(512, 512))
-        self.add_node_frame.generated_image.configure(image=img)
-        self.add_node_frame.generated_image.configure(text="")
+        img = ctk.CTkImage(Image.open(path), size=(512, 512))
+        display.configure(image=img)
+        display.configure(text="")
 
 
 if __name__ == "__main__":
