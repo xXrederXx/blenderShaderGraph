@@ -309,6 +309,8 @@ class NodeApp(ctk.CTk):
             value = entry.get()
             if field_name.endswith("N"):
                 node[field_name] = int(value)
+            elif field_name.endswith("B"):
+                node[field_name] = bool(value)
             else:
                 node[field_name] = str(value)
 
@@ -325,8 +327,8 @@ class NodeApp(ctk.CTk):
         self._request_image(self.add_node_frame.generated_image, self.nodes)
 
     def request_node_image(self) -> None:
-        self._request_image(self.config_frame.image_label, [
-                            self.nodes[self.selected_node_index]])
+        nodes = self.nodes[0:self.selected_node_index+1]
+        self._request_image(self.config_frame.image_label, nodes)
 
     def _request_image(self, display: ctk.CTkLabel, content: list[dict[str, any]]) -> None:
         json = to_json_string(content)
@@ -346,7 +348,6 @@ class NodeApp(ctk.CTk):
         directory = os.path.join(os.getcwd(), "tmp", "img")
         os.makedirs(directory, exist_ok=True)
         path = os.path.join(directory, filename)
-        print(path)
             
         with open(path, "wb") as f:
             f.write(response.content)
