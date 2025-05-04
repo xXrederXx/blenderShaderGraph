@@ -1,5 +1,7 @@
 """Avoid lint"""
 
+from io import BytesIO
+import threading
 import time
 from typing import Any, List, Optional, Callable
 from functools import partial
@@ -398,34 +400,45 @@ class NodeApp(ctk.CTk):
 
     def generate_image(self) -> None:
         """Stub for generating an image."""
-        self._request_image(self.add_node_frame.generated_image, self.nodes)
+        self._request_image_async(self.add_node_frame.generated_image, self.nodes)
 
     def request_node_image(self) -> None:
         """Requests an image for the currently selected node"""
         nodes = self.nodes[0 : self.selected_node_index + 1]
-        self._request_image(self.config_frame.image_label, nodes)
+        self._request_image_async(self.config_frame.image_label, nodes)
 
-    def _request_image(
-        self, display: ctk.CTkLabel, content: list[dict[str, Any]]
-    ) -> None:
-        json = to_json_string(content)
-        print(json)
-        response = requests.post(
-            "http://localhost:5000/generate-image",
-            data=json,
-            headers={"Content-Type": "application/json"},
-            timeout=1000,
-        )
-        if response.status_code != 200:
-            print(response.text)  # Might contain C# exception string
-            display.configure(text=response.text)
-            return
+    def _request_image_async(self, display: ctk.CTkLabel, content: list[dict[str, Any]]) -> None:
+        def task():
+            try:
+                json_data = to_json_string(content)
+                print(json_data)
+                response = requests.post(
+                    "http://localhost:5000/generate-image",
+                    data=json_data,
+                    headers={"Content-Type": "application/json"},
+                    timeout=1000,
+                )
 
-        path = self._save_image_to_file(response.content)
+                if response.status_code != 200:
+                    print(response.text)
+                    display.after(0, lambda: display.configure(text=response.text))
+                    return
 
-        img = ctk.CTkImage(Image.open(path), size=(512, 512))
-        display.configure(image=img)
-        display.configure(text="")
+                image = Image.open(BytesIO(response.content))
+                img = ctk.CTkImage(image, size=(512, 512))
+
+                def update_ui():
+                    display.configure(image=img)
+                    display.configure(text="")
+
+                display.after(0, update_ui)
+
+            except Exception as e:
+                print(f"Error: {e}")
+                display.after(0, lambda: display.configure(text=str(e)))
+
+        threading.Thread(target=task, daemon=True).start()
+
 
     def _save_image_to_file(self, content: bytes) -> str:
         filename = time.strftime("%d_%H-%M-%S", time.localtime()) + ".png"
