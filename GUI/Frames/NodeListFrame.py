@@ -18,7 +18,7 @@ class NodeListFrame(ctk.CTkScrollableFrame):
         on_node_select: Callable[[int], None],
         on_node_pos_change: Callable[[int, int], None],
     ) -> None:
-        super().__init__(master)
+        super().__init__(master, corner_radius=0)
         self.on_node_select = on_node_select
         self.on_node_pos_change = on_node_pos_change
         self.node_buttons: List[ctk.CTkFrame] = []

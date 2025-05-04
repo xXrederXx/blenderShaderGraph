@@ -15,7 +15,7 @@ class NodeConfigFrame(ctk.CTkFrame):
         on_update: Callable[[], None],
         on_req_img: Callable[[], None],
     ) -> None:
-        super().__init__(master)
+        super().__init__(master, corner_radius=0)
         self.on_update = on_update
         self.on_req_img = on_req_img
 

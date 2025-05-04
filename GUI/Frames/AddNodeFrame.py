@@ -16,7 +16,7 @@ class AddNodeFrame(ctk.CTkFrame):
         on_generate_image: Callable[[], None],
         on_group_change: Callable[[str], None],
     ) -> None:
-        super().__init__(master)
+        super().__init__(master, corner_radius=0)
         self.on_add_node = on_add_node
         self.on_group_change = on_group_change
         self.on_generate_image = on_generate_image

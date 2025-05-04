@@ -1,4 +1,5 @@
 """Avoid lint"""
+
 import threading
 import time
 from io import BytesIO
@@ -6,16 +7,17 @@ from pathlib import Path
 from typing import Any, List
 from typing import Optional
 
+from tkinter import filedialog as fd
 import customtkinter as ctk
 import requests
 from PIL import Image
 
 from Frames.AddNodeFrame import AddNodeFrame
 from Frames.NodeConfigFrame import NodeConfigFrame
+from Frames.ToolBarFrame import ToolBarFrame
 from nodes import NEW_NODE_TYPES
 from Frames.NodeListFrame import NodeListFrame
-from util.my_json import to_json_string
-
+from util.my_json import from_json_file, to_json_string
 
 
 class NodeApp(ctk.CTk):
@@ -25,7 +27,6 @@ class NodeApp(ctk.CTk):
         super().__init__()
         self.title("Node Manager")
         self.geometry("1400x800")
-
         self.nodes: List[dict[str, Any]] = []
         self.selected_node_index: Optional[int] = None
 
@@ -35,20 +36,27 @@ class NodeApp(ctk.CTk):
     def _setup_layout(self) -> None:
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure((1, 2), weight=2)
-        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=0)
+        self.grid_rowconfigure(1, weight=1)
 
     def _create_frames(self) -> None:
+
+        self.tool_bar = ToolBarFrame(
+            self, self.on_save_btn, self.on_load_btn, self.on_export_btn
+        )
+        self.tool_bar.grid(row=0, column=0, columnspan=3, sticky="nswe")
+
         self.node_list_frame = NodeListFrame(
             self,
             on_node_select=self.show_details,
             on_node_pos_change=self.change_node_pos,
         )
-        self.node_list_frame.grid(row=0, column=0, sticky="nswe", padx=10, pady=10)
+        self.node_list_frame.grid(row=1, column=0, sticky="nswe")
 
         self.config_frame = NodeConfigFrame(
             self, on_update=self.update_node, on_req_img=self.request_node_image
         )
-        self.config_frame.grid(row=0, column=1, sticky="nswe", padx=10, pady=10)
+        self.config_frame.grid(row=1, column=1, sticky="nswe")
 
         self.add_node_frame = AddNodeFrame(
             self,
@@ -56,7 +64,7 @@ class NodeApp(ctk.CTk):
             on_generate_image=self.generate_image,
             on_group_change=self.update_node_type_menu,
         )
-        self.add_node_frame.grid(row=0, column=2, sticky="nswe", padx=10, pady=10)
+        self.add_node_frame.grid(row=1, column=2, sticky="nswe")
 
     def change_node_pos(self, idx: int, offset: int) -> None:
         """Changes node pos in list
@@ -132,7 +140,6 @@ class NodeApp(ctk.CTk):
 
         self.node_list_frame.update_node_list(self.nodes)
         self.show_details(self.selected_node_index)
-        print(to_json_string(self.nodes))
 
     def update_node_type_menu(self, selected_group: str) -> None:
         """Update node type dropdown and color on group change."""
@@ -147,7 +154,9 @@ class NodeApp(ctk.CTk):
         nodes = self.nodes[0 : self.selected_node_index + 1]
         self._request_image_async(self.config_frame.image_label, nodes)
 
-    def _request_image_async(self, display: ctk.CTkLabel, content: list[dict[str, Any]]) -> None:
+    def _request_image_async(
+        self, display: ctk.CTkLabel, content: list[dict[str, Any]]
+    ) -> None:
         def task():
             try:
                 json_data = to_json_string(content)
@@ -179,7 +188,6 @@ class NodeApp(ctk.CTk):
 
         threading.Thread(target=task, daemon=True).start()
 
-
     def _save_image_to_file(self, content: bytes) -> str:
         filename = time.strftime("%d_%H-%M-%S", time.localtime()) + ".png"
         directory = Path.cwd() / "tmp" / "img"
@@ -188,3 +196,29 @@ class NodeApp(ctk.CTk):
         with open(path, "wb") as f:
             f.write(content)
         return str(path)
+
+    def on_save_btn(self):
+        """Used to save to a file"""
+        fp = fd.asksaveasfilename(
+            defaultextension=".bsg",
+            filetypes=[("bsg file", "*.bsg"), ("json file", "*.json")],
+        )
+        if not fp:
+            return
+        content = to_json_string(self.nodes)
+        with open(fp, "w", encoding="utf-8") as f:
+            f.write(content)
+
+    def on_load_btn(self):
+        """Used to load from a file"""
+        fp = fd.askopenfilename(
+            filetypes=[("bsg file", "*.bsg"), ("json file", "*.json")]
+        )
+        if not fp:
+            return
+        self.nodes = from_json_file(fp)
+        self.node_list_frame.update_node_list(self.nodes)
+
+    def on_export_btn(self):
+        """used to export to a file"""
+        self.on_save_btn()
