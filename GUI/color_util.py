@@ -1,3 +1,5 @@
+"""Color util"""
+
 from PIL import ImageColor
 
 

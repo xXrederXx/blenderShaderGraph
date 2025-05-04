@@ -1,6 +1,5 @@
 """Avoid lint"""
 
-import os
 import time
 from typing import Any, List, Optional, Callable
 from functools import partial
@@ -264,7 +263,6 @@ class AddNodeFrame(ctk.CTkFrame):
         self.update_node_type_menu(selected_group)
         self.on_group_change(selected_group)
 
-
     def update_node_type_menu(self, selected_group: str) -> None:
         """Update the node types shown in the dropdown."""
         new_types = self.node_types_dict[selected_group]
@@ -292,7 +290,6 @@ class NodeApp(ctk.CTk):
         self._setup_layout()
         self._create_frames()
 
-
     def _setup_layout(self) -> None:
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure((1, 2), weight=2)
@@ -319,7 +316,6 @@ class NodeApp(ctk.CTk):
         )
         self.add_node_frame.grid(row=0, column=2, sticky="nswe", padx=10, pady=10)
 
-    
     def change_node_pos(self, idx: int, offset: int) -> None:
         """Changes node pos in list
 
@@ -345,11 +341,15 @@ class NodeApp(ctk.CTk):
         if not name or not selected_type_name:
             return
 
-        node_group = next((g for g in NEW_NODE_TYPES if g.name == selected_group_name), None)
+        node_group = next(
+            (g for g in NEW_NODE_TYPES if g.name == selected_group_name), None
+        )
         if not node_group:
             return
 
-        node_type = next((nt for nt in node_group.nodes if nt.name == selected_type_name), None)
+        node_type = next(
+            (nt for nt in node_group.nodes if nt.name == selected_type_name), None
+        )
         if not node_type:
             return
 
@@ -360,7 +360,6 @@ class NodeApp(ctk.CTk):
 
         self.nodes.append(new_node)
         self.node_list_frame.update_node_list(self.nodes)
-
 
         self.add_node_frame.new_id_entry.delete(0, "end")
         self.add_node_frame.new_desc_entry.delete(0, "end")
@@ -388,7 +387,6 @@ class NodeApp(ctk.CTk):
                     node[field_name] = str(value)
             except ValueError:
                 print(f"Invalid input for field {field_name}: {value}")
-
 
         self.node_list_frame.update_node_list(self.nodes)
         self.show_details(self.selected_node_index)
