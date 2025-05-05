@@ -18,13 +18,13 @@ from Frames.ToolBarFrame import ToolBarFrame
 from nodes import NEW_NODE_TYPES
 from Frames.NodeListFrame import NodeListFrame
 from util.my_json import from_json_file, to_json_string
-
+from style import FRAME_GRID_KWARGS, FRAME_GRID_PADX, FRAME_GRID_PADY
 
 class NodeApp(ctk.CTk):
     """Main application for managing nodes."""
 
     def __init__(self) -> None:
-        super().__init__()
+        super().__init__(fg_color="#1e1f22")
         self.title("Node Manager")
         self.geometry("1400x800")
         self.nodes: List[dict[str, Any]] = []
@@ -38,6 +38,7 @@ class NodeApp(ctk.CTk):
         self.grid_columnconfigure((1, 2), weight=2)
         self.grid_rowconfigure(0, weight=0)
         self.grid_rowconfigure(1, weight=1)
+        self.configure(padx=FRAME_GRID_PADX, pady=FRAME_GRID_PADY)
 
     def _create_frames(self) -> None:
 
@@ -51,12 +52,12 @@ class NodeApp(ctk.CTk):
             on_node_select=self.show_details,
             on_node_pos_change=self.change_node_pos,
         )
-        self.node_list_frame.grid(row=1, column=0, sticky="nswe")
+        self.node_list_frame.grid(row=1, column=0, **FRAME_GRID_KWARGS)
 
         self.config_frame = NodeConfigFrame(
             self, on_update=self.update_node, on_req_img=self.request_node_image
         )
-        self.config_frame.grid(row=1, column=1, sticky="nswe")
+        self.config_frame.grid(row=1, column=1, **FRAME_GRID_KWARGS)
 
         self.add_node_frame = AddNodeFrame(
             self,
@@ -64,7 +65,10 @@ class NodeApp(ctk.CTk):
             on_generate_image=self.generate_image,
             on_group_change=self.update_node_type_menu,
         )
-        self.add_node_frame.grid(row=1, column=2, sticky="nswe")
+        add_node_frame_style = FRAME_GRID_KWARGS
+        add_node_frame_style.pop("padx")
+        add_node_frame_style.pop("pady")
+        self.add_node_frame.grid(row=1, column=2, **add_node_frame_style)
 
     def change_node_pos(self, idx: int, offset: int) -> None:
         """Changes node pos in list

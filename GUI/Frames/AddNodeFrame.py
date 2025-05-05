@@ -5,6 +5,7 @@ from typing import Callable, List
 import customtkinter as ctk
 
 from nodes import NEW_NODE_TYPES
+from style import FRAME_KWARGS, MAIN_BG_COL, FRAME_GRID_KWARGS
 
 class AddNodeFrame(ctk.CTkFrame):
     """Frame for adding a new node."""
@@ -16,7 +17,7 @@ class AddNodeFrame(ctk.CTkFrame):
         on_generate_image: Callable[[], None],
         on_group_change: Callable[[str], None],
     ) -> None:
-        super().__init__(master, corner_radius=0)
+        super().__init__(master, fg_color=MAIN_BG_COL)
         self.on_add_node = on_add_node
         self.on_group_change = on_group_change
         self.on_generate_image = on_generate_image
@@ -36,8 +37,8 @@ class AddNodeFrame(ctk.CTkFrame):
         self._create_image_section()
 
     def _create_add_node_section(self) -> None:
-        add_node_frame = ctk.CTkFrame(self)
-        add_node_frame.grid(row=0, column=0, sticky="nswe", padx=10, pady=10)
+        add_node_frame = ctk.CTkFrame(self, **FRAME_KWARGS)
+        add_node_frame.grid(row=0, column=0, **FRAME_GRID_KWARGS)
 
         ctk.CTkLabel(
             add_node_frame,
@@ -79,8 +80,8 @@ class AddNodeFrame(ctk.CTkFrame):
         self.update_node_type_menu(initial_group)
 
     def _create_image_section(self) -> None:
-        image_display_frame = ctk.CTkFrame(self)
-        image_display_frame.grid(row=1, column=0, sticky="nswe", padx=10, pady=10)
+        image_display_frame = ctk.CTkFrame(self, **FRAME_KWARGS)
+        image_display_frame.grid(row=1, column=0, **FRAME_GRID_KWARGS)
 
         generate_image_button = ctk.CTkButton(
             image_display_frame, text="Generate Image", command=self.on_generate_image

@@ -5,6 +5,7 @@ import customtkinter as ctk
 
 from custom_components.ctk_labled_entry import CTkLabledEntry
 from nodes import NEW_NODE_TYPES
+from style import FRAME_KWARGS
 
 class NodeConfigFrame(ctk.CTkFrame):
     """Frame for configuring and editing a selected node."""
@@ -15,7 +16,7 @@ class NodeConfigFrame(ctk.CTkFrame):
         on_update: Callable[[], None],
         on_req_img: Callable[[], None],
     ) -> None:
-        super().__init__(master, corner_radius=0)
+        super().__init__(master, **FRAME_KWARGS)
         self.on_update = on_update
         self.on_req_img = on_req_img
 

@@ -1,0 +1,12 @@
+"""Contains styling"""
+
+FRAME_CORNER_RAD = 8
+FRAME_BG_COL = "#27282d"
+FRAME_KWARGS = {"corner_radius":FRAME_CORNER_RAD, "fg_color":FRAME_BG_COL}
+FRAME_GRID_PADX = 4
+FRAME_GRID_PADY = 4
+FRAME_GRID_KWARGS = {"padx":FRAME_GRID_PADX, "pady":FRAME_GRID_PADY, "sticky":"nswe"}
+
+MAIN_BG_COL = "#1e1f22"
+
+TOOLBAR_BG_COL = "#2f3236"

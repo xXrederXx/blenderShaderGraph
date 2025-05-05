@@ -8,6 +8,7 @@ import customtkinter as ctk
 from util.color_util import dimm_color
 from nodes import NEW_NODE_TYPES
 
+from style import FRAME_KWARGS
 
 class NodeListFrame(ctk.CTkScrollableFrame):
     """Frame that displays a list of nodes as buttons."""
@@ -18,7 +19,7 @@ class NodeListFrame(ctk.CTkScrollableFrame):
         on_node_select: Callable[[int], None],
         on_node_pos_change: Callable[[int, int], None],
     ) -> None:
-        super().__init__(master, corner_radius=0)
+        super().__init__(master, **FRAME_KWARGS)
         self.on_node_select = on_node_select
         self.on_node_pos_change = on_node_pos_change
         self.node_buttons: List[ctk.CTkFrame] = []
