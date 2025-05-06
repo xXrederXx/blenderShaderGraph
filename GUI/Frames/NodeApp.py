@@ -14,19 +14,16 @@ from PIL import Image
 
 from Frames.AddNodeFrame import AddNodeFrame
 from Frames.NodeConfigFrame import NodeConfigFrame
-from Frames.ToolBarFrame import ToolBarFrame
 from nodes import NEW_NODE_TYPES
 from Frames.NodeListFrame import NodeListFrame
 from util.my_json import from_json_file, to_json_string
-from style import FRAME_GRID_KWARGS, FRAME_GRID_PADX, FRAME_GRID_PADY
+from style import FRAME_GRID_KWARGS, MAIN_BG_COL
 
-class NodeApp(ctk.CTk):
+class NodeAppMainFrame(ctk.CTkFrame):
     """Main application for managing nodes."""
 
-    def __init__(self) -> None:
-        super().__init__(fg_color="#1e1f22")
-        self.title("Node Manager")
-        self.geometry("1400x800")
+    def __init__(self, master) -> None:
+        super().__init__(master, fg_color=MAIN_BG_COL)
         self.nodes: List[dict[str, Any]] = []
         self.selected_node_index: Optional[int] = None
 
@@ -36,28 +33,20 @@ class NodeApp(ctk.CTk):
     def _setup_layout(self) -> None:
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure((1, 2), weight=2)
-        self.grid_rowconfigure(0, weight=0)
-        self.grid_rowconfigure(1, weight=1)
-        self.configure(padx=FRAME_GRID_PADX, pady=FRAME_GRID_PADY)
+        self.grid_rowconfigure(0, weight=1)
 
     def _create_frames(self) -> None:
-
-        self.tool_bar = ToolBarFrame(
-            self, self.on_save_btn, self.on_load_btn, self.on_export_btn
-        )
-        self.tool_bar.grid(row=0, column=0, columnspan=3, sticky="nswe")
-
         self.node_list_frame = NodeListFrame(
             self,
             on_node_select=self.show_details,
             on_node_pos_change=self.change_node_pos,
         )
-        self.node_list_frame.grid(row=1, column=0, **FRAME_GRID_KWARGS)
+        self.node_list_frame.grid(row=0, column=0, **FRAME_GRID_KWARGS)
 
         self.config_frame = NodeConfigFrame(
             self, on_update=self.update_node, on_req_img=self.request_node_image
         )
-        self.config_frame.grid(row=1, column=1, **FRAME_GRID_KWARGS)
+        self.config_frame.grid(row=0, column=1, **FRAME_GRID_KWARGS)
 
         self.add_node_frame = AddNodeFrame(
             self,
@@ -68,7 +57,7 @@ class NodeApp(ctk.CTk):
         add_node_frame_style = FRAME_GRID_KWARGS
         add_node_frame_style.pop("padx")
         add_node_frame_style.pop("pady")
-        self.add_node_frame.grid(row=1, column=2, **add_node_frame_style)
+        self.add_node_frame.grid(row=0, column=2, **add_node_frame_style)
 
     def change_node_pos(self, idx: int, offset: int) -> None:
         """Changes node pos in list
