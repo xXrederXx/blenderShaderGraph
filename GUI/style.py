@@ -24,7 +24,7 @@ def init_fonts():
     global TEXT_FONT
     global HEADER_FONT
     TEXT_FONT = CTkFont("Cascadia Mono", 11, "normal", "roman", False, False)
-    HEADER_FONT = CTkFont("Cascadia Mono", 20, "bold", "roman", False, False)
+    HEADER_FONT = CTkFont("Cascadia Mono SemiBold", 20, "normal", "roman", False, False)
 
 
 
@@ -40,4 +40,9 @@ ENTRY_KWARGS = {
     "text_color": TEXT_COLOR,
     "border_width": 1,
     "font": TEXT_FONT,
+}
+
+LABEL_KWARGS = {
+    "font": TEXT_FONT,
+    "text_color": TEXT_COLOR
 }

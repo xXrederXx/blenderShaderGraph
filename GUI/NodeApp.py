@@ -1,4 +1,3 @@
-from Frames.NodeAppMainFrame import NodeAppMainFrame
 from style import (
     FRAME_GRID_KWARGS,
     FRAME_GRID_PADX,
@@ -7,6 +6,7 @@ from style import (
     TOOLBAR_BG_COL,
     init_fonts,
 )
+from Frames.NodeAppMainFrame import NodeAppMainFrame
 
 
 import customtkinter as ctk
@@ -37,6 +37,5 @@ class NodeApp(ctk.CTk):
         )
         self.main.columnconfigure(0, weight=1)
         self.main.rowconfigure(0, weight=1)
-
         self.app = NodeAppMainFrame(self.main)
         self.app.grid(sticky="nswe")

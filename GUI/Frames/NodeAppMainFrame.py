@@ -122,8 +122,10 @@ class NodeAppMainFrame(ctk.CTkFrame):
         for field_name, entry in self.config_frame.custom_field_entries.items():
             value = entry.get()
             try:
-                if field_name.endswith("N"):
+                if field_name.endswith("I"):
                     node[field_name] = int(value)
+                elif field_name.endswith("F"):
+                    node[field_name] = float(value)
                 elif field_name.endswith("B"):
                     node[field_name] = value.lower() in ("true", "1", "yes")
                 else:

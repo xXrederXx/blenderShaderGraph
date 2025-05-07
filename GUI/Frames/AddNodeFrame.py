@@ -12,7 +12,8 @@ from style import (
     TEXT_COLOR,
     PRIMARY_BUTTON_BG_COLOR,
     DROPDOWN_KWARGS,
-    ENTRY_KWARGS
+    ENTRY_KWARGS,
+    HEADER_FONT
 )
 
 
@@ -52,7 +53,7 @@ class AddNodeFrame(ctk.CTkFrame):
         ctk.CTkLabel(
             add_node_frame,
             text="Add New Node",
-            font=ctk.CTkFont(size=20, weight="bold"),
+            font=HEADER_FONT,
             text_color=TEXT_COLOR,
         ).pack(pady=10)
 
