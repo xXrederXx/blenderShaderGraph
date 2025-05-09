@@ -1,18 +1,14 @@
 """Avoid lint"""
 
-import threading
-import time
 from typing import Any, List
 from typing import Optional
 
-from tkinter import filedialog as fd
 import customtkinter as ctk
 
 from Frames.AddNodeFrame import AddNodeFrame
 from Frames.NodeConfigFrame import NodeConfigFrame
 from Frames.NodeListFrame import NodeListFrame
-from util.my_json import from_json_file, to_json_string
-from util.node_util import change_node_pos
+from util.node_util import change_node_pos, convert_value
 from util.io_util import request_image_async
 from style import FRAME_GRID_KWARGS, MAIN_BG_COL
 
@@ -87,14 +83,7 @@ class NodeAppMainFrame(ctk.CTkFrame):
         for field_name, entry in self.config_frame.custom_field_entries.items():
             value = entry.get()
             try:
-                if field_name.endswith("I"):
-                    node[field_name] = int(value)
-                elif field_name.endswith("F"):
-                    node[field_name] = float(value)
-                elif field_name.endswith("B"):
-                    node[field_name] = value.lower() in ("true", "1", "yes")
-                else:
-                    node[field_name] = str(value)
+                node[field_name] = convert_value(field_name, value)
             except ValueError:
                 print(f"Invalid input for field {field_name}: {value}")
 
