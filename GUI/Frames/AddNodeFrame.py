@@ -162,9 +162,9 @@ class AddNodeFrame(ctk.CTkFrame):
             return
 
         new_node = dict(node_type.params)
-        new_node["idS"] = name
-        new_node["descriptionS"] = description
-        new_node["typeS"] = selected_type_name
+        new_node["id:S"] = name
+        new_node["description:S"] = description
+        new_node["type:S"] = selected_type_name
 
         self.new_id_entry.delete(0, "end")
         self.new_desc_entry.delete(0, "end")

@@ -41,9 +41,9 @@ class NodeListFrame(ctk.CTkScrollableFrame):
 
             btn = ctk.CTkButton(
                 frame,
-                text=node["idS"],
-                fg_color=self.node_colors[node["typeS"]],
-                hover_color=dimm_color(self.node_colors[node["typeS"]]),
+                text=node["id:S"],
+                fg_color=self.node_colors[node["type:S"]],
+                hover_color=dimm_color(self.node_colors[node["type:S"]]),
                 corner_radius=0,
                 command=partial(self.on_node_select, idx),
             )
@@ -53,8 +53,8 @@ class NodeListFrame(ctk.CTkScrollableFrame):
                 frame,
                 text="⬆",
                 width=12,
-                fg_color=self.node_colors[node["typeS"]],
-                hover_color=dimm_color(self.node_colors[node["typeS"]]),
+                fg_color=self.node_colors[node["type:S"]],
+                hover_color=dimm_color(self.node_colors[node["type:S"]]),
                 corner_radius=0,
                 command=partial(self.on_node_pos_change, idx, -1),
             )
@@ -64,8 +64,8 @@ class NodeListFrame(ctk.CTkScrollableFrame):
                 frame,
                 text="⬇",
                 width=12,
-                fg_color=self.node_colors[node["typeS"]],
-                hover_color=dimm_color(self.node_colors[node["typeS"]]),
+                fg_color=self.node_colors[node["type:S"]],
+                hover_color=dimm_color(self.node_colors[node["type:S"]]),
                 corner_radius=0,
                 command=partial(self.on_node_pos_change, idx, 1),
             )

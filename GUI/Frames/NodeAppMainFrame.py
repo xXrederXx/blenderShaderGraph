@@ -86,6 +86,8 @@ class NodeAppMainFrame(ctk.CTkFrame):
                 node[field_name] = convert_value(field_name, value)
             except ValueError:
                 print(f"Invalid input for field {field_name}: {value}")
+            except TypeError:
+                print(f"No matching conversion found for field {field_name}: {value}")
 
         self.node_list_frame.update_node_list(self.nodes)
         self.show_details(self.selected_node_index)

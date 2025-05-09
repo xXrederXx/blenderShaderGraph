@@ -11,7 +11,7 @@ class NodeType:
     params: dict[str, any]
 
     def __post_init__(self):
-        self.params["typeS"] = self.name
+        self.params["type:S"] = self.name
 
 
 @dataclass
@@ -31,44 +31,44 @@ NEW_NODE_TYPES: list[NodeTypeGroup] = [
             NodeType(
                 "NoiseTexture",
                 {
-                    "widthI": 1024,
-                    "heightI": 1024,
-                    "detailF": 2,
-                    "roughnessF": 0.5,
-                    "sizeF": 1,
-                    "LacunarityF": 2,
+                    "width:I": 1024,
+                    "height:I": 1024,
+                    "detail:F": 2,
+                    "roughness:F": 0.5,
+                    "size:F": 1,
+                    "Lacunarity:F": 2,
                 },
             ),
             NodeType(
                 "BrickTexture",
                 {
-                    "widthI": 1024,
-                    "heightI": 1024,
-                    "offsetF": 0.5,
-                    "offsetFrequencyI": 2,
-                    "squashF": 1,
-                    "squashFrequencyI": 0,
-                    "color1S": "Black",
-                    "color2S": "Black",
-                    "colorMotarS": "White",
-                    "motarSizeF": 5,
-                    "motarSmoothnessF": 0,
-                    "biasF": 0,
-                    "brickWidtF": 30,
-                    "rowHeightI": 12,
-                    "forceTilableB": False,
+                    "width:I": 1024,
+                    "height:I": 1024,
+                    "offset:F": 0.5,
+                    "offsetFrequency:I": 2,
+                    "squash:F": 1,
+                    "squashFrequency:I": 0,
+                    "color1:S": "Black",
+                    "color2:S": "Black",
+                    "colorMotar:S": "White",
+                    "motarSize:F": 5,
+                    "motarSmoothness:F": 0,
+                    "bias:F": 0,
+                    "brickWidt:F": 30,
+                    "rowHeight:I": 12,
+                    "forceTilable:B": False,
                 },
             ),
             NodeType(
                 "MaskTexture",
                 {
-                    "widthI": 1024,
-                    "heightI": 1024,
-                    "dotsI": 10,
-                    "maxSizeI": 124,
-                    "minSizeI": 24,
-                    "betterDistCalcB": False,
-                    "modeS": "square",
+                    "width:I": 1024,
+                    "height:I": 1024,
+                    "dots:I": 10,
+                    "maxSize:I": 124,
+                    "minSize:I": 24,
+                    "betterDistCalc:B": False,
+                    "mode:S": "square",
                 },
             ),
         ],
@@ -76,7 +76,7 @@ NEW_NODE_TYPES: list[NodeTypeGroup] = [
     NodeTypeGroup(
         "Color",
         "#6e6e1d",
-        [NodeType("MixColor", {"aS": "", "bS": "", "factorS": "", "modeS": ""})],
+        [NodeType("MixColor", {"a:S": "", "b:S": "", "factor:FS": "", "mode:S": ""})],
     ),
     NodeTypeGroup(
         "Converter",
@@ -84,7 +84,7 @@ NEW_NODE_TYPES: list[NodeTypeGroup] = [
         [
             NodeType(
                 "ColorRamp",
-                {"imageS": "", "colorStopsA": "0.4-black,0.5-white", "modeS": "linear"},
+                {"image:S": "", "colorStopsA": "0.4-black,0.5-white", "mode:S": "linear"},
             )
         ],
     ),
@@ -94,7 +94,7 @@ NEW_NODE_TYPES: list[NodeTypeGroup] = [
         [
             NodeType(
                 "TextureCoordinate",
-                {"widthI": 1024, "heightI": 1024, "modeS": "object"},
+                {"width:I": 1024, "height:I": 1024, "mode:S": "object"},
             )
         ],
     ),
@@ -102,8 +102,8 @@ NEW_NODE_TYPES: list[NodeTypeGroup] = [
         "Other",
         "#344621",
         [
-            NodeType("Resize", {"widthI": 1024, "heightI": 1024, "imageS": ""}),
-            NodeType("TileFixer", {"blurF": 16, "imageS": ""}),
+            NodeType("Resize", {"width:I": 1024, "height:I": 1024, "image:S": ""}),
+            NodeType("TileFixer", {"blur:F": 16, "image:S": ""}),
         ],
     ),
     NodeTypeGroup(
@@ -113,11 +113,11 @@ NEW_NODE_TYPES: list[NodeTypeGroup] = [
             NodeType(
                 "Bump",
                 {
-                    "heightMapS": "",
-                    "strengthF": 1,
-                    "distanceF": 1,
-                    "invertB": False,
-                    "isDXB": False,
+                    "heightMap:S": "",
+                    "strength:F": 1,
+                    "distance:F": 1,
+                    "invert:B": False,
+                    "isDX:B": False,
                 },
             )
         ],

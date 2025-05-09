@@ -11,13 +11,26 @@ def change_node_pos(list: list, idx: int, offset: int) -> None:
     node = list.pop(idx)
     list.insert(idx + offset, node)
 
-def convert_value(key:str, value:any) -> any:
-        """Update the currently selected node from config fields."""
-        if key.endswith("I"):
-            return int(value)
-        elif key.endswith("F"):
-            return float(value)
-        elif key.endswith("B"):
-            return value.lower() in ("true", "1", "yes")
-        else:
-            return str(value)
+
+def convert_value(key: str, value: any) -> any:
+    """Update the currently selected node from config fields."""
+    splits = key.split(":")
+    if len(splits) != 2:
+        raise ValueError("Key dosnt split into tow")
+    splits = splits[1]
+    
+    types = [splits[i] for i in range(len(splits))]
+    print(types)
+    for type in types:
+        try:
+            if type == "I":
+                return int(value)
+            if type == "F":
+                return float(value)
+            if type == "B":
+                return value.lower() in ("true", "1", "yes")
+            if type == "S":
+                return str(value)
+        except:
+            continue
+    raise TypeError("No matching conversion found")
