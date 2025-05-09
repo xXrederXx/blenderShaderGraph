@@ -1,3 +1,5 @@
+from tkinter import filedialog as fd
+from util.my_json import from_json_file, to_json_string
 from style import (
     FRAME_GRID_KWARGS,
     FRAME_GRID_PADX,
@@ -32,12 +34,38 @@ class NodeApp(ctk.CTk):
         self.top.grid(row=0, column=0, sticky="nswe")
 
         self.main = ctk.CTkFrame(self, fg_color=MAIN_BG_COL, corner_radius=0)
-        self.main.grid(
-            row=1, column=0, **FRAME_GRID_KWARGS
-        )
+        self.main.grid(row=1, column=0, **FRAME_GRID_KWARGS)
         self.main.columnconfigure(0, weight=1)
         self.main.rowconfigure(0, weight=1)
         self.app = NodeAppMainFrame(self.main)
         self.app.grid(sticky="nswe")
-        self.tool_bar = ToolBarFrame(self.top, self.app.on_save_btn, self.app.on_load_btn, self.app.on_export_btn)
+        self.tool_bar = ToolBarFrame(
+            self.top, self.on_save_btn, self.on_load_btn, self.on_export_btn
+        )
         self.tool_bar.grid(sticky="nswe")
+
+    def on_save_btn(self):
+        """Used to save to a file"""
+        fp = fd.asksaveasfilename(
+            defaultextension=".bsg",
+            filetypes=[("bsg file", "*.bsg"), ("json file", "*.json")],
+        )
+        if not fp:
+            return
+        content = to_json_string(self.app.nodes)
+        with open(fp, "w", encoding="utf-8") as f:
+            f.write(content)
+
+    def on_load_btn(self):
+        """Used to load from a file"""
+        fp = fd.askopenfilename(
+            filetypes=[("bsg file", "*.bsg"), ("json file", "*.json")]
+        )
+        if not fp:
+            return
+        self.app.nodes = from_json_file(fp)
+        self.app.node_list_frame.update_node_list(self.app.nodes)
+
+    def on_export_btn(self):
+        """used to export to a file"""
+        self.on_save_btn()

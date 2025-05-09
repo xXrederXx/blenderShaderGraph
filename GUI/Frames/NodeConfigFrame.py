@@ -8,13 +8,10 @@ from custom_components.ctk_labled_entry import CTkLabledEntry
 from nodes import NEW_NODE_TYPES
 from style import (
     FRAME_KWARGS,
-    DROPDOWN_KWARGS,
-    ENTRY_KWARGS,
     TEXT_COLOR,
     PRIMARY_BUTTON_BG_COLOR,
     SECONDARY_BUTTON_BG_COLOR,
     HEADER_FONT,
-    TEXT_FONT,
     LABEL_KWARGS,
     FRAME_BG_COL
 )

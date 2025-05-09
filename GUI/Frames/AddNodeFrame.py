@@ -13,7 +13,7 @@ from style import (
     PRIMARY_BUTTON_BG_COLOR,
     DROPDOWN_KWARGS,
     ENTRY_KWARGS,
-    HEADER_FONT
+    HEADER_FONT,
 )
 
 
@@ -78,16 +78,12 @@ class AddNodeFrame(ctk.CTkFrame):
         self.node_type_menu.pack(pady=5, padx=24, fill="x")
 
         self.new_id_entry = ctk.CTkEntry(
-            add_node_frame,
-            placeholder_text="Id",
-            **ENTRY_KWARGS
+            add_node_frame, placeholder_text="Id", **ENTRY_KWARGS
         )
         self.new_id_entry.pack(pady=5, padx=24, fill="x")
 
         self.new_desc_entry = ctk.CTkEntry(
-            add_node_frame,
-            placeholder_text="Description",
-            **ENTRY_KWARGS
+            add_node_frame, placeholder_text="Description", **ENTRY_KWARGS
         )
         self.new_desc_entry.pack(pady=5, padx=24, fill="x")
 
@@ -138,3 +134,39 @@ class AddNodeFrame(ctk.CTkFrame):
         """Update the color of the node group menu."""
         color = self.node_groups_colors[selected_group]
         self.node_groups_menu.configure(fg_color=color)
+
+    def get_node(self) -> dict[str, any]:
+        """returns a node dict
+
+        Returns:
+            dict[str, any]: node
+        """
+        name = self.new_id_entry.get()
+        description = self.new_desc_entry.get()
+        selected_type_name = self.node_type_var.get()
+        selected_group_name = self.node_groups_var.get()
+
+        if not name or not selected_type_name:
+            return
+
+        node_group = next(
+            (g for g in NEW_NODE_TYPES if g.name == selected_group_name), None
+        )
+        if not node_group:
+            return
+
+        node_type = next(
+            (nt for nt in node_group.nodes if nt.name == selected_type_name), None
+        )
+        if not node_type:
+            return
+
+        new_node = dict(node_type.params)
+        new_node["idS"] = name
+        new_node["descriptionS"] = description
+        new_node["typeS"] = selected_type_name
+
+        self.new_id_entry.delete(0, "end")
+        self.new_desc_entry.delete(0, "end")
+
+        return new_node
