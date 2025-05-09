@@ -7,7 +7,7 @@ from style import (
     init_fonts,
 )
 from Frames.NodeAppMainFrame import NodeAppMainFrame
-
+from Frames.ToolBarFrame import ToolBarFrame
 
 import customtkinter as ctk
 
@@ -26,10 +26,10 @@ class NodeApp(ctk.CTk):
         self.rowconfigure(0, weight=0)
         self.rowconfigure(1, weight=1)
 
-        self.tool_bar = ctk.CTkFrame(
+        self.top = ctk.CTkFrame(
             self, fg_color=TOOLBAR_BG_COL, height=48, corner_radius=0
         )
-        self.tool_bar.grid(row=0, column=0, sticky="nswe")
+        self.top.grid(row=0, column=0, sticky="nswe")
 
         self.main = ctk.CTkFrame(self, fg_color=MAIN_BG_COL, corner_radius=0)
         self.main.grid(
@@ -39,3 +39,5 @@ class NodeApp(ctk.CTk):
         self.main.rowconfigure(0, weight=1)
         self.app = NodeAppMainFrame(self.main)
         self.app.grid(sticky="nswe")
+        self.tool_bar = ToolBarFrame(self.top, self.app.on_save_btn, self.app.on_load_btn, self.app.on_export_btn)
+        self.tool_bar.grid(sticky="nswe")
