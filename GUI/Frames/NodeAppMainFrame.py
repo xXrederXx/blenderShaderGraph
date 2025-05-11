@@ -28,6 +28,7 @@ class NodeAppMainFrame(ctk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure((1, 2), weight=2)
         self.grid_rowconfigure(0, weight=1)
+        self.grid_propagate(False)
 
     def _create_frames(self) -> None:
         self.node_list_frame = NodeListFrame(
@@ -65,7 +66,10 @@ class NodeAppMainFrame(ctk.CTkFrame):
 
     def add_node(self) -> None:
         """Adds a new node to the list."""
-        self.nodes.append(self.add_node_frame.get_node())
+        node = self.add_node_frame.get_node()
+        if not node:
+            return
+        self.nodes.append(node)
         self.node_list_frame.update_node_list(self.nodes)
 
     def show_details(self, idx: int) -> None:

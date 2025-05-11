@@ -1,3 +1,13 @@
+from custom_components.my_entry import (
+    MyEntry,
+    StringEntry,
+    EnumEntry,
+    IntEntry,
+    BoolEntry,
+    FloatEntry,
+)
+
+
 def change_node_pos(list: list, idx: int, offset: int) -> None:
     """Changes node pos in list
 
@@ -18,9 +28,8 @@ def convert_value(key: str, value: any) -> any:
     if len(splits) != 2:
         raise ValueError("Key dosnt split into tow")
     splits = splits[1]
-    
+
     types = [splits[i] for i in range(len(splits))]
-    print(types)
     for type in types:
         try:
             if type == "I":
@@ -34,3 +43,20 @@ def convert_value(key: str, value: any) -> any:
         except:
             continue
     raise TypeError("No matching conversion found")
+
+
+def get_my_entry(key: str, **kwargs) -> MyEntry:
+    if not len(key) == 1 and not key.startswith("E-"):
+        return StringEntry(**kwargs)
+    
+    if key == "I":
+        return IntEntry(**kwargs)
+    if key == "F":
+        return FloatEntry(**kwargs)
+    if key == "B":
+        return BoolEntry(**kwargs)
+    if key.startswith("E-"):
+        key = key.removeprefix("E-")
+        enum = key.split("-")
+        return EnumEntry(enum=enum, **kwargs)
+    return StringEntry(**kwargs)

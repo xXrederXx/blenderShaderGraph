@@ -4,9 +4,9 @@ from typing import Callable
 
 import customtkinter as ctk
 
-from custom_components.ctk_labled_entry import CTkLabledEntry
 from nodes import NEW_NODE_TYPES
 from style import (
+    ENTRY_KWARGS,
     FRAME_KWARGS,
     TEXT_COLOR,
     PRIMARY_BUTTON_BG_COLOR,
@@ -15,7 +15,7 @@ from style import (
     LABEL_KWARGS,
     FRAME_BG_COL
 )
-
+from util.node_util import get_my_entry
 
 class NodeConfigFrame(ctk.CTkFrame):
     """Frame for configuring and editing a selected node."""
@@ -75,15 +75,15 @@ class NodeConfigFrame(ctk.CTkFrame):
         )
         self.gen_img_btn.grid(row=0, column=1, sticky="nswe", pady=8, padx=4)
 
-        self.image_label = ctk.CTkLabel(self, text="")
+        self.image_label = ctk.CTkLabel(self, text="", wraplength=400)
         self.image_label.pack(pady=10)
 
         self.custom_field_entries: dict[str, ctk.CTkEntry] = {}
 
     def show_details(self, node: dict) -> None:
         """Displays details of the selected node in the config frame."""
-        self.details_label.configure(text=f"Editing: {node.get('idS', 'Unknown')}")
-        node_type = node.get("typeS", "Unknown")
+        self.details_label.configure(text=f"Editing: {node.get('id:S', 'Unknown')}")
+        node_type = node.get("type:S", "Unknown")
         self.category_label.configure(text=node_type)
         self.top_bar.configure(border_color=self.node_colors.get(node_type, "black"))
         self.clear_custom_fields()
@@ -91,11 +91,26 @@ class NodeConfigFrame(ctk.CTkFrame):
         for field_name, value in node.items():
             if field_name == "typeS":
                 continue
-            labeled_entry = CTkLabledEntry(
-                self.custom_fields_frame, field_name[:-1], 180, 100, 24, "x", True
+            splited_name = field_name.split(":")
+            if len(splited_name) != 2:
+                print("len is not 2")
+                continue
+            name = splited_name[0]
+            types = splited_name[1]
+            
+            field_frame = ctk.CTkFrame(self.custom_fields_frame, fg_color=FRAME_BG_COL)
+            field_frame.pack(pady=2, fill="x")
+            label = ctk.CTkLabel(
+                field_frame, text=name, width=180, anchor="w", **LABEL_KWARGS
             )
-            labeled_entry.entry.insert(0, str(value))
-            self.custom_field_entries[field_name] = labeled_entry.entry
+            label.pack(side="left", padx=24)
+
+            entry = get_my_entry(types, master=field_frame, width=100, **ENTRY_KWARGS)
+
+            entry.pack(side="left", fill="x", expand=True)
+            
+            entry.insert(0, str(value))
+            self.custom_field_entries[field_name] = entry
 
         self.image_label.configure(text="No image provided", image="")
 

@@ -145,8 +145,7 @@ class AddNodeFrame(ctk.CTkFrame):
         description = self.new_desc_entry.get()
         selected_type_name = self.node_type_var.get()
         selected_group_name = self.node_groups_var.get()
-
-        if not name or not selected_type_name:
+        if not name or not selected_type_name :
             return
 
         node_group = next(

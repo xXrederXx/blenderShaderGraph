@@ -2,8 +2,6 @@ from tkinter import filedialog as fd
 from util.my_json import from_json_file, to_json_string
 from style import (
     FRAME_GRID_KWARGS,
-    FRAME_GRID_PADX,
-    FRAME_GRID_PADY,
     MAIN_BG_COL,
     TOOLBAR_BG_COL,
     init_fonts,
