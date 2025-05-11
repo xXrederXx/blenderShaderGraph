@@ -1,3 +1,4 @@
+import json
 from tkinter import filedialog as fd
 from util.my_json import from_json_file, to_json_string
 from style import (
@@ -50,7 +51,7 @@ class NodeApp(ctk.CTk):
         )
         if not fp:
             return
-        content = to_json_string(self.app.nodes)
+        content = json.dumps(self.app.nodes)
         with open(fp, "w", encoding="utf-8") as f:
             f.write(content)
 
@@ -61,9 +62,20 @@ class NodeApp(ctk.CTk):
         )
         if not fp:
             return
-        self.app.nodes = from_json_file(fp)
+        content = ""
+        with open(fp, "r", encoding="utf-8") as f:
+            content = f.read()
+        self.app.nodes = json.loads(content)
         self.app.node_list_frame.update_node_list(self.app.nodes)
 
     def on_export_btn(self):
         """used to export to a file"""
-        self.on_save_btn()
+        fp = fd.asksaveasfilename(
+            defaultextension=".bsg",
+            filetypes=[("bsg file", "*.bsg"), ("json file", "*.json")],
+        )
+        if not fp:
+            return
+        content = to_json_string(self.app.nodes)
+        with open(fp, "w", encoding="utf-8") as f:
+            f.write(content)

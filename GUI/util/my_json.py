@@ -40,6 +40,8 @@ def unformat_node_dict(formatted: dict[str, any]) -> dict[str, any]:
     Returns:
         dict[str, any]: The original-style dict with 'idS', 'typeS', etc.
     """
+    print("Not working with type system")
+    return
     result: dict[str, any] = {}
 
     if "id" in formatted:

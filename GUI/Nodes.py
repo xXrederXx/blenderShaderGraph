@@ -84,7 +84,7 @@ NEW_NODE_TYPES: list[NodeTypeGroup] = [
         [
             NodeType(
                 "ColorRamp",
-                {"image:S": "", "colorStops:S": "0.4-black,0.5-white", "mode:E-linear-constant": "linear"},
+                {"image:S": "", "colorStops:S": "black-0,white-1", "mode:E-linear-constant": "linear"},
             )
         ],
     ),

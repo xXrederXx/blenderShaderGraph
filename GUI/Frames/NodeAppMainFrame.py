@@ -102,9 +102,11 @@ class NodeAppMainFrame(ctk.CTkFrame):
 
     def generate_image(self) -> None:
         """Stub for generating an image."""
+        self.update_node()
         request_image_async(self.add_node_frame.generated_image, self.nodes)
 
     def request_node_image(self) -> None:
         """Requests an image for the currently selected node"""
+        self.update_node()
         nodes = self.nodes[0 : self.selected_node_index + 1]
         request_image_async(self.config_frame.image_label, nodes)
