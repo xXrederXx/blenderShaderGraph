@@ -5,10 +5,12 @@ from style import TEXT_COLOR
 
 T = TypeVar("T")
 
+
 class MyEntry(ctk.CTkEntry, Generic[T], ABC):
-    def __init__(self, **kwargs):
+    def __init__(self, default_value:T, **kwargs):
         super().__init__(**kwargs)
         self.bind("<KeyRelease>", lambda e: self.input_validation())
+        self.default = default_value
 
     def input_validation(self):
         current = self.get()
@@ -25,16 +27,16 @@ class MyEntry(ctk.CTkEntry, Generic[T], ABC):
     def convert_input(self, text: str) -> T:
         pass
 
-    def get_value(self, default: T) -> T:
+    def get_value(self) -> T:
         current = super().get()
         if not self.validate_input(current):
-            return default
+            return self.default
         return self.convert_input(current)
 
 
 class IntEntry(MyEntry[int]):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(0, **kwargs)
 
     def validate_input(self, text: str) -> bool:
         try:
@@ -45,10 +47,11 @@ class IntEntry(MyEntry[int]):
 
     def convert_input(self, text: str) -> int:
         return int(text)
-    
+
+
 class FloatEntry(MyEntry[float]):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(0.0, **kwargs)
 
     def validate_input(self, text: str) -> bool:
         try:
@@ -60,9 +63,10 @@ class FloatEntry(MyEntry[float]):
     def convert_input(self, text: str) -> float:
         return float(text)
 
+
 class StringEntry(MyEntry[str]):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__("", **kwargs)
 
     def validate_input(self, text: str) -> bool:
         return True
@@ -70,19 +74,28 @@ class StringEntry(MyEntry[str]):
     def convert_input(self, text: str) -> str:
         return text
 
+
 class BoolEntry(MyEntry[bool]):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(False, **kwargs)
 
     def validate_input(self, text: str) -> bool:
-        return text.lower() in ("yes", "no", "0", "1", "true", "false",)
+        return text.lower() in (
+            "yes",
+            "no",
+            "0",
+            "1",
+            "true",
+            "false",
+        )
 
-    def convert_input(self, text: str) -> str:
+    def convert_input(self, text: str) -> bool:
         return text.lower() in ("yes", "1", "true")
-    
-class EnumEntry(MyEntry[bool]):
-    def __init__(self, enum:list[str], **kwargs):
-        super().__init__(**kwargs)
+
+
+class EnumEntry(MyEntry[str]):
+    def __init__(self, enum: list[str], **kwargs):
+        super().__init__("", **kwargs)
         self.enum = enum
 
     def validate_input(self, text: str) -> bool:

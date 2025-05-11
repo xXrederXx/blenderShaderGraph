@@ -85,7 +85,7 @@ class NodeAppMainFrame(ctk.CTkFrame):
 
         node = self.nodes[self.selected_node_index]
         for field_name, entry in self.config_frame.custom_field_entries.items():
-            value = entry.get()
+            value = entry.get_value()
             try:
                 node[field_name] = convert_value(field_name, value)
             except ValueError:

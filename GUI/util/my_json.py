@@ -19,14 +19,14 @@ def format_node_dict(_dict: dict[str, any]) -> dict[str, any]:
     ret: dict[str, any] = {}
     params: dict[str, any] = {}
     for key, value in _dict.items():
-        if key == "idS":
+        if key == "id:S":
             ret["id"] = value
-        elif key == "typeS":
+        elif key == "type:S":
             ret["type"] = value
-        elif key == "descriptionS":
+        elif key == "description:S":
             ret["description"] = value
         else:
-            params[key[0:-1]] = value
+            params[key.split(":")[0]] = value
     ret["params"] = params
     return ret
 

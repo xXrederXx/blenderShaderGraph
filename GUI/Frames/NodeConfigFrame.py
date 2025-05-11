@@ -16,6 +16,7 @@ from style import (
     FRAME_BG_COL
 )
 from util.node_util import get_my_entry
+from custom_components.my_entry import MyEntry
 
 class NodeConfigFrame(ctk.CTkFrame):
     """Frame for configuring and editing a selected node."""
@@ -78,7 +79,7 @@ class NodeConfigFrame(ctk.CTkFrame):
         self.image_label = ctk.CTkLabel(self, text="", wraplength=400)
         self.image_label.pack(pady=10)
 
-        self.custom_field_entries: dict[str, ctk.CTkEntry] = {}
+        self.custom_field_entries: dict[str, MyEntry] = {}
 
     def show_details(self, node: dict) -> None:
         """Displays details of the selected node in the config frame."""
