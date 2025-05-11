@@ -117,11 +117,24 @@ public class ColorRampNode : Node<ColorRampProps, Input<MyColor>>
     {
         JsonElement p = element.GetProperty("params");
         List<ColorStop> stops = [];
-        foreach (JsonElement x in p.GetProperty("colorStops").EnumerateArray())
+        JsonElement stopsElement = p.GetProperty("colorStops");
+        if (stopsElement.ValueKind == JsonValueKind.String)
         {
-            MyColor col = ColorTranslator.FromHtml(x.GetString("color", "black"));
-            float pos = x.GetFloat("position", 0);
-            stops.Add(new(col, pos));
+            // "0.4-black,0.5-white"
+            string val = stopsElement.GetString() ?? string.Empty;
+            stops = val.Split(',') // split stops
+                .Select(x => x.Split('-')) // split stop values
+                .Select(x => new ColorStop(ColorTranslator.FromHtml(x[0]), float.Parse(x[1]))) // arrange values
+                .ToList();
+        }
+        else if (stopsElement.ValueKind == JsonValueKind.Array)
+        {
+            foreach (JsonElement x in p.GetProperty("colorStops").EnumerateArray())
+            {
+                MyColor col = ColorTranslator.FromHtml(x.GetString("color", "black"));
+                float pos = x.GetFloat("position", 0);
+                stops.Add(new(col, pos));
+            }
         }
         string modeStr = p.GetString("mode", "linear");
         ColorRampMode mode = modeStr switch
