@@ -41,7 +41,7 @@ This repository is provided **as-is** for educational and experimental purposes.
 
 ## 📷 Screenshots
 
-*Add screenshots here if available.*
+![GUI](image.png)
 
 ---
 
