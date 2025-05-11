@@ -125,7 +125,15 @@ public static class JsonElementUtil
         string img = self.GetString(propName, "");
         if (!contex.TryGetValue(img, out Input? obj) || obj is not Input<float> flot)
         {
-            throw new FileNotFoundException($"Node {IdSelf} could not find input: {img}");
+            if (obj is not Input<MyColor> col)
+            {
+                throw new FileNotFoundException($"Node {IdSelf} could not find input: {img}");
+            }
+            if(col.useArray)
+            {
+                return new Input<float>(Converter.ConvertToFloat(col.Array ?? new MyColor[0, 0]));
+            }
+            return new Input<float>(col.Value.GetGrayscale());
         }
         return flot;
     }
