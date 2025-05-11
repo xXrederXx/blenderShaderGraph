@@ -18,10 +18,12 @@ class NodeListFrame(ctk.CTkScrollableFrame):
         master,
         on_node_select: Callable[[int], None],
         on_node_pos_change: Callable[[int, int], None],
+        on_delete_node: Callable[[int], None]
     ) -> None:
         super().__init__(master, **FRAME_KWARGS)
         self.on_node_select = on_node_select
         self.on_node_pos_change = on_node_pos_change
+        self.on_delete_node = on_delete_node
         self.node_buttons: List[ctk.CTkFrame] = []
 
         self.node_colors: dict[str, str] = {
@@ -34,7 +36,6 @@ class NodeListFrame(ctk.CTkScrollableFrame):
             btn.destroy()
         self.node_buttons.clear()
         for idx, node in enumerate(nodes):
-            print(idx)
             frame = ctk.CTkFrame(self)
             frame.pack(fill="x", pady=2)
             frame.columnconfigure(0, weight=1)
@@ -70,5 +71,17 @@ class NodeListFrame(ctk.CTkScrollableFrame):
                 command=partial(self.on_node_pos_change, idx, 1),
             )
             down_btn.grid(row=0, column=2)
+            
+            delete_btn = ctk.CTkButton(
+                frame,
+                text="x",
+                width=24,
+                fg_color=self.node_colors[node["type:S"]],
+                hover_color=dimm_color(self.node_colors[node["type:S"]]),
+                corner_radius=0,
+                command=partial(self.on_delete_node, idx),
+                text_color="red"
+            )
+            delete_btn.grid(row=0, column=3)
 
             self.node_buttons.append(frame)
