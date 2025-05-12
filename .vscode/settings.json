@@ -1,0 +1,9 @@
+{
+    "json.schemas": [
+      {
+        "fileMatch": ["*.sg.json"],  // or use "*.myjson" or similar pattern
+        "url": "./json-schema/shadergraph-schema.json"  // relative to the workspace
+      }
+    ]
+  }
+  
