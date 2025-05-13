@@ -28,10 +28,10 @@ def convert_value(key: str, value: any) -> any:
     if len(splits) != 2:
         raise ValueError("Key dosnt split into tow")
     splits = splits[1]
-    
+
     if splits.startswith("E-"):
         return value
-    
+
     types = [splits[i] for i in range(len(splits))]
     for type in types:
         try:
@@ -51,7 +51,7 @@ def convert_value(key: str, value: any) -> any:
 def get_my_entry(key: str, **kwargs) -> MyEntry:
     if not len(key) == 1 and not key.startswith("E-"):
         return StringEntry(**kwargs)
-    
+
     if key == "I":
         return IntEntry(**kwargs)
     if key == "F":

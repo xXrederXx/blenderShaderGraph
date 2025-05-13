@@ -17,7 +17,7 @@ from style import (
     CORNER_RADIUS_MEDIUM,
     LABEL_KWARGS,
     TEXT_FONT,
-    FRAME_BG_COL
+    FRAME_BG_COL,
 )
 
 
@@ -47,7 +47,9 @@ class NodeListFrame(ctk.CTkScrollableFrame):
             btn.destroy()
         self.node_buttons.clear()
         for idx, node in enumerate(nodes):
-            frame = ctk.CTkFrame(self, corner_radius=CORNER_RADIUS_MEDIUM, fg_color="transparent")
+            frame = ctk.CTkFrame(
+                self, corner_radius=CORNER_RADIUS_MEDIUM, fg_color="transparent"
+            )
             frame.pack(fill="x", pady=PAD_SMALL)
             frame.columnconfigure(0, weight=1)
 
@@ -95,7 +97,7 @@ class NodeListFrame(ctk.CTkScrollableFrame):
                 corner_radius=0,
                 command=partial(self.on_delete_node, idx),
                 text_color="red",
-                font=TEXT_FONT
+                font=TEXT_FONT,
             )
             delete_btn.grid(row=0, column=3)
 

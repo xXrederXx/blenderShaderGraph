@@ -15,7 +15,9 @@ from style import (
     LABEL_KWARGS,
     PAD_SMALL,
     BUTTON_KWARKS,
-    PAD_LARGE
+    PAD_LARGE,
+    HEADER_FONT,
+    TEXT_COLOR,
 )
 
 
@@ -53,12 +55,10 @@ class AddNodeFrame(ctk.CTkFrame):
         add_node_frame.grid(row=0, column=0, **FRAME_GRID_KWARGS)
 
         ctk.CTkLabel(
-            add_node_frame,
-            text="Add New Node",
-            **LABEL_KWARGS
+            add_node_frame, text="Add New Node", text_color=TEXT_COLOR, font=HEADER_FONT
         ).pack(pady=PAD_LARGE)
 
-        label_pack_props = {"pady":PAD_SMALL, "padx":PAD_LARGE, "fill":"x"}
+        label_pack_props = {"pady": PAD_SMALL, "padx": PAD_LARGE, "fill": "x"}
         self.node_groups_var = ctk.StringVar(value=self.node_groups[0])
         self.node_groups_menu = ctk.CTkOptionMenu(
             add_node_frame,
@@ -119,7 +119,9 @@ class AddNodeFrame(ctk.CTkFrame):
             image=None,
             **LABEL_KWARGS
         )
-        self.generated_image.pack(fill="both", padx=PAD_LARGE, pady=PAD_LARGE, expand=True)
+        self.generated_image.pack(
+            fill="both", padx=PAD_LARGE, pady=PAD_LARGE, expand=True
+        )
 
     def _on_group_change_wrapper(self, selected_group: str) -> None:
         self.update_node_type_menu(selected_group)
@@ -147,7 +149,7 @@ class AddNodeFrame(ctk.CTkFrame):
         description = self.new_desc_entry.get()
         selected_type_name = self.node_type_var.get()
         selected_group_name = self.node_groups_var.get()
-        if not name or not selected_type_name :
+        if not name or not selected_type_name:
             return
 
         node_group = next(

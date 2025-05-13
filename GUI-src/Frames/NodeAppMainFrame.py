@@ -35,7 +35,7 @@ class NodeAppMainFrame(ctk.CTkFrame):
             self,
             on_node_select=self.show_details,
             on_node_pos_change=self.change_node_pos,
-            on_delete_node=self.delete_node
+            on_delete_node=self.delete_node,
         )
         self.node_list_frame.grid(row=0, column=0, **FRAME_GRID_KWARGS)
 
@@ -78,11 +78,11 @@ class NodeAppMainFrame(ctk.CTkFrame):
         self.selected_node_index = idx
         selected_node = self.nodes[idx]
         self.config_frame.show_details(selected_node)
-    
-    def delete_node(self, idx:int):
+
+    def delete_node(self, idx: int):
         self.nodes.pop(idx)
         self.node_list_frame.update_node_list(self.nodes)
-    
+
     def update_node(self) -> None:
         """Update the currently selected node from config fields."""
         if self.selected_node_index is None:

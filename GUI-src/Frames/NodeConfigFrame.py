@@ -18,11 +18,12 @@ from style import (
     PAD_MEDIUM,
     PAD_LARGE,
     BUTTON_KWARKS,
-    CORNER_RADIUS_MEDIUM
+    CORNER_RADIUS_MEDIUM,
 )
 from util.node_util import get_my_entry
 from custom_components.my_entry import MyEntry
 from util.color_util import dimm_color
+
 
 class NodeConfigFrame(ctk.CTkFrame):
     """Frame for configuring and editing a selected node."""
@@ -42,7 +43,12 @@ class NodeConfigFrame(ctk.CTkFrame):
             for n in g.nodes:
                 self.node_colors[n.name] = g.color
 
-        self.top_bar = ctk.CTkFrame(self, border_color="black", border_width=2, corner_radius=CORNER_RADIUS_MEDIUM)
+        self.top_bar = ctk.CTkFrame(
+            self,
+            border_color="black",
+            border_width=2,
+            corner_radius=CORNER_RADIUS_MEDIUM,
+        )
         self.top_bar.pack(fill="x", padx=PAD_SMALL, pady=PAD_SMALL)
         self.top_bar.columnconfigure(0, weight=1)
         self.details_label = ctk.CTkLabel(
@@ -52,10 +58,14 @@ class NodeConfigFrame(ctk.CTkFrame):
             text_color=TEXT_COLOR,
             anchor="w",
         )
-        self.details_label.grid(row=0, column=0, sticky="nswe", pady=PAD_LARGE, padx=PAD_LARGE)
+        self.details_label.grid(
+            row=0, column=0, sticky="nswe", pady=PAD_LARGE, padx=PAD_LARGE
+        )
 
         self.category_label = ctk.CTkLabel(self.top_bar, text="", **LABEL_KWARGS)
-        self.category_label.grid(row=0, column=1, sticky="nswe", pady=PAD_MEDIUM, padx=PAD_MEDIUM)
+        self.category_label.grid(
+            row=0, column=1, sticky="nswe", pady=PAD_MEDIUM, padx=PAD_MEDIUM
+        )
 
         self.custom_fields_frame = ctk.CTkFrame(self, fg_color=FRAME_BG_COL)
         self.custom_fields_frame.pack(pady=PAD_MEDIUM, fill="both", expand=False)
@@ -70,9 +80,11 @@ class NodeConfigFrame(ctk.CTkFrame):
             command=self.on_update,
             fg_color=PRIMARY_BUTTON_BG_COLOR,
             hover_color=dimm_color(PRIMARY_BUTTON_BG_COLOR),
-            **BUTTON_KWARKS
+            **BUTTON_KWARKS,
         )
-        self.update_button.grid(row=0, column=0, sticky="nswe", pady=PAD_MEDIUM, padx=PAD_SMALL)
+        self.update_button.grid(
+            row=0, column=0, sticky="nswe", pady=PAD_MEDIUM, padx=PAD_SMALL
+        )
 
         self.gen_img_btn = ctk.CTkButton(
             bottom_container,
@@ -80,9 +92,11 @@ class NodeConfigFrame(ctk.CTkFrame):
             command=self.on_req_img,
             fg_color=SECONDARY_BUTTON_BG_COLOR,
             hover_color=dimm_color(SECONDARY_BUTTON_BG_COLOR),
-            **BUTTON_KWARKS
+            **BUTTON_KWARKS,
         )
-        self.gen_img_btn.grid(row=0, column=1, sticky="nswe", pady=PAD_MEDIUM, padx=PAD_SMALL)
+        self.gen_img_btn.grid(
+            row=0, column=1, sticky="nswe", pady=PAD_MEDIUM, padx=PAD_SMALL
+        )
 
         self.image_label = ctk.CTkLabel(self, text="", wraplength=400)
         self.image_label.pack(pady=PAD_MEDIUM)

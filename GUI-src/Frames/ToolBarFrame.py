@@ -3,6 +3,7 @@ import customtkinter as ctk
 from style import TOOLBAR_BG_COL, LABEL_KWARGS, PAD_SMALL
 from util.color_util import dimm_color
 
+
 class ToolBarFrame(ctk.CTkFrame):
     """Frame that displays a list of nodes as buttons."""
 

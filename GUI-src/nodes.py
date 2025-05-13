@@ -76,7 +76,17 @@ NEW_NODE_TYPES: list[NodeTypeGroup] = [
     NodeTypeGroup(
         "Color",
         "#6e6e1d",
-        [NodeType("MixColor", {"a:S": "", "b:S": "", "factor:FS": "", "mode:E-mix-lighten-darken-linearlight-hue-value-saturation": ""})],
+        [
+            NodeType(
+                "MixColor",
+                {
+                    "a:S": "",
+                    "b:S": "",
+                    "factor:FS": "",
+                    "mode:E-mix-lighten-darken-linearlight-hue-value-saturation": "",
+                },
+            )
+        ],
     ),
     NodeTypeGroup(
         "Converter",
@@ -84,7 +94,11 @@ NEW_NODE_TYPES: list[NodeTypeGroup] = [
         [
             NodeType(
                 "ColorRamp",
-                {"image:S": "", "colorStops:S": "black-0,white-1", "mode:E-linear-constant": "linear"},
+                {
+                    "image:S": "",
+                    "colorStops:S": "black-0,white-1",
+                    "mode:E-linear-constant": "linear",
+                },
             )
         ],
     ),

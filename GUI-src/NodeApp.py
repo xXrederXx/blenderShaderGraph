@@ -17,7 +17,7 @@ class NodeApp(ctk.CTk):
     """Main application for managing nodes."""
 
     def __init__(self):
-        super().__init__()
+        super().__init__(fg_color=MAIN_BG_COL)
         self.title("Node Manager")
         self.geometry("1400x800")
 
