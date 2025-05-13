@@ -17,16 +17,25 @@ PRIMARY_BUTTON_BG_COLOR = "#224567"
 SECONDARY_BUTTON_BG_COLOR = "#393a3e"
 
 TEXT_COLOR = "#f9fdfe"
-TEXT_FONT = None
-HEADER_FONT = None
+_FONT_NAME = "Inter"
+TEXT_FONT = (_FONT_NAME, 13)
+HEADER_FONT = (_FONT_NAME, 20, "bold")
 
 def init_fonts():
     global TEXT_FONT
     global HEADER_FONT
-    TEXT_FONT = CTkFont("Cascadia Mono", 11, "normal", "roman", False, False)
-    HEADER_FONT = CTkFont("Cascadia Mono SemiBold", 20, "normal", "roman", False, False)
+    TEXT_FONT = CTkFont(_FONT_NAME, 13, "normal", "roman", False, False)
+    HEADER_FONT = CTkFont(_FONT_NAME, 20, "normal", "roman", False, False)
 
 
+
+CORNER_RADIUS_SMALL = 4
+CORNER_RADIUS_MEDIUM = 8
+CORNER_RADIUS_LARGE = 16
+
+PAD_SMALL = 4
+PAD_MEDIUM = 8
+PAD_LARGE = 16
 
 DROPDOWN_KWARGS = {
     "text_color": TEXT_COLOR,
@@ -45,4 +54,9 @@ ENTRY_KWARGS = {
 LABEL_KWARGS = {
     "font": TEXT_FONT,
     "text_color": TEXT_COLOR
+}
+
+BUTTON_KWARKS = {
+    **LABEL_KWARGS,
+    "corner_radius": CORNER_RADIUS_SMALL
 }
