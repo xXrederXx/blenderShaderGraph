@@ -38,23 +38,22 @@ PAD_LARGE = 16
 
 FRAME_KWARGS = {"corner_radius": CORNER_RADIUS_MEDIUM, "fg_color": FRAME_BG_COL}
 
+LABEL_KWARGS = {"font": TEXT_FONT, "text_color": TEXT_COLOR}
+
 DROPDOWN_KWARGS = {
-    "text_color": TEXT_COLOR,
+    **LABEL_KWARGS,
     "fg_color": SECONDARY_BUTTON_BG_COLOR,
     "button_color": SECONDARY_BUTTON_BG_COLOR,
-    "font": TEXT_FONT,
     "button_hover_color": dimm_color(SECONDARY_BUTTON_BG_COLOR),
     "corner_radius": CORNER_RADIUS_SMALL,
 }
 
 ENTRY_KWARGS = {
+    **LABEL_KWARGS,
     "fg_color": SECONDARY_BUTTON_BG_COLOR,
-    "text_color": TEXT_COLOR,
     "border_width": 1,
-    "font": TEXT_FONT,
     "corner_radius": CORNER_RADIUS_SMALL,
 }
 
-LABEL_KWARGS = {"font": TEXT_FONT, "text_color": TEXT_COLOR}
 
 BUTTON_KWARKS = {**LABEL_KWARGS, "corner_radius": CORNER_RADIUS_SMALL}
