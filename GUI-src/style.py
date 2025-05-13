@@ -3,9 +3,7 @@
 from customtkinter import CTkFont
 from util.color_util import dimm_color
 
-FRAME_CORNER_RAD = 8
 FRAME_BG_COL = "#27282d"
-FRAME_KWARGS = {"corner_radius": FRAME_CORNER_RAD, "fg_color": FRAME_BG_COL}
 FRAME_GRID_PADX = 4
 FRAME_GRID_PADY = 4
 FRAME_GRID_KWARGS = {"padx": FRAME_GRID_PADX, "pady": FRAME_GRID_PADY, "sticky": "nswe"}
@@ -22,6 +20,7 @@ _FONT_NAME = "Inter"
 TEXT_FONT = (_FONT_NAME, 13)
 HEADER_FONT = (_FONT_NAME, 20, "bold")
 
+
 def init_fonts():
     global TEXT_FONT
     global HEADER_FONT
@@ -29,21 +28,23 @@ def init_fonts():
     HEADER_FONT = CTkFont(_FONT_NAME, 20, "normal", "roman", False, False)
 
 
-
-CORNER_RADIUS_SMALL = 4
-CORNER_RADIUS_MEDIUM = 8
-CORNER_RADIUS_LARGE = 16
+CORNER_RADIUS_SMALL = 8
+CORNER_RADIUS_MEDIUM = 16
+CORNER_RADIUS_LARGE = 32
 
 PAD_SMALL = 4
 PAD_MEDIUM = 8
 PAD_LARGE = 16
+
+FRAME_KWARGS = {"corner_radius": CORNER_RADIUS_MEDIUM, "fg_color": FRAME_BG_COL}
 
 DROPDOWN_KWARGS = {
     "text_color": TEXT_COLOR,
     "fg_color": SECONDARY_BUTTON_BG_COLOR,
     "button_color": SECONDARY_BUTTON_BG_COLOR,
     "font": TEXT_FONT,
-    "button_hover_color": dimm_color(SECONDARY_BUTTON_BG_COLOR)
+    "button_hover_color": dimm_color(SECONDARY_BUTTON_BG_COLOR),
+    "corner_radius": CORNER_RADIUS_SMALL,
 }
 
 ENTRY_KWARGS = {
@@ -51,14 +52,9 @@ ENTRY_KWARGS = {
     "text_color": TEXT_COLOR,
     "border_width": 1,
     "font": TEXT_FONT,
+    "corner_radius": CORNER_RADIUS_SMALL,
 }
 
-LABEL_KWARGS = {
-    "font": TEXT_FONT,
-    "text_color": TEXT_COLOR
-}
+LABEL_KWARGS = {"font": TEXT_FONT, "text_color": TEXT_COLOR}
 
-BUTTON_KWARKS = {
-    **LABEL_KWARGS,
-    "corner_radius": CORNER_RADIUS_SMALL
-}
+BUTTON_KWARKS = {**LABEL_KWARGS, "corner_radius": CORNER_RADIUS_SMALL}

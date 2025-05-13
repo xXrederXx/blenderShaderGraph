@@ -13,10 +13,16 @@ from style import (
     SECONDARY_BUTTON_BG_COLOR,
     HEADER_FONT,
     LABEL_KWARGS,
-    FRAME_BG_COL
+    FRAME_BG_COL,
+    PAD_SMALL,
+    PAD_MEDIUM,
+    PAD_LARGE,
+    BUTTON_KWARKS,
+    CORNER_RADIUS_MEDIUM
 )
 from util.node_util import get_my_entry
 from custom_components.my_entry import MyEntry
+from util.color_util import dimm_color
 
 class NodeConfigFrame(ctk.CTkFrame):
     """Frame for configuring and editing a selected node."""
@@ -36,8 +42,8 @@ class NodeConfigFrame(ctk.CTkFrame):
             for n in g.nodes:
                 self.node_colors[n.name] = g.color
 
-        self.top_bar = ctk.CTkFrame(self, border_color="black", border_width=2)
-        self.top_bar.pack(fill="x", padx=4, pady=4)
+        self.top_bar = ctk.CTkFrame(self, border_color="black", border_width=2, corner_radius=CORNER_RADIUS_MEDIUM)
+        self.top_bar.pack(fill="x", padx=PAD_SMALL, pady=PAD_SMALL)
         self.top_bar.columnconfigure(0, weight=1)
         self.details_label = ctk.CTkLabel(
             self.top_bar,
@@ -46,38 +52,40 @@ class NodeConfigFrame(ctk.CTkFrame):
             text_color=TEXT_COLOR,
             anchor="w",
         )
-        self.details_label.grid(row=0, column=0, sticky="nswe", pady=12, padx=8)
+        self.details_label.grid(row=0, column=0, sticky="nswe", pady=PAD_LARGE, padx=PAD_LARGE)
 
         self.category_label = ctk.CTkLabel(self.top_bar, text="", **LABEL_KWARGS)
-        self.category_label.grid(row=0, column=1, sticky="nswe", pady=8, padx=8)
+        self.category_label.grid(row=0, column=1, sticky="nswe", pady=PAD_MEDIUM, padx=PAD_MEDIUM)
 
         self.custom_fields_frame = ctk.CTkFrame(self, fg_color=FRAME_BG_COL)
-        self.custom_fields_frame.pack(pady=10, fill="both", expand=False)
+        self.custom_fields_frame.pack(pady=PAD_MEDIUM, fill="both", expand=False)
 
         bottom_container = ctk.CTkFrame(self, fg_color=FRAME_BG_COL)
-        bottom_container.pack(fill="x", padx=4, pady=4)
+        bottom_container.pack(fill="x", padx=PAD_SMALL, pady=PAD_SMALL)
         bottom_container.columnconfigure((0, 1), weight=1)
 
         self.update_button = ctk.CTkButton(
             bottom_container,
             text="Update Node",
             command=self.on_update,
-            text_color=TEXT_COLOR,
             fg_color=PRIMARY_BUTTON_BG_COLOR,
+            hover_color=dimm_color(PRIMARY_BUTTON_BG_COLOR),
+            **BUTTON_KWARKS
         )
-        self.update_button.grid(row=0, column=0, sticky="nswe", pady=8, padx=4)
+        self.update_button.grid(row=0, column=0, sticky="nswe", pady=PAD_MEDIUM, padx=PAD_SMALL)
 
         self.gen_img_btn = ctk.CTkButton(
             bottom_container,
             text="Generate Image",
             command=self.on_req_img,
-            text_color=TEXT_COLOR,
             fg_color=SECONDARY_BUTTON_BG_COLOR,
+            hover_color=dimm_color(SECONDARY_BUTTON_BG_COLOR),
+            **BUTTON_KWARKS
         )
-        self.gen_img_btn.grid(row=0, column=1, sticky="nswe", pady=8, padx=4)
+        self.gen_img_btn.grid(row=0, column=1, sticky="nswe", pady=PAD_MEDIUM, padx=PAD_SMALL)
 
         self.image_label = ctk.CTkLabel(self, text="", wraplength=400)
-        self.image_label.pack(pady=10)
+        self.image_label.pack(pady=PAD_MEDIUM)
 
         self.custom_field_entries: dict[str, MyEntry] = {}
 
@@ -98,18 +106,18 @@ class NodeConfigFrame(ctk.CTkFrame):
                 continue
             name = splited_name[0]
             types = splited_name[1]
-            
+
             field_frame = ctk.CTkFrame(self.custom_fields_frame, fg_color=FRAME_BG_COL)
-            field_frame.pack(pady=2, fill="x")
+            field_frame.pack(pady=PAD_SMALL, fill="x")
             label = ctk.CTkLabel(
                 field_frame, text=name, width=180, anchor="w", **LABEL_KWARGS
             )
-            label.pack(side="left", padx=24)
+            label.pack(side="left", padx=PAD_LARGE)
 
             entry = get_my_entry(types, master=field_frame, width=100, **ENTRY_KWARGS)
 
             entry.pack(side="left", fill="x", expand=True)
-            
+
             entry.insert(0, str(value))
             self.custom_field_entries[field_name] = entry
 
