@@ -5,9 +5,15 @@ import time
 from PIL import Image
 import customtkinter as ctk
 import requests
-
+import numpy as np
 from util.my_json import to_json_string
 
+def _get_hash(content: list[dict[str, any]]) -> str:
+    ret_hash = 0x123456789abcdef
+    for node in content:
+        for k, v in node.items():
+            ret_hash ^= hash(v)
+    return np.base_repr(ret_hash, 36)
 
 def request_image_async(display: ctk.CTkLabel, content: list[dict[str, any]]) -> None:
     def task():
@@ -25,7 +31,9 @@ def request_image_async(display: ctk.CTkLabel, content: list[dict[str, any]]) ->
                 print(response.text)
                 display.after(0, lambda: display.configure(text=response.text))
                 return
-
+            
+            save_as_tmp(response.content, content)
+            
             image = Image.open(BytesIO(response.content))
             img = ctk.CTkImage(image, size=(512, 512))
 
@@ -42,11 +50,35 @@ def request_image_async(display: ctk.CTkLabel, content: list[dict[str, any]]) ->
     threading.Thread(target=task, daemon=True).start()
 
 
-def save_image_to_file(content: bytes) -> str:
-    filename = time.strftime("%d_%H-%M-%S", time.localtime()) + ".png"
+def save_as_tmp(data: bytes, source: list[dict[str, any]]):
+    filename = _get_hash(source) + ".png"
     directory = Path.cwd() / "tmp" / "img"
     directory.mkdir(parents=True, exist_ok=True)
     path = directory / filename
     with open(path, "wb") as f:
-        f.write(content)
-    return str(path)
+        f.write(data)
+        
+def get_from_tmp(source: list[dict[str, any]], display: ctk.CTkLabel):
+    filename = _get_hash(source) + ".png"
+    directory = Path.cwd() / "tmp" / "img"
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / filename
+    
+    if not Path.exists(path):
+        print("Not found: " + str(path))
+        return
+    
+    content = None
+    with open(path, "rb") as f:
+        content = f.read()
+        
+    image = Image.open(BytesIO(content))
+    img = ctk.CTkImage(image, size=(512, 512))
+
+    def update_ui():
+        display.configure(image=img)
+        display.configure(text="")
+
+    display.after(0, update_ui)
+    
+    

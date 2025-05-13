@@ -33,10 +33,12 @@ class NodeConfigFrame(ctk.CTkFrame):
         master,
         on_update: Callable[[], None],
         on_req_img: Callable[[], None],
+        on_auto_req: Callable[[], None]
     ) -> None:
         super().__init__(master, **FRAME_KWARGS)
         self.on_update = on_update
         self.on_req_img = on_req_img
+        self.on_auto_req = on_auto_req
 
         self.node_colors: dict[str, str] = {}
         for g in NEW_NODE_TYPES:
@@ -136,6 +138,7 @@ class NodeConfigFrame(ctk.CTkFrame):
             self.custom_field_entries[field_name] = entry
 
         self.image_label.configure(text="No image provided", image="")
+        self.on_auto_req()
 
     def clear_custom_fields(self) -> None:
         """Removes all field entry widgets from the frame."""

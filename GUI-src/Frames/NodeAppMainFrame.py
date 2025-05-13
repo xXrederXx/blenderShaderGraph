@@ -9,7 +9,7 @@ from Frames.AddNodeFrame import AddNodeFrame
 from Frames.NodeConfigFrame import NodeConfigFrame
 from Frames.NodeListFrame import NodeListFrame
 from util.node_util import change_node_pos, convert_value
-from util.io_util import request_image_async
+from util.io_util import request_image_async, get_from_tmp
 from style import FRAME_GRID_KWARGS, MAIN_BG_COL
 
 
@@ -40,7 +40,7 @@ class NodeAppMainFrame(ctk.CTkFrame):
         self.node_list_frame.grid(row=0, column=0, **FRAME_GRID_KWARGS)
 
         self.config_frame = NodeConfigFrame(
-            self, on_update=self.update_node, on_req_img=self.request_node_image
+            self, on_update=self.update_node, on_req_img=self.request_node_image, on_auto_req=self.request_from_tmp
         )
         self.config_frame.grid(row=0, column=1, **FRAME_GRID_KWARGS)
 
@@ -115,3 +115,9 @@ class NodeAppMainFrame(ctk.CTkFrame):
         self.update_node()
         nodes = self.nodes[0 : self.selected_node_index + 1]
         request_image_async(self.config_frame.image_label, nodes)
+
+    def request_from_tmp(self) -> None:
+        """Auto request image from tmp cache
+        """
+        nodes = self.nodes[0 : self.selected_node_index + 1]
+        get_from_tmp(nodes, self.config_frame.image_label)
