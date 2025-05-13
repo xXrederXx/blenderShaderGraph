@@ -1,6 +1,7 @@
 """Contains styling"""
 
 from customtkinter import CTkFont
+from util.color_util import dimm_color
 
 FRAME_CORNER_RAD = 8
 FRAME_BG_COL = "#27282d"
@@ -42,6 +43,7 @@ DROPDOWN_KWARGS = {
     "fg_color": SECONDARY_BUTTON_BG_COLOR,
     "button_color": SECONDARY_BUTTON_BG_COLOR,
     "font": TEXT_FONT,
+    "button_hover_color": dimm_color(SECONDARY_BUTTON_BG_COLOR)
 }
 
 ENTRY_KWARGS = {

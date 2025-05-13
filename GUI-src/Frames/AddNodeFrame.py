@@ -9,11 +9,13 @@ from style import (
     FRAME_KWARGS,
     MAIN_BG_COL,
     FRAME_GRID_KWARGS,
-    TEXT_COLOR,
     PRIMARY_BUTTON_BG_COLOR,
     DROPDOWN_KWARGS,
     ENTRY_KWARGS,
-    HEADER_FONT,
+    LABEL_KWARGS,
+    PAD_SMALL,
+    BUTTON_KWARKS,
+    PAD_LARGE
 )
 
 
@@ -53,10 +55,10 @@ class AddNodeFrame(ctk.CTkFrame):
         ctk.CTkLabel(
             add_node_frame,
             text="Add New Node",
-            font=HEADER_FONT,
-            text_color=TEXT_COLOR,
-        ).pack(pady=10)
+            **LABEL_KWARGS
+        ).pack(pady=PAD_LARGE)
 
+        label_pack_props = {"pady":PAD_SMALL, "padx":PAD_LARGE, "fill":"x"}
         self.node_groups_var = ctk.StringVar(value=self.node_groups[0])
         self.node_groups_menu = ctk.CTkOptionMenu(
             add_node_frame,
@@ -65,7 +67,7 @@ class AddNodeFrame(ctk.CTkFrame):
             command=self._on_group_change_wrapper,
             **DROPDOWN_KWARGS
         )
-        self.node_groups_menu.pack(pady=5, padx=24, fill="x")
+        self.node_groups_menu.pack(**label_pack_props)
 
         initial_group = self.node_groups_var.get()
         self.node_type_var = ctk.StringVar(value=self.node_types_dict[initial_group][0])
@@ -75,26 +77,26 @@ class AddNodeFrame(ctk.CTkFrame):
             values=self.node_types_dict[initial_group],
             **DROPDOWN_KWARGS
         )
-        self.node_type_menu.pack(pady=5, padx=24, fill="x")
+        self.node_type_menu.pack(**label_pack_props)
 
         self.new_id_entry = ctk.CTkEntry(
             add_node_frame, placeholder_text="Id", **ENTRY_KWARGS
         )
-        self.new_id_entry.pack(pady=5, padx=24, fill="x")
+        self.new_id_entry.pack(**label_pack_props)
 
         self.new_desc_entry = ctk.CTkEntry(
             add_node_frame, placeholder_text="Description", **ENTRY_KWARGS
         )
-        self.new_desc_entry.pack(pady=5, padx=24, fill="x")
+        self.new_desc_entry.pack(**label_pack_props)
 
         self.add_button = ctk.CTkButton(
             add_node_frame,
             text="Add Node",
             command=self.on_add_node,
-            text_color=TEXT_COLOR,
             fg_color=PRIMARY_BUTTON_BG_COLOR,
+            **BUTTON_KWARKS
         )
-        self.add_button.pack(pady=20, padx=24, fill="x")
+        self.add_button.pack(pady=PAD_LARGE, padx=PAD_LARGE, fill="x")
 
         self.update_node_type_menu(initial_group)
 
@@ -106,18 +108,18 @@ class AddNodeFrame(ctk.CTkFrame):
             image_display_frame,
             text="Generate Image",
             command=self.on_generate_image,
-            text_color=TEXT_COLOR,
+            **BUTTON_KWARKS
         )
-        generate_image_button.pack(fill="x", padx=8, pady=8)
+        generate_image_button.pack(fill="x", padx=PAD_LARGE, pady=PAD_LARGE)
 
         self.generated_image = ctk.CTkLabel(
             image_display_frame,
             text="No Image Generated",
             wraplength=400,
             image=None,
-            text_color=TEXT_COLOR,
+            **LABEL_KWARGS
         )
-        self.generated_image.pack(fill="both", padx=8, pady=8, expand=True)
+        self.generated_image.pack(fill="both", padx=PAD_LARGE, pady=PAD_LARGE, expand=True)
 
     def _on_group_change_wrapper(self, selected_group: str) -> None:
         self.update_node_type_menu(selected_group)
