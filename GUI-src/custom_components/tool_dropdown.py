@@ -44,8 +44,8 @@ class ToolDropdown:
         )
         self.dropdown_frame.pack(fill="both", ipady=PAD_SMALL)
 
-        self.root.bind("<Configure>", self._on_click_outside)
-        self.root.bind("<Button-1>", self._on_click_outside)
+        self.root.bind("<Configure>", self._on_click_outside, add=True)
+        self.root.bind("<Button-1>", self._on_click_outside, add=True)
 
         self._populate_dropdown()
 

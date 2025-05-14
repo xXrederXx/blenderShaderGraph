@@ -3,6 +3,7 @@ import customtkinter as ctk
 from style import TOOLBAR_BG_COL, LABEL_KWARGS, PAD_SMALL
 from util.color_util import dimm_color
 from custom_components.tool_dropdown import ToolDropdown
+from log import logger as log
 
 
 class ToolBarFrame(ctk.CTkFrame):
@@ -18,7 +19,7 @@ class ToolBarFrame(ctk.CTkFrame):
     ) -> None:
         super().__init__(master, corner_radius=0, fg_color=TOOLBAR_BG_COL)
         grid_props = {"sticky": "nswe", "padx": PAD_SMALL}
-        
+
         file_btn = ctk.CTkButton(
             self,
             text="File",
@@ -29,8 +30,8 @@ class ToolBarFrame(ctk.CTkFrame):
             corner_radius=0,
             **LABEL_KWARGS
         )
-        file_btn.grid(row=0, column=3, **grid_props)
-        
+        file_btn.grid(row=0, column=0, **grid_props)
+
         ToolDropdown(
             self,
             {
@@ -40,5 +41,33 @@ class ToolBarFrame(ctk.CTkFrame):
                 "Export Project": on_export,
             },
             300,
-            file_btn
+            file_btn,
+        )
+
+        debug_btn = ctk.CTkButton(
+            self,
+            text="Debug",
+            width=70,
+            fg_color=TOOLBAR_BG_COL,
+            hover_color=dimm_color(TOOLBAR_BG_COL),
+            command=on_export,
+            corner_radius=0,
+            **LABEL_KWARGS
+        )
+        debug_btn.grid(row=0, column=1, **grid_props)
+
+        ToolDropdown(
+            self,
+            {
+                "Toggle Console Logging": lambda: log.set_logger_output_console(
+                    not log.is_logging_to_console
+                ),
+                "Set Log-LvL: DEBUG": lambda: log.log.setLevel(10),
+                "Set Log-LvL: INFO": lambda: log.log.setLevel(20),
+                "Set Log-LvL: WARN": lambda: log.log.setLevel(30),
+                "Set Log-LvL: ERROR": lambda: log.log.setLevel(40),
+                "Set Log-LvL: CRITICAL": lambda: log.log.setLevel(50),
+            },
+            300,
+            debug_btn,
         )
