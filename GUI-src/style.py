@@ -2,6 +2,7 @@
 
 from customtkinter import CTkFont
 from util.color_util import dimm_color
+from log import logger as log
 
 FRAME_BG_COL = "#27282d"
 FRAME_GRID_PADX = 4
@@ -22,6 +23,7 @@ HEADER_FONT = (_FONT_NAME, 20, "bold")
 
 
 def init_fonts():
+    log.debug("init proper CTkFonts")
     global TEXT_FONT
     global HEADER_FONT
     TEXT_FONT = CTkFont(_FONT_NAME, 13, "normal", "roman", False, False)

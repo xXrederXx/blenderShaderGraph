@@ -11,12 +11,13 @@ from Frames.NodeAppMainFrame import NodeAppMainFrame
 from Frames.ToolBarFrame import ToolBarFrame
 
 import customtkinter as ctk
-
+from log import logger as log
 
 class NodeApp(ctk.CTk):
     """Main application for managing nodes."""
 
     def __init__(self):
+        log.debug("Init Node App")
         super().__init__(fg_color=MAIN_BG_COL)
         self.title("Node Manager")
         self.geometry("1400x800")
@@ -50,10 +51,13 @@ class NodeApp(ctk.CTk):
             filetypes=[("bsg file", "*.bsg"), ("json file", "*.json")],
         )
         if not fp:
+            log.info("No file path found after asksaveasfilename")
             return
+        
         content = json.dumps(self.app.nodes)
         with open(fp, "w", encoding="utf-8") as f:
             f.write(content)
+        log.debug("Saved content to " + fp)
 
     def on_load_btn(self):
         """Used to load from a file"""
@@ -61,12 +65,15 @@ class NodeApp(ctk.CTk):
             filetypes=[("bsg file", "*.bsg"), ("json file", "*.json")]
         )
         if not fp:
+            log.info("No file path found after askopenfilename")
             return
+        
         content = ""
         with open(fp, "r", encoding="utf-8") as f:
             content = f.read()
         self.app.nodes = json.loads(content)
         self.app.node_list_frame.update_node_list(self.app.nodes)
+        log.debug("Loaded content from " + fp)
 
     def on_export_btn(self):
         """used to export to a file"""
@@ -75,7 +82,10 @@ class NodeApp(ctk.CTk):
             filetypes=[("bsg file", "*.bsg"), ("json file", "*.json")],
         )
         if not fp:
+            log.info("No file path found after asksaveasfilename")
             return
+        
         content = to_json_string(self.app.nodes)
         with open(fp, "w", encoding="utf-8") as f:
             f.write(content)
+        log.debug("Exportet content to " + fp)

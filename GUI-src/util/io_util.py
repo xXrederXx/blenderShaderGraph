@@ -1,12 +1,12 @@
 from io import BytesIO
 from pathlib import Path
 import threading
-import time
 from PIL import Image
 import customtkinter as ctk
 import requests
 import numpy as np
 from util.my_json import to_json_string
+from log import logger as log
 
 def _get_hash(content: list[dict[str, any]]) -> str:
     ret_hash = 0x123456789abcdef
@@ -28,7 +28,7 @@ def request_image_async(display: ctk.CTkLabel, content: list[dict[str, any]]) ->
             )
 
             if response.status_code != 200:
-                print(response.text)
+                log.error(response.text)
                 display.after(0, lambda: display.configure(text=response.text))
                 return
             
@@ -44,7 +44,7 @@ def request_image_async(display: ctk.CTkLabel, content: list[dict[str, any]]) ->
             display.after(0, update_ui)
 
         except Exception as err:
-            print(f"Error: {str(err)}")
+            log.error(str(err))
             display.after(0, lambda err=err: display.configure(text=str(err)))
 
     threading.Thread(target=task, daemon=True).start()
@@ -65,7 +65,7 @@ def get_from_tmp(source: list[dict[str, any]], display: ctk.CTkLabel):
     path = directory / filename
     
     if not Path.exists(path):
-        print("Not found: " + str(path))
+        log.warn("File Not found: " + str(path))
         return
     
     content = None

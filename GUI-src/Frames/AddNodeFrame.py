@@ -19,6 +19,7 @@ from style import (
     HEADER_FONT,
     TEXT_COLOR,
 )
+from log import logger as log
 
 
 class AddNodeFrame(ctk.CTkFrame):
@@ -150,18 +151,21 @@ class AddNodeFrame(ctk.CTkFrame):
         selected_type_name = self.node_type_var.get()
         selected_group_name = self.node_groups_var.get()
         if not name or not selected_type_name:
+            log.info("Cant generate a node with an empty name or type")
             return
 
         node_group = next(
             (g for g in NEW_NODE_TYPES if g.name == selected_group_name), None
         )
         if not node_group:
+            log.warn("Cant find the node group in which the node type lives ")
             return
 
         node_type = next(
             (nt for nt in node_group.nodes if nt.name == selected_type_name), None
         )
         if not node_type:
+            log.warn("Cant find the node type in the node group")
             return
 
         new_node = dict(node_type.params)

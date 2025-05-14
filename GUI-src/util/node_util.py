@@ -6,6 +6,7 @@ from custom_components.my_entry import (
     BoolEntry,
     FloatEntry,
 )
+from log import logger as log
 
 
 def change_node_pos(list: list, idx: int, offset: int) -> None:
@@ -16,6 +17,7 @@ def change_node_pos(list: list, idx: int, offset: int) -> None:
         offset (int): the offset
     """
     if idx + offset < 0 or idx + offset >= len(list):
+        log.info("Cant move Node out of bounds")
         return
 
     node = list.pop(idx)
@@ -26,6 +28,7 @@ def convert_value(key: str, value: any) -> any:
     """Update the currently selected node from config fields."""
     splits = key.split(":")
     if len(splits) != 2:
+        log.error("The provided Key cant be split into tow parts. The key: " + key)
         raise ValueError("Key dosnt split into tow")
     splits = splits[1]
 
@@ -44,12 +47,15 @@ def convert_value(key: str, value: any) -> any:
             if type == "S":
                 return str(value)
         except:
+            log.debug("Type not able to convert Trying the next one. Type tryed: " + type)
             continue
+    log.error("There was no matching conversion found for the key " + key)
     raise TypeError("No matching conversion found")
 
 
 def get_my_entry(key: str, **kwargs) -> MyEntry:
     if not len(key) == 1 and not key.startswith("E-"):
+        log.info("Using string, because there are multiple valid types")
         return StringEntry(**kwargs)
 
     if key == "I":

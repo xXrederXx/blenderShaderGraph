@@ -11,6 +11,7 @@ from Frames.NodeListFrame import NodeListFrame
 from util.node_util import change_node_pos, convert_value
 from util.io_util import request_image_async, get_from_tmp
 from style import FRAME_GRID_KWARGS, MAIN_BG_COL
+from log import logger as log
 
 
 class NodeAppMainFrame(ctk.CTkFrame):
@@ -69,6 +70,7 @@ class NodeAppMainFrame(ctk.CTkFrame):
         """Adds a new node to the list."""
         node = self.add_node_frame.get_node()
         if not node:
+            log.info("No node to be added")
             return
         self.nodes.append(node)
         self.node_list_frame.update_node_list(self.nodes)
@@ -86,6 +88,7 @@ class NodeAppMainFrame(ctk.CTkFrame):
     def update_node(self) -> None:
         """Update the currently selected node from config fields."""
         if self.selected_node_index is None:
+            log.info("No node selected")
             return
 
         node = self.nodes[self.selected_node_index]
@@ -94,9 +97,9 @@ class NodeAppMainFrame(ctk.CTkFrame):
             try:
                 node[field_name] = convert_value(field_name, value)
             except ValueError:
-                print(f"Invalid input for field {field_name}: {value}")
+                log.error(f"Invalid input for field {field_name}: {value}")
             except TypeError:
-                print(f"No matching conversion found for field {field_name}: {value}")
+                log.error(f"No matching conversion found for field {field_name}: {value}")
 
         self.node_list_frame.update_node_list(self.nodes)
         self.show_details(self.selected_node_index)

@@ -1,6 +1,7 @@
 """Used for parsing JSON"""
 
 import json
+from log import logger as log
 
 
 def format_node_dict(_dict: dict[str, any]) -> dict[str, any]:
@@ -14,6 +15,7 @@ def format_node_dict(_dict: dict[str, any]) -> dict[str, any]:
     """
 
     if _dict.get("id") and _dict.get("type") and _dict.get("params"):
+        log.info("The dictionary passed in to format_node_dict is allready formatted")
         return _dict
 
     ret: dict[str, any] = {}
@@ -41,6 +43,7 @@ def unformat_node_dict(formatted: dict[str, any]) -> dict[str, any]:
         dict[str, any]: The original-style dict with 'idS', 'typeS', etc.
     """
     print("Not working with type system")
+    log.error("This feature is currently not available")
     return
     result: dict[str, any] = {}
 
@@ -86,6 +89,7 @@ def from_json_string(json_str: str) -> list[dict[str, any]]:
         raw_list = json.loads(json_str)
         return [unformat_node_dict(d) for d in raw_list]
     except json.JSONDecodeError as e:
+        log.error("Json could not be decoded")
         raise ValueError(f"Invalid JSON string: {e}") from e
 
 
@@ -103,4 +107,5 @@ def from_json_file(file_path: str) -> list[dict[str, any]]:
             raw_list = json.load(f)
         return [unformat_node_dict(d) for d in raw_list]
     except (json.JSONDecodeError, FileNotFoundError, OSError) as e:
+        log.error("An error either happend while reading or parsing the file")
         raise ValueError(f"Error reading from file: {e}") from e

@@ -2,6 +2,7 @@ import customtkinter as ctk
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
 from style import TEXT_COLOR
+from log import logger as log
 
 T = TypeVar("T")
 
@@ -21,10 +22,12 @@ class MyEntry(ctk.CTkEntry, Generic[T], ABC):
 
     @abstractmethod
     def validate_input(self, text: str) -> bool:
+        log.warn("Your calling an empty abstarct method")
         pass
 
     @abstractmethod
     def convert_input(self, text: str) -> T:
+        log.warn("Your calling an empty abstarct method")
         pass
 
     def get_value(self) -> T:

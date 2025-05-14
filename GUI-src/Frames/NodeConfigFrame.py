@@ -23,6 +23,7 @@ from style import (
 from util.node_util import get_my_entry
 from custom_components.my_entry import MyEntry
 from util.color_util import dimm_color
+from log import logger as log
 
 
 class NodeConfigFrame(ctk.CTkFrame):
@@ -118,7 +119,7 @@ class NodeConfigFrame(ctk.CTkFrame):
                 continue
             splited_name = field_name.split(":")
             if len(splited_name) != 2:
-                print("len is not 2")
+                log.warn("len of field_name is not 2. field_name: " + field_name)
                 continue
             name = splited_name[0]
             types = splited_name[1]

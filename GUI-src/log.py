@@ -61,4 +61,19 @@ class MyLogger:
             self.log.removeHandler(self._console_stream_hdlr)
             self.is_logging_to_console = False
 
+    def debug(self, msg, *args, **kwargs):
+        self.log.debug(msg, *args, **kwargs)
+        
+    def info(self, msg, *args, **kwargs):
+        self.log.info(msg, *args, **kwargs)
+        
+    def warn(self, msg, *args, **kwargs):
+        self.log.warning(msg, *args, **kwargs)
+        
+    def error(self, msg, *args, **kwargs):
+        self.log.error(msg, *args, **kwargs)
+        
+    def critical(self, msg, *args, **kwargs):
+        self.log.critical(msg, *args, **kwargs)
+    
 logger = MyLogger(log.DEBUG)
