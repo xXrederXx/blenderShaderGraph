@@ -124,15 +124,15 @@ def nodes_to_cs(nodes: list[dict[str, any]]) -> str:
             continue
         
         
-        class_name[0] = class_name[0].lower()
+        class_name = class_name[0].lower() + class_name[1:]
         
         paramsStr = "new("
         
         for k, v in params.items():
             paramsStr += f"{k} = {v},"
-        paramsStr.removesuffix(",")
+        paramsStr = paramsStr[:-1]
         paramsStr += ")"
         
-        f"var {var_name} = NodeInstances.{class_name}.ExecuteNode({paramsStr});\n" 
+        content += f"var {var_name} = NodeInstances.{class_name}.ExecuteNode({paramsStr});\n" 
     
     return content

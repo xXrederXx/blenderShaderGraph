@@ -1,6 +1,6 @@
 import json
 from tkinter import filedialog as fd
-from util.export_util import to_json_string
+from util.export_util import to_json_string, nodes_to_cs
 from style import (
     FRAME_GRID_KWARGS,
     MAIN_BG_COL,
@@ -81,13 +81,19 @@ class NodeApp(ctk.CTk):
         """used to export to a file"""
         fp = fd.asksaveasfilename(
             defaultextension=".bsg",
-            filetypes=[("bsg file", "*.bsg"), ("json file", "*.json")],
+            filetypes=[("json file", "*.json"), ("c-sharp file", "*.cs")],
         )
         if not fp:
             log.info("No file path found after asksaveasfilename")
             return
         
-        content = to_json_string(self.app.nodes)
+        content = ""
+        
+        if fp.endswith(".cs"):
+            content = nodes_to_cs(self.app.nodes)
+        else:
+            content = to_json_string(self.app.nodes)
+            
         with open(fp, "w", encoding="utf-8") as f:
             f.write(content)
         log.debug("Exportet content to " + fp)
