@@ -20,6 +20,13 @@ class MyLogger:
         self.is_logging_to_console = False
         self._file_stream_hdlr = None
         self._console_stream_hdlr = None
+        
+        self.debug = self.log.debug
+        self.info = self.log.info
+        self.warn = self.log.warning
+        self.warning = self.log.warning
+        self.error = self.log.error
+        self.critical = self.log.critical
 
     def set_up_logger(self):
         filename = time.strftime("%Y-%m-%d_%H-%M-%S") + ".log"
@@ -60,20 +67,5 @@ class MyLogger:
             # Remove all StreamHandlers to stop console logging
             self.log.removeHandler(self._console_stream_hdlr)
             self.is_logging_to_console = False
-
-    def debug(self, msg, *args, **kwargs):
-        self.log.debug(msg, *args, **kwargs)
-        
-    def info(self, msg, *args, **kwargs):
-        self.log.info(msg, *args, **kwargs)
-        
-    def warn(self, msg, *args, **kwargs):
-        self.log.warning(msg, *args, **kwargs)
-        
-    def error(self, msg, *args, **kwargs):
-        self.log.error(msg, *args, **kwargs)
-        
-    def critical(self, msg, *args, **kwargs):
-        self.log.critical(msg, *args, **kwargs)
     
 logger = MyLogger(log.DEBUG)
