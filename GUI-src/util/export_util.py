@@ -109,3 +109,30 @@ def from_json_file(file_path: str) -> list[dict[str, any]]:
     except (json.JSONDecodeError, FileNotFoundError, OSError) as e:
         log.error("An error either happend while reading or parsing the file")
         raise ValueError(f"Error reading from file: {e}") from e
+
+
+def nodes_to_cs(nodes: list[dict[str, any]]) -> str:
+    content = ""
+    for node in nodes:
+        node = format_node_dict(node)
+        var_name:str = node.get("id")
+        class_name:str = node.get("type")
+        params:dict[str, any] = node.get("params")
+        
+        if not var_name or not class_name or not params:
+            log.warn(f"Could not get every needed value from the node, after formatting. Var Name: {var_name}, Class Name: {class_name}, Params Dict: {params}") 
+            continue
+        
+        
+        class_name[0] = class_name[0].lower()
+        
+        paramsStr = "new("
+        
+        for k, v in params.items():
+            paramsStr += f"{k} = {v},"
+        paramsStr.removesuffix(",")
+        paramsStr += ")"
+        
+        f"var {var_name} = NodeInstances.{class_name}.ExecuteNode({paramsStr});\n" 
+    
+    return content

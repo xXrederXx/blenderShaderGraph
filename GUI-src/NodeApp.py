@@ -1,6 +1,6 @@
 import json
 from tkinter import filedialog as fd
-from util.my_json import from_json_file, to_json_string
+from util.export_util import to_json_string
 from style import (
     FRAME_GRID_KWARGS,
     MAIN_BG_COL,

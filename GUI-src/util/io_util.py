@@ -5,7 +5,7 @@ from PIL import Image
 import customtkinter as ctk
 import requests
 import numpy as np
-from util.my_json import to_json_string
+from util.export_util import to_json_string
 from log import logger as log
 
 def _get_hash(content: list[dict[str, any]]) -> str:
