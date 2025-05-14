@@ -37,10 +37,12 @@ class NodeApp(ctk.CTk):
         self.main.grid(row=1, column=0, **FRAME_GRID_KWARGS)
         self.main.columnconfigure(0, weight=1)
         self.main.rowconfigure(0, weight=1)
+        
         self.app = NodeAppMainFrame(self.main)
         self.app.grid(sticky="nswe")
+        
         self.tool_bar = ToolBarFrame(
-            self.top, self.on_save_btn, self.on_load_btn, self.on_export_btn
+            self.top, self.on_save_btn, self.on_load_btn, self.on_export_btn, self.on_new_project
         )
         self.tool_bar.grid(sticky="nswe")
 
@@ -89,3 +91,10 @@ class NodeApp(ctk.CTk):
         with open(fp, "w", encoding="utf-8") as f:
             f.write(content)
         log.debug("Exportet content to " + fp)
+        
+    def on_new_project(self):
+        """Used to load a new project"""
+        content = "[]"
+        self.app.nodes = json.loads(content)
+        self.app.node_list_frame.update_node_list(self.app.nodes)
+        log.debug("New Project init")
