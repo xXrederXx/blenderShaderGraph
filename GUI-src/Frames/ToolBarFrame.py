@@ -2,7 +2,7 @@ from typing import Callable
 import customtkinter as ctk
 from style import TOOLBAR_BG_COL, LABEL_KWARGS, PAD_SMALL
 from util.color_util import dimm_color
-from custom_components.tool_dropdown import ToolDropdown
+from custom_components.tool_dropdown import BtnToolDropdown
 from log import logger as log
 
 
@@ -32,16 +32,15 @@ class ToolBarFrame(ctk.CTkFrame):
         )
         file_btn.grid(row=0, column=0, **grid_props)
 
-        ToolDropdown(
+        BtnToolDropdown(
             self,
+            file_btn,
             {
                 "New Project": on_new_project,
                 "Load Project": on_load,
                 "Save Project": on_save,
                 "Export Project": on_export,
             },
-            300,
-            file_btn,
         )
 
         debug_btn = ctk.CTkButton(
@@ -56,8 +55,9 @@ class ToolBarFrame(ctk.CTkFrame):
         )
         debug_btn.grid(row=0, column=1, **grid_props)
 
-        ToolDropdown(
+        BtnToolDropdown(
             self,
+            debug_btn,
             {
                 "Toggle Console Logging": lambda: log.set_logger_output_console(
                     not log.is_logging_to_console
@@ -68,6 +68,4 @@ class ToolBarFrame(ctk.CTkFrame):
                 "Set Log-LvL: ERROR": lambda: log.log.setLevel(40),
                 "Set Log-LvL: CRITICAL": lambda: log.log.setLevel(50),
             },
-            300,
-            debug_btn,
         )
