@@ -5,7 +5,7 @@ from PIL import Image
 import customtkinter as ctk
 import requests
 import numpy as np
-from util.export_util import to_json_string
+from util.export_util import nodes_to_json
 from log import logger as log
 
 def _get_hash(content: list[dict[str, any]]) -> str:
@@ -18,7 +18,7 @@ def _get_hash(content: list[dict[str, any]]) -> str:
 def request_image_async(display: ctk.CTkLabel, content: list[dict[str, any]]) -> None:
     def task():
         try:
-            json_data = to_json_string(content)
+            json_data = nodes_to_json(content)
             print(json_data)
             response = requests.post(
                 "http://localhost:5000/generate-image",

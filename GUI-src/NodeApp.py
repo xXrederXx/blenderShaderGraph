@@ -1,6 +1,6 @@
 import json
 from tkinter import filedialog as fd
-from util.export_util import to_json_string, nodes_to_cs
+from util.export_util import nodes_to_json, nodes_to_cs, nodes_from_bsg, nodes_to_bsg, BSGData
 from style import (
     FRAME_GRID_KWARGS,
     MAIN_BG_COL,
@@ -56,7 +56,7 @@ class NodeApp(ctk.CTk):
             log.info("No file path found after asksaveasfilename")
             return
         
-        content = json.dumps(self.app.nodes)
+        content = nodes_to_bsg(BSGData(self.app.nodes, self.app.selected_node_index))
         with open(fp, "w", encoding="utf-8") as f:
             f.write(content)
         log.debug("Saved content to " + fp)
@@ -73,9 +73,11 @@ class NodeApp(ctk.CTk):
         content = ""
         with open(fp, "r", encoding="utf-8") as f:
             content = f.read()
-        self.app.nodes = json.loads(content)
+        data = nodes_from_bsg(content)
+        self.app.nodes = data.nodes
+        self.app.selected_node_index = data.selected_node_index
         self.app.node_list_frame.update_node_list(self.app.nodes)
-        self.app.config_frame.show_details({})
+        self.app.config_frame.show_details(data.nodes[data.selected_node_index])
         log.debug("Loaded content from " + fp)
 
     def on_export_btn(self):
@@ -93,7 +95,7 @@ class NodeApp(ctk.CTk):
         if fp.endswith(".cs"):
             content = nodes_to_cs(self.app.nodes)
         else:
-            content = to_json_string(self.app.nodes)
+            content = nodes_to_json(self.app.nodes)
             
         with open(fp, "w", encoding="utf-8") as f:
             f.write(content)

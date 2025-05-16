@@ -2,9 +2,17 @@
 
 import json
 from log import logger as log
+from dataclasses import dataclass
+from typing import Optional
 
 
-def format_node_dict(_dict: dict[str, any]) -> dict[str, any]:
+@dataclass
+class BSGData:
+    nodes: list[dict[str, any]]
+    selected_node_index: int
+
+
+def _format_node_dict(_dict: dict[str, any]) -> dict[str, any]:
     """This takes a params dic of a node and returns it with all the types and keys ajusted
 
     Args:
@@ -33,35 +41,34 @@ def format_node_dict(_dict: dict[str, any]) -> dict[str, any]:
     return ret
 
 
-def unformat_node_dict(formatted: dict[str, any]) -> dict[str, any]:
-    """Reverts a formatted node dict back to the original app format.
-
-    Args:
-        formatted (dict[str, any]): A formatted dict with 'id', 'type', 'params'.
-
-    Returns:
-        dict[str, any]: The original-style dict with 'idS', 'typeS', etc.
-    """
-    print("Not working with type system")
-    log.error("This feature is currently not available")
-    return
-    result: dict[str, any] = {}
-
-    if "id" in formatted:
-        result["idS"] = formatted["id"]
-    if "type" in formatted:
-        result["typeS"] = formatted["type"]
-    if "description" in formatted:
-        result["descriptionS"] = formatted["description"]
-
-    if "params" in formatted:
-        for key, value in formatted["params"].items():
-            result[f"{key}N"] = value
-
-    return result
+def nodes_to_bsg(data: BSGData) -> str:
+    return json.dumps(
+        {
+            "settings": {"selected_node_index": data.selected_node_index},
+            "nodes": data.nodes,
+        }
+    )
 
 
-def to_json_string(dics: list[dict[str, any]]):
+def nodes_from_bsg(data: str) -> BSGData:
+    idx = 0
+    nodes = []
+
+    json_data: dict[str, any] = json.loads(data)
+    
+    if isinstance(json_data, list):
+        #Old way
+        return BSGData(json_data, 0)
+
+    settings: Optional[dict[str, any]] = json_data.get("settings", None)
+    if settings:
+        idx = settings.get("selected_node_index", 0)
+
+    nodes = json_data.get("nodes", [])
+    return BSGData(nodes, idx)
+
+
+def nodes_to_json(dics: list[dict[str, any]]) -> str:
     """Takes a list of nodes and creates json from them
 
     Args:
@@ -72,67 +79,35 @@ def to_json_string(dics: list[dict[str, any]]):
     """
     arr: list[dict[str, any]] = []
     for dic in dics:
-        arr.append(format_node_dict(dic))
+        arr.append(_format_node_dict(dic))
     return json.dumps(arr)
-
-
-def from_json_string(json_str: str) -> list[dict[str, any]]:
-    """Parses a JSON string and converts formatted dicts back to original format.
-
-    Args:
-        json_str (str): JSON string from to_json_string().
-
-    Returns:
-        list[dict[str, any]]: The original-style dicts.
-    """
-    try:
-        raw_list = json.loads(json_str)
-        return [unformat_node_dict(d) for d in raw_list]
-    except json.JSONDecodeError as e:
-        log.error("Json could not be decoded")
-        raise ValueError(f"Invalid JSON string: {e}") from e
-
-
-def from_json_file(file_path: str) -> list[dict[str, any]]:
-    """Reads a JSON file and converts formatted dicts back to original format.
-
-    Args:
-        file_path (str): Path to the JSON file.
-
-    Returns:
-        list[dict[str, any]]: The original-style dicts.
-    """
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            raw_list = json.load(f)
-        return [unformat_node_dict(d) for d in raw_list]
-    except (json.JSONDecodeError, FileNotFoundError, OSError) as e:
-        log.error("An error either happend while reading or parsing the file")
-        raise ValueError(f"Error reading from file: {e}") from e
 
 
 def nodes_to_cs(nodes: list[dict[str, any]]) -> str:
     content = ""
     for node in nodes:
-        node = format_node_dict(node)
-        var_name:str = node.get("id")
-        class_name:str = node.get("type")
-        params:dict[str, any] = node.get("params")
-        
+        node = _format_node_dict(node)
+        var_name: str = node.get("id")
+        class_name: str = node.get("type")
+        params: dict[str, any] = node.get("params")
+
         if not var_name or not class_name or not params:
-            log.warn(f"Could not get every needed value from the node, after formatting. Var Name: {var_name}, Class Name: {class_name}, Params Dict: {params}") 
+            log.warn(
+                f"Could not get every needed value from the node, after formatting. Var Name: {var_name}, Class Name: {class_name}, Params Dict: {params}"
+            )
             continue
-        
-        
+
         class_name = class_name[0].lower() + class_name[1:]
-        
+
         paramsStr = "new("
-        
+
         for k, v in params.items():
             paramsStr += f"{k} = {v},"
         paramsStr = paramsStr[:-1]
         paramsStr += ")"
-        
-        content += f"var {var_name} = NodeInstances.{class_name}.ExecuteNode({paramsStr});\n" 
-    
+
+        content += (
+            f"var {var_name} = NodeInstances.{class_name}.ExecuteNode({paramsStr});\n"
+        )
+
     return content
