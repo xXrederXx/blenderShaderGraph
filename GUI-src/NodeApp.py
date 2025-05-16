@@ -75,6 +75,7 @@ class NodeApp(ctk.CTk):
             content = f.read()
         self.app.nodes = json.loads(content)
         self.app.node_list_frame.update_node_list(self.app.nodes)
+        self.app.config_frame.show_details({})
         log.debug("Loaded content from " + fp)
 
     def on_export_btn(self):
@@ -103,4 +104,5 @@ class NodeApp(ctk.CTk):
         content = "[]"
         self.app.nodes = json.loads(content)
         self.app.node_list_frame.update_node_list(self.app.nodes)
+        self.app.config_frame.show_details({})
         log.debug("New Project init")
