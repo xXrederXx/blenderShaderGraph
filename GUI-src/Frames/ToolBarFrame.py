@@ -37,8 +37,10 @@ class ToolBarFrame(ctk.CTkFrame):
             file_btn,
             {
                 "New Project": on_new_project,
+                "1-line-": None,
                 "Load Project": on_load,
                 "Save Project": on_save,
+                "2-line-": None,
                 "Export Project": on_export,
             },
         )
@@ -62,6 +64,7 @@ class ToolBarFrame(ctk.CTkFrame):
                 "Toggle Console Logging": lambda: log.set_logger_output_console(
                     not log.is_logging_to_console
                 ),
+                "-line-": None,
                 "Set Log-LvL: DEBUG": lambda: log.log.setLevel(10),
                 "Set Log-LvL: INFO": lambda: log.log.setLevel(20),
                 "Set Log-LvL: WARN": lambda: log.log.setLevel(30),

@@ -95,18 +95,25 @@ class ToolDropdownBase:
 
 
 class BtnToolDropdown(ToolDropdownBase):
+    """
+    Just like dropdown base with easyer usage. By default every entry in the tool_buttons
+    will be converted to a button. But there are some special types. These types are:
+        - "-line-" -> reults in a line
+    To use multiple just add a prefix or a suffix
+    """
+
     def __init__(
         self,
-        master:ctk.CTkFrame,
-        button:ctk.CTkButton,
+        master: ctk.CTkFrame,
+        button: ctk.CTkButton,
         tool_buttons: dict[str, Callable[[], None]],
-        transparent_color:str = "#010101",
-        window_width:int = 300,
-        window_height:int = 600,
+        transparent_color: str = "#010101",
+        window_width: int = 300,
+        window_height: int = 600,
     ):
         super().__init__(master, button, transparent_color, window_width, window_height)
         self.tool_buttons = tool_buttons
-        
+
         # CTk-compatible frame inside Toplevel
         self.dropdown_frame = ctk.CTkFrame(
             self.dropdown_window,
@@ -114,22 +121,36 @@ class BtnToolDropdown(ToolDropdownBase):
             bg_color=FRAME_BG_COL,
         )
         self.dropdown_frame.pack(fill="both", ipady=PAD_SMALL)
-        
+
         self._populate_dropdown()
-        
+
     def _populate_dropdown(self):
         """Fill the dropdown with tool buttons."""
         for widget in self.dropdown_frame.winfo_children():
             widget.destroy()
 
         for label, command in self.tool_buttons.items():
-            btn = ctk.CTkButton(
-                self.dropdown_frame,
-                text=label,
-                command=lambda cmd=command: self._run_and_close(cmd),
-                fg_color="transparent",
-                hover_color=dimm_color(PRIMARY_BUTTON_BG_COLOR),
-                anchor="w",
-                **LABEL_KWARGS,
-            )
-            btn.pack(fill="x", padx=PAD_MEDIUM, pady=PAD_SMALL)
+            if label.find("-line-") != -1: 
+                self._make_line()
+            else:
+                self._make_button(label, command)
+
+    def _make_button(self, label, command):
+        btn = ctk.CTkButton(
+            self.dropdown_frame,
+            text=label,
+            command=lambda cmd=command: self._run_and_close(cmd),
+            fg_color="transparent",
+            hover_color=dimm_color(PRIMARY_BUTTON_BG_COLOR),
+            anchor="w",
+            **LABEL_KWARGS,
+        )
+        btn.pack(fill="x", padx=PAD_MEDIUM, pady=PAD_SMALL)
+        
+    def _make_line(self):
+        line = ctk.CTkFrame(
+            self.dropdown_frame,
+            fg_color=PRIMARY_BUTTON_BG_COLOR,
+            height=2
+        )
+        line.pack(fill="x", padx=PAD_MEDIUM)
