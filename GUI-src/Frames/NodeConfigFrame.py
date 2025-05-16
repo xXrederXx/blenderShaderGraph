@@ -132,7 +132,7 @@ class NodeConfigFrame(ctk.CTkFrame):
             label.pack(side="left", padx=PAD_LARGE)
 
             entry = get_my_entry(types, master=field_frame, width=100, **ENTRY_KWARGS)
-
+            entry.on_end_editing = self.on_update
             entry.pack(side="left", fill="x", expand=True)
 
             entry.insert(0, str(value))

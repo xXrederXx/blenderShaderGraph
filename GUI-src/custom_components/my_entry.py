@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from abc import ABC, abstractmethod
-from typing import TypeVar, Generic
+from typing import TypeVar, Generic, Callable
 from style import TEXT_COLOR
 from log import logger as log
 
@@ -10,9 +10,19 @@ T = TypeVar("T")
 class MyEntry(ctk.CTkEntry, Generic[T], ABC):
     def __init__(self, default_value:T, **kwargs):
         super().__init__(**kwargs)
-        self.bind("<KeyRelease>", lambda e: self.input_validation())
+        self.bind("<KeyRelease>", lambda e: self._on_key_relese())
         self.default = default_value
-
+        self._after_id = None
+        self.on_end_editing: Callable[[], None]
+    
+    def _on_key_relese(self):
+        if self._after_id:
+            self.after_cancel(self._after_id)
+        if self.on_end_editing:
+            self._after_id = self.after(1000, self.on_end_editing)
+        
+        self.input_validation()
+    
     def input_validation(self):
         current = self.get()
         if not self.validate_input(current):

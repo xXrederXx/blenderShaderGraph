@@ -102,7 +102,6 @@ class NodeAppMainFrame(ctk.CTkFrame):
                 log.error(f"No matching conversion found for field {field_name}: {value}")
 
         self.node_list_frame.update_node_list(self.nodes)
-        self.show_details(self.selected_node_index)
 
     def update_node_type_menu(self, selected_group: str) -> None:
         """Update node type dropdown and color on group change."""
