@@ -2,8 +2,10 @@ from typing import Callable
 import customtkinter as ctk
 from style import TOOLBAR_BG_COL, LABEL_KWARGS, PAD_SMALL
 from util.color_util import dimm_color
-from custom_components.tool_dropdown import BtnToolDropdown, ToolDropdownBase
+from custom_components.tool_dropdown import BtnToolDropdown
 from log import logger as log
+import os
+from util.io_util import get_persistant_path, get_tmp_path
 
 
 class ToolBarFrame(ctk.CTkFrame):
@@ -57,21 +59,28 @@ class ToolBarFrame(ctk.CTkFrame):
         )
         debug_btn.grid(row=0, column=1, **grid_props)
 
-        debug_dropdown = BtnToolDropdown(
+        BtnToolDropdown(
             self,
             debug_btn,
             {
-                "Toggle Console Logging":self.toogle_console_out,
-                "-line-": None,
+                "Toggle Console Logging": self.toogle_console_out,
+                "1-line-": None,
                 "Set Log-LvL: DEBUG": lambda: log.log.setLevel(10),
                 "Set Log-LvL: INFO": lambda: log.log.setLevel(20),
                 "Set Log-LvL: WARN": lambda: log.log.setLevel(30),
                 "Set Log-LvL: ERROR": lambda: log.log.setLevel(40),
                 "Set Log-LvL: CRITICAL": lambda: log.log.setLevel(50),
+                "2-line-": None,
+                "Open tmp Folder": lambda: os.startfile(
+                    os.path.realpath(get_tmp_path())
+                ),
+                "Open persistant Folder": lambda: os.startfile(
+                    os.path.realpath(get_persistant_path())
+                ),
             },
         )
 
-    def toogle_console_out(self, btn:ctk.CTkButton) -> None:
+    def toogle_console_out(self, btn: ctk.CTkButton) -> None:
         log.set_logger_output_console(not log.is_logging_to_console)
         if log.is_logging_to_console:
             btn.configure(text="Disable Console Logging")
