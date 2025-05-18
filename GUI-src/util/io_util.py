@@ -82,5 +82,8 @@ def get_from_tmp(source: list[dict[str, any]], display: ctk.CTkLabel):
 def get_persistant_path() -> Path:
     return Path(os.getenv('LOCALAPPDATA')) / "BSG"
 
+def get_log_path() -> Path:
+    return get_persistant_path() / "logs"
+
 def get_tmp_path() -> Path:
     return Path(tempfile.gettempdir()) / "BSG"

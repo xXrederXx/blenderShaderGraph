@@ -1,9 +1,8 @@
 import logging as log
 import time
-from pathlib import Path
 import sys
 from typing import Optional
-
+from util.io_util import get_log_path
 
 class MyLogger:
     def __init__(self, log_level: int, formatter: Optional[log.Formatter] = None):
@@ -30,9 +29,7 @@ class MyLogger:
 
     def set_up_logger(self):
         filename = time.strftime("%Y-%m-%d_%H-%M-%S") + ".log"
-        directory = Path.cwd() / "tmp" / "log"
-        directory.mkdir(parents=True, exist_ok=True)
-        path = directory / filename
+        path = get_log_path / filename
 
         self.log.setLevel(self.log_level)
 
