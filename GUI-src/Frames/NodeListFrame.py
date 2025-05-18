@@ -6,9 +6,8 @@ from typing import Callable, Dict, List
 import customtkinter as ctk
 
 from util.color_util import dimm_color
-from nodes import NEW_NODE_TYPES
-
-from style import (
+from globals.nodes import NEW_NODE_TYPES
+from globals.style import (
     FRAME_KWARGS,
     PAD_SMALL,
     CORNER_RADIUS_MEDIUM,

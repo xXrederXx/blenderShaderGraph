@@ -3,8 +3,8 @@
 from abc import ABC, abstractmethod
 from typing import List, TypeVar, Generic, Callable
 import customtkinter as ctk
-from style import TEXT_COLOR
-from log import logger as log
+from globals.style import TEXT_COLOR
+from globals.my_logger import logger as log
 
 T = TypeVar("T")
 

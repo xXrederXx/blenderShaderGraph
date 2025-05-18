@@ -1,7 +1,5 @@
 """This contains some IO functions as well as the paths needed to save data to"""
 
-import tempfile
-import os
 from io import BytesIO
 from pathlib import Path
 import threading
@@ -11,7 +9,8 @@ import customtkinter as ctk
 import requests
 import numpy as np
 from util.export_util import nodes_to_json
-from log import logger as log
+from globals.my_logger import logger as log
+import globals.paths as paths
 
 
 def _get_hash(content: List[Dict[str, Any]]) -> str:
@@ -59,14 +58,14 @@ def request_image_async(display: ctk.CTkLabel, content: List[Dict[str, Any]]) ->
 
 def save_as_tmp(data: bytes, source: List[Dict[str, Any]]):
     filename = _get_hash(source) + ".png"
-    path = get_tmp_path() / filename
+    path = paths.TMP_PATH / filename
     with open(path, "wb") as f:
         f.write(data)
 
 
 def get_from_tmp(source: List[Dict[str, Any]], display: ctk.CTkLabel):
     filename = _get_hash(source) + ".png"
-    path = get_tmp_path() / filename
+    path = paths.TMP_PATH / filename
 
     if not Path.exists(path):
         log.warn("File Not found: " + str(path))
@@ -84,15 +83,3 @@ def get_from_tmp(source: List[Dict[str, Any]], display: ctk.CTkLabel):
         display.configure(text="")
 
     display.after(0, update_ui)
-
-
-def get_persistant_path() -> Path:
-    return Path(os.getenv("LOCALAPPDATA")) / "BSG"
-
-
-def get_log_path() -> Path:
-    return get_persistant_path() / "logs"
-
-
-def get_tmp_path() -> Path:
-    return Path(tempfile.gettempdir()) / "BSG"

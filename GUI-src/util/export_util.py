@@ -3,7 +3,7 @@
 import json
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
-from log import logger as log
+from globals.my_logger import logger as log
 
 
 @dataclass

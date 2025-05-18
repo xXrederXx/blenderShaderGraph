@@ -3,7 +3,7 @@
 from typing import Union, Tuple
 from customtkinter import CTkFont
 from util.color_util import dimm_color
-from log import logger as log
+from globals.my_logger import logger as log
 
 FRAME_BG_COL = "#27282d"
 FRAME_GRID_PADX = 4

@@ -10,8 +10,8 @@ from Frames.NodeConfigFrame import NodeConfigFrame
 from Frames.NodeListFrame import NodeListFrame
 from util.node_util import change_node_pos, convert_value
 from util.io_util import request_image_async, get_from_tmp
-from style import FRAME_GRID_KWARGS, MAIN_BG_COL
-from log import logger as log
+from globals.style import FRAME_GRID_KWARGS, MAIN_BG_COL
+from globals.my_logger import logger as log
 
 
 class NodeAppMainFrame(ctk.CTkFrame):

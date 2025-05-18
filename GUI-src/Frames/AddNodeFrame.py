@@ -4,8 +4,8 @@ from typing import Any, Callable, Dict, List
 
 import customtkinter as ctk
 
-from nodes import NEW_NODE_TYPES
-from style import (
+from globals.nodes import NEW_NODE_TYPES
+from globals.style import (
     FRAME_KWARGS,
     MAIN_BG_COL,
     FRAME_GRID_KWARGS,
@@ -19,7 +19,7 @@ from style import (
     HEADER_FONT,
     TEXT_COLOR,
 )
-from log import logger as log
+from globals.my_logger import logger as log
 
 
 class AddNodeFrame(ctk.CTkFrame):
@@ -168,7 +168,7 @@ class AddNodeFrame(ctk.CTkFrame):
             log.warn("Cant find the node type in the node group")
             return {}
 
-        new_node = Dict(node_type.params)
+        new_node = dict(node_type.params)
         new_node["id:S"] = name
         new_node["description:S"] = description
         new_node["type:S"] = selected_type_name

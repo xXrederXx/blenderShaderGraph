@@ -3,11 +3,11 @@
 import os
 from typing import Callable
 import customtkinter as ctk
-from style import TOOLBAR_BG_COL, LABEL_KWARGS, PAD_SMALL
+from globals.style import TOOLBAR_BG_COL, LABEL_KWARGS, PAD_SMALL
 from util.color_util import dimm_color
 from custom_components.tool_dropdown import BtnToolDropdown
-from log import logger as log
-from util.io_util import get_persistant_path, get_tmp_path
+from globals.my_logger import logger as log
+from globals.paths import PERSISTANT_PATH, TMP_PATH
 
 
 class ToolBarFrame(ctk.CTkFrame):
@@ -74,10 +74,10 @@ class ToolBarFrame(ctk.CTkFrame):
                 "Set Log-LvL: CRITICAL": lambda: log.log.setLevel(50),
                 "2-line-": None,
                 "Open tmp Folder": lambda: os.startfile(
-                    os.path.realpath(get_tmp_path())
+                    os.path.realpath(TMP_PATH)
                 ),
                 "Open persistant Folder": lambda: os.startfile(
-                    os.path.realpath(get_persistant_path())
+                    os.path.realpath(PERSISTANT_PATH)
                 ),
             },
         )

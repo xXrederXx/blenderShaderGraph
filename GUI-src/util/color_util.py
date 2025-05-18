@@ -1,18 +1,7 @@
 """Color util"""
 
 from PIL import ImageColor
-
-
-def clamp0to255(x: int) -> int:
-    """Clamps x to 0 and 255
-
-    Args:
-        x (int): value to clamp
-
-    Returns:
-        int: clamped
-    """
-    return max(0, min(x, 255))
+from util.math import clamp0to255
 
 
 def hex_to_rgb(hex_val: str) -> tuple[int, int, int]:

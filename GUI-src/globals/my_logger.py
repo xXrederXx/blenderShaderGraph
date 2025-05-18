@@ -4,11 +4,12 @@ import logging as log
 import time
 import sys
 from typing import Optional
-from util.io_util import get_log_path
+from globals.paths import LOG_PATH
 
 
-class MyLogger:
+class _MyLogger:
     """My implementation of a logger"""
+
     def __init__(self, log_level: int, formatter: Optional[log.Formatter] = None):
         self.log = log.getLogger(__name__)
 
@@ -34,8 +35,7 @@ class MyLogger:
     def set_up_logger(self):
         """This sets up the defult logger, which logs to a file"""
         filename = time.strftime("%Y-%m-%d_%H-%M-%S") + ".log"
-        path = get_log_path / filename
-
+        path = LOG_PATH / filename
         self.log.setLevel(self.log_level)
 
         # Clear existing handlers (in case this function is called again)
@@ -71,4 +71,4 @@ class MyLogger:
             self.is_logging_to_console = False
 
 
-logger = MyLogger(log.DEBUG)
+logger = _MyLogger(log.DEBUG)

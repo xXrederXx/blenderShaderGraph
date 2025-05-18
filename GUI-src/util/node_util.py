@@ -7,7 +7,7 @@ from custom_components.my_entry import (
     BoolEntry,
     FloatEntry,
 )
-from log import logger as log
+from globals.my_logger import logger as log
 
 
 def change_node_pos(_list: list, idx: int, offset: int) -> None:

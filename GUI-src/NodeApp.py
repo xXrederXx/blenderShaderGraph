@@ -9,17 +9,18 @@ from util.export_util import (
     nodes_to_bsg,
     BSGData,
 )
-from style import (
+from globals.style import (
     FRAME_GRID_KWARGS,
     MAIN_BG_COL,
     TOOLBAR_BG_COL,
     init_fonts,
 )
+from globals.my_logger import logger as log
+
 from Frames.NodeAppMainFrame import NodeAppMainFrame
 from Frames.ToolBarFrame import ToolBarFrame
 
 import customtkinter as ctk
-from log import logger as log
 
 
 class NodeApp(ctk.CTk):

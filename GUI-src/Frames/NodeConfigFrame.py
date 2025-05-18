@@ -4,8 +4,9 @@ from typing import Callable, Dict
 
 import customtkinter as ctk
 
-from nodes import NEW_NODE_TYPES
-from style import (
+from globals.nodes import NEW_NODE_TYPES
+from globals.my_logger import logger as log
+from globals.style import (
     ENTRY_KWARGS,
     FRAME_KWARGS,
     TEXT_COLOR,
@@ -23,7 +24,6 @@ from style import (
 from util.node_util import get_my_entry
 from custom_components.my_entry import MyEntry
 from util.color_util import dimm_color
-from log import logger as log
 
 
 class NodeConfigFrame(ctk.CTkFrame):

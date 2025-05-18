@@ -2,8 +2,8 @@
 from typing import Callable, Dict
 import tkinter as tk
 import customtkinter as ctk
-from log import logger as log
-from style import (
+from globals.my_logger import logger as log
+from globals.style import (
     FRAME_BG_COL,
     LABEL_KWARGS,
     PAD_SMALL,
