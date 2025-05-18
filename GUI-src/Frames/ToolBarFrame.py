@@ -2,7 +2,7 @@ from typing import Callable
 import customtkinter as ctk
 from style import TOOLBAR_BG_COL, LABEL_KWARGS, PAD_SMALL
 from util.color_util import dimm_color
-from custom_components.tool_dropdown import BtnToolDropdown
+from custom_components.tool_dropdown import BtnToolDropdown, ToolDropdownBase
 from log import logger as log
 
 
@@ -57,13 +57,11 @@ class ToolBarFrame(ctk.CTkFrame):
         )
         debug_btn.grid(row=0, column=1, **grid_props)
 
-        BtnToolDropdown(
+        debug_dropdown = BtnToolDropdown(
             self,
             debug_btn,
             {
-                "Toggle Console Logging": lambda: log.set_logger_output_console(
-                    not log.is_logging_to_console
-                ),
+                "Toggle Console Logging":self.toogle_console_out,
                 "-line-": None,
                 "Set Log-LvL: DEBUG": lambda: log.log.setLevel(10),
                 "Set Log-LvL: INFO": lambda: log.log.setLevel(20),
@@ -72,3 +70,10 @@ class ToolBarFrame(ctk.CTkFrame):
                 "Set Log-LvL: CRITICAL": lambda: log.log.setLevel(50),
             },
         )
+
+    def toogle_console_out(self, btn:ctk.CTkButton) -> None:
+        log.set_logger_output_console(not log.is_logging_to_console)
+        if log.is_logging_to_console:
+            btn.configure(text="Disable Console Logging")
+        else:
+            btn.configure(text="Enable Console Logging")

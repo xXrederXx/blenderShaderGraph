@@ -88,9 +88,17 @@ class ToolDropdownBase:
             widget = widget.master
         return False
 
-    def _run_and_close(self, command):
+    def _run_and_close(self, command, *args):
         """Run the button command and close the dropdown."""
-        command()
+        try:
+            command(*args)
+        except TypeError:
+            log.warning(
+                "Could not provide the *args to the command, going to call without *args"
+            )
+            command()
+        except:
+            log.error("Something went wrong when calling the command")
         self.hide_dropdown()
 
 
@@ -106,7 +114,7 @@ class BtnToolDropdown(ToolDropdownBase):
         self,
         master: ctk.CTkFrame,
         button: ctk.CTkButton,
-        tool_buttons: dict[str, Callable[[], None]],
+        tool_buttons: dict[str, Callable[[ctk.CTkButton], None]],
         transparent_color: str = "#010101",
         window_width: int = 300,
         window_height: int = 600,
@@ -130,7 +138,7 @@ class BtnToolDropdown(ToolDropdownBase):
             widget.destroy()
 
         for label, command in self.tool_buttons.items():
-            if label.find("-line-") != -1: 
+            if label.find("-line-") != -1:
                 self._make_line()
             else:
                 self._make_button(label, command)
@@ -139,18 +147,16 @@ class BtnToolDropdown(ToolDropdownBase):
         btn = ctk.CTkButton(
             self.dropdown_frame,
             text=label,
-            command=lambda cmd=command: self._run_and_close(cmd),
+            command=lambda cmd=command: self._run_and_close(cmd, btn),
             fg_color="transparent",
             hover_color=dimm_color(PRIMARY_BUTTON_BG_COLOR),
             anchor="w",
             **LABEL_KWARGS,
         )
         btn.pack(fill="x", padx=PAD_MEDIUM, pady=PAD_SMALL)
-        
+
     def _make_line(self):
         line = ctk.CTkFrame(
-            self.dropdown_frame,
-            fg_color=PRIMARY_BUTTON_BG_COLOR,
-            height=2
+            self.dropdown_frame, fg_color=PRIMARY_BUTTON_BG_COLOR, height=2
         )
         line.pack(fill="x", padx=PAD_MEDIUM)
