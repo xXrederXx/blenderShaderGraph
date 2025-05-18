@@ -3,6 +3,7 @@
 import customtkinter as ctk
 from NodeApp import NodeApp
 from log import logger as log
+from util.io_util import get_persistant_path, get_tmp_path
 
 if __name__ == "__main__":
     log.set_up_logger()  # Set up logging to file
@@ -12,6 +13,9 @@ if __name__ == "__main__":
     
     ctk.set_appearance_mode("Dark")
     ctk.set_default_color_theme("dark-blue")
+    
+    get_persistant_path().mkdir(parents=True, exist_ok=True)
+    get_tmp_path().mkdir(parents=True, exist_ok=True)
     
     root = NodeApp()
     root.mainloop()

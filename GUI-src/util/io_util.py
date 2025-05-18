@@ -7,6 +7,8 @@ import requests
 import numpy as np
 from util.export_util import nodes_to_json
 from log import logger as log
+import os
+import tempfile
 
 def _get_hash(content: list[dict[str, any]]) -> str:
     ret_hash = 0x123456789abcdef
@@ -52,17 +54,13 @@ def request_image_async(display: ctk.CTkLabel, content: list[dict[str, any]]) ->
 
 def save_as_tmp(data: bytes, source: list[dict[str, any]]):
     filename = _get_hash(source) + ".png"
-    directory = Path.cwd() / "tmp" / "img"
-    directory.mkdir(parents=True, exist_ok=True)
-    path = directory / filename
+    path = get_tmp_path() / filename
     with open(path, "wb") as f:
         f.write(data)
         
 def get_from_tmp(source: list[dict[str, any]], display: ctk.CTkLabel):
     filename = _get_hash(source) + ".png"
-    directory = Path.cwd() / "tmp" / "img"
-    directory.mkdir(parents=True, exist_ok=True)
-    path = directory / filename
+    path = get_tmp_path() / filename
     
     if not Path.exists(path):
         log.warn("File Not found: " + str(path))
@@ -81,4 +79,8 @@ def get_from_tmp(source: list[dict[str, any]], display: ctk.CTkLabel):
 
     display.after(0, update_ui)
     
-    
+def get_persistant_path() -> Path:
+    return Path(os.getenv('LOCALAPPDATA')) / "BSG"
+
+def get_tmp_path() -> Path:
+    return Path(tempfile.gettempdir()) / "BSG"
