@@ -3,7 +3,7 @@
 import customtkinter as ctk
 from NodeApp import NodeApp
 from log import logger as log
-from util.io_util import get_persistant_path, get_tmp_path
+from util.io_util import get_persistant_path, get_tmp_path, get_log_path
 
 if __name__ == "__main__":
     log.set_up_logger()  # Set up logging to file
@@ -16,6 +16,7 @@ if __name__ == "__main__":
     
     get_persistant_path().mkdir(parents=True, exist_ok=True)
     get_tmp_path().mkdir(parents=True, exist_ok=True)
+    get_log_path().mkdir(parents=True, exist_ok=True)
     
     root = NodeApp()
     root.mainloop()
