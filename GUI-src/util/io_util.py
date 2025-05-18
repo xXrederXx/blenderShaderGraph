@@ -17,6 +17,8 @@ def _get_hash(content: List[Dict[str, Any]]) -> str:
     ret_hash = 0x123456789ABCDEF
     for node in content:
         for k, v in node.items():
+            if k in ("id:S", "description:S"):
+                continue
             ret_hash ^= hash(v)
     return np.base_repr(ret_hash, 36)
 
