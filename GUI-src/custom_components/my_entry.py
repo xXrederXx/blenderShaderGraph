@@ -1,6 +1,8 @@
-import customtkinter as ctk
+"""Contains custom entries with lint"""
+
 from abc import ABC, abstractmethod
-from typing import TypeVar, Generic, Callable
+from typing import List, TypeVar, Generic, Callable
+import customtkinter as ctk
 from style import TEXT_COLOR
 from log import logger as log
 
@@ -8,22 +10,25 @@ T = TypeVar("T")
 
 
 class MyEntry(ctk.CTkEntry, Generic[T], ABC):
-    def __init__(self, default_value:T, **kwargs):
+    """The base class"""
+
+    def __init__(self, default_value: T, **kwargs):
         super().__init__(**kwargs)
         self.bind("<KeyRelease>", lambda e: self._on_key_relese())
         self.default = default_value
         self._after_id = None
         self.on_end_editing: Callable[[], None]
-    
+
     def _on_key_relese(self):
         if self._after_id:
             self.after_cancel(self._after_id)
         if self.on_end_editing:
             self._after_id = self.after(1000, self.on_end_editing)
-        
+
         self.input_validation()
-    
+
     def input_validation(self):
+        """This validates the input and colores the text accordingly"""
         current = self.get()
         if not self.validate_input(current):
             self.configure(text_color="red")
@@ -32,15 +37,16 @@ class MyEntry(ctk.CTkEntry, Generic[T], ABC):
 
     @abstractmethod
     def validate_input(self, text: str) -> bool:
+        """This function determines if the text is valid"""
         log.warn("Your calling an empty abstarct method")
-        pass
 
     @abstractmethod
     def convert_input(self, text: str) -> T:
+        """This converts the string to type T"""
         log.warn("Your calling an empty abstarct method")
-        pass
 
     def get_value(self) -> T:
+        """This returns the value as T"""
         current = super().get()
         if not self.validate_input(current):
             return self.default
@@ -48,6 +54,8 @@ class MyEntry(ctk.CTkEntry, Generic[T], ABC):
 
 
 class IntEntry(MyEntry[int]):
+    """Intiger variant of MyEntry"""
+
     def __init__(self, **kwargs):
         super().__init__(0, **kwargs)
 
@@ -63,6 +71,8 @@ class IntEntry(MyEntry[int]):
 
 
 class FloatEntry(MyEntry[float]):
+    """Float variant of MyEntry"""
+
     def __init__(self, **kwargs):
         super().__init__(0.0, **kwargs)
 
@@ -78,6 +88,8 @@ class FloatEntry(MyEntry[float]):
 
 
 class StringEntry(MyEntry[str]):
+    """String variant of MyEntry"""
+
     def __init__(self, **kwargs):
         super().__init__("", **kwargs)
 
@@ -89,6 +101,8 @@ class StringEntry(MyEntry[str]):
 
 
 class BoolEntry(MyEntry[bool]):
+    """Bool variant of MyEntry"""
+
     def __init__(self, **kwargs):
         super().__init__(False, **kwargs)
 
@@ -107,7 +121,9 @@ class BoolEntry(MyEntry[bool]):
 
 
 class EnumEntry(MyEntry[str]):
-    def __init__(self, enum: list[str], **kwargs):
+    """Enum variant of MyEntry"""
+
+    def __init__(self, enum: List[str], **kwargs):
         super().__init__("", **kwargs)
         self.enum = enum
 

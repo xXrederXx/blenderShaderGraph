@@ -1,6 +1,6 @@
 """Avoid lint"""
 
-from typing import Any, List
+from typing import Any, Dict, List
 from typing import Optional
 
 import customtkinter as ctk
@@ -19,7 +19,7 @@ class NodeAppMainFrame(ctk.CTkFrame):
 
     def __init__(self, master) -> None:
         super().__init__(master, fg_color=MAIN_BG_COL)
-        self.nodes: List[dict[str, Any]] = []
+        self.nodes: List[Dict[str, Any]] = []
         self.selected_node_index: Optional[int] = None
 
         self._setup_layout()
@@ -41,7 +41,10 @@ class NodeAppMainFrame(ctk.CTkFrame):
         self.node_list_frame.grid(row=0, column=0, **FRAME_GRID_KWARGS)
 
         self.config_frame = NodeConfigFrame(
-            self, on_update=self.update_node, on_req_img=self.request_node_image, on_auto_req=self.request_from_tmp
+            self,
+            on_update=self.update_node,
+            on_req_img=self.request_node_image,
+            on_auto_req=self.request_from_tmp,
         )
         self.config_frame.grid(row=0, column=1, **FRAME_GRID_KWARGS)
 
@@ -82,6 +85,7 @@ class NodeAppMainFrame(ctk.CTkFrame):
         self.config_frame.show_details(selected_node)
 
     def delete_node(self, idx: int):
+        """Deletes the nod at the spesifyed index and updates the node_list"""
         self.nodes.pop(idx)
         self.node_list_frame.update_node_list(self.nodes)
 
@@ -99,7 +103,9 @@ class NodeAppMainFrame(ctk.CTkFrame):
             except ValueError:
                 log.error(f"Invalid input for field {field_name}: {value}")
             except TypeError:
-                log.error(f"No matching conversion found for field {field_name}: {value}")
+                log.error(
+                    f"No matching conversion found for field {field_name}: {value}"
+                )
 
         self.node_list_frame.update_node_list(self.nodes)
 
@@ -119,7 +125,6 @@ class NodeAppMainFrame(ctk.CTkFrame):
         request_image_async(self.config_frame.image_label, nodes)
 
     def request_from_tmp(self) -> None:
-        """Auto request image from tmp cache
-        """
+        """Auto request image from tmp cache"""
         nodes = self.nodes[0 : self.selected_node_index + 1]
         get_from_tmp(nodes, self.config_frame.image_label)

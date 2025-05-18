@@ -1,6 +1,6 @@
 """Avoid lint"""
 
-from typing import Callable, List
+from typing import Any, Callable, Dict, List
 
 import customtkinter as ctk
 
@@ -38,10 +38,10 @@ class AddNodeFrame(ctk.CTkFrame):
         self.on_generate_image = on_generate_image
 
         self.node_groups: List[str] = [group.name for group in NEW_NODE_TYPES]
-        self.node_groups_colors: dict[str, str] = {
+        self.node_groups_colors: Dict[str, str] = {
             group.name: group.color for group in NEW_NODE_TYPES
         }
-        self.node_types_dict: dict[str, List[str]] = {
+        self.node_types_Dict: Dict[str, List[str]] = {
             group.name: [node.name for node in group.nodes] for group in NEW_NODE_TYPES
         }
 
@@ -71,11 +71,11 @@ class AddNodeFrame(ctk.CTkFrame):
         self.node_groups_menu.pack(**label_pack_props)
 
         initial_group = self.node_groups_var.get()
-        self.node_type_var = ctk.StringVar(value=self.node_types_dict[initial_group][0])
+        self.node_type_var = ctk.StringVar(value=self.node_types_Dict[initial_group][0])
         self.node_type_menu = ctk.CTkOptionMenu(
             add_node_frame,
             variable=self.node_type_var,
-            values=self.node_types_dict[initial_group],
+            values=self.node_types_Dict[initial_group],
             **DROPDOWN_KWARGS
         )
         self.node_type_menu.pack(**label_pack_props)
@@ -130,7 +130,7 @@ class AddNodeFrame(ctk.CTkFrame):
 
     def update_node_type_menu(self, selected_group: str) -> None:
         """Update the node types shown in the dropdown."""
-        new_types = self.node_types_dict[selected_group]
+        new_types = self.node_types_Dict[selected_group]
         self.node_type_menu.configure(values=new_types)
         self.node_type_var.set(new_types[0])
         self.update_menu_color(selected_group)
@@ -140,11 +140,11 @@ class AddNodeFrame(ctk.CTkFrame):
         color = self.node_groups_colors[selected_group]
         self.node_groups_menu.configure(fg_color=color)
 
-    def get_node(self) -> dict[str, any]:
-        """returns a node dict
+    def get_node(self) -> Dict[str, Any]:
+        """returns a node Dict
 
         Returns:
-            dict[str, any]: node
+            Dict[str, Any]: node
         """
         name = self.new_id_entry.get()
         description = self.new_desc_entry.get()
@@ -152,23 +152,23 @@ class AddNodeFrame(ctk.CTkFrame):
         selected_group_name = self.node_groups_var.get()
         if not name or not selected_type_name:
             log.info("Cant generate a node with an empty name or type")
-            return
+            return {}
 
         node_group = next(
             (g for g in NEW_NODE_TYPES if g.name == selected_group_name), None
         )
         if not node_group:
             log.warn("Cant find the node group in which the node type lives ")
-            return
+            return {}
 
         node_type = next(
             (nt for nt in node_group.nodes if nt.name == selected_type_name), None
         )
         if not node_type:
             log.warn("Cant find the node type in the node group")
-            return
+            return {}
 
-        new_node = dict(node_type.params)
+        new_node = Dict(node_type.params)
         new_node["id:S"] = name
         new_node["description:S"] = description
         new_node["type:S"] = selected_type_name

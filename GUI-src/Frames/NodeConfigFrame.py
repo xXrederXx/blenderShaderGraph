@@ -1,6 +1,6 @@
 """Avoid lint"""
 
-from typing import Callable
+from typing import Callable, Dict
 
 import customtkinter as ctk
 
@@ -34,14 +34,14 @@ class NodeConfigFrame(ctk.CTkFrame):
         master,
         on_update: Callable[[], None],
         on_req_img: Callable[[], None],
-        on_auto_req: Callable[[], None]
+        on_auto_req: Callable[[], None],
     ) -> None:
         super().__init__(master, **FRAME_KWARGS)
         self.on_update = on_update
         self.on_req_img = on_req_img
         self.on_auto_req = on_auto_req
 
-        self.node_colors: dict[str, str] = {}
+        self.node_colors: Dict[str, str] = {}
         for g in NEW_NODE_TYPES:
             for n in g.nodes:
                 self.node_colors[n.name] = g.color
@@ -104,9 +104,9 @@ class NodeConfigFrame(ctk.CTkFrame):
         self.image_label = ctk.CTkLabel(self, text="", wraplength=400)
         self.image_label.pack(pady=PAD_MEDIUM)
 
-        self.custom_field_entries: dict[str, MyEntry] = {}
+        self.custom_field_entries: Dict[str, MyEntry] = {}
 
-    def show_details(self, node: dict) -> None:
+    def show_details(self, node: Dict) -> None:
         """Displays details of the selected node in the config frame."""
         self.details_label.configure(text=f"Editing: {node.get('id:S', 'Unknown')}")
         node_type = node.get("type:S", "Unknown")

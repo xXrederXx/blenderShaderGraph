@@ -1,14 +1,14 @@
 """Used for dataclasses (Easy way to stor data)"""
 
 from dataclasses import dataclass
-
+from typing import Dict, Any, List
 
 @dataclass
 class NodeType:
     """Contains name and params of a Node Type"""
 
     name: str
-    params: dict[str, any]
+    params: Dict[str, Any]
 
     def __post_init__(self):
         self.params["type:S"] = self.name
@@ -16,14 +16,14 @@ class NodeType:
 
 @dataclass
 class NodeTypeGroup:
-    """Contains a group name, a group color, and a list of node types for the group"""
+    """Contains a group name, a group color, and a List of node types for the group"""
 
     name: str
     color: str
-    nodes: list[NodeType]
+    nodes: List[NodeType]
 
 
-NEW_NODE_TYPES: list[NodeTypeGroup] = [
+NEW_NODE_TYPES: List[NodeTypeGroup] = [
     NodeTypeGroup(
         "TextureNodes",
         "#79461d",

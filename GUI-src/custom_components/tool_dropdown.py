@@ -1,5 +1,7 @@
-import customtkinter as ctk
+"""Contains custom tooldropdowns"""
+from typing import Callable, Dict
 import tkinter as tk
+import customtkinter as ctk
 from log import logger as log
 from style import (
     FRAME_BG_COL,
@@ -9,7 +11,6 @@ from style import (
     CORNER_RADIUS_SMALL,
     PRIMARY_BUTTON_BG_COLOR,
 )
-from typing import Callable
 from util.color_util import dimm_color
 
 
@@ -48,6 +49,7 @@ class ToolDropdownBase:
         self._root.bind("<Button-1>", self._on_click_outside, add=True)
 
     def toggle_dropdown(self):
+        """Toggles dropdown visabiluty"""
         if self.dropdown_visible:
             self.hide_dropdown()
         else:
@@ -97,8 +99,8 @@ class ToolDropdownBase:
                 "Could not provide the *args to the command, going to call without *args"
             )
             command()
-        except:
-            log.error("Something went wrong when calling the command")
+        except Exception as e:
+            log.error("Something went wrong when calling the command", exc_info=e)
         self.hide_dropdown()
 
 
@@ -114,7 +116,7 @@ class BtnToolDropdown(ToolDropdownBase):
         self,
         master: ctk.CTkFrame,
         button: ctk.CTkButton,
-        tool_buttons: dict[str, Callable[[ctk.CTkButton], None]],
+        tool_buttons: Dict[str, Callable[[ctk.CTkButton], None]],
         transparent_color: str = "#010101",
         window_width: int = 300,
         window_height: int = 600,

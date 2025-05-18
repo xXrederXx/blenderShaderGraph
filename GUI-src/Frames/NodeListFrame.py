@@ -1,7 +1,7 @@
 """Avoid lint"""
 
 from functools import partial
-from typing import Callable, List
+from typing import Callable, Dict, List
 
 import customtkinter as ctk
 
@@ -10,10 +10,7 @@ from nodes import NEW_NODE_TYPES
 
 from style import (
     FRAME_KWARGS,
-    BUTTON_KWARKS,
     PAD_SMALL,
-    PAD_MEDIUM,
-    PAD_LARGE,
     CORNER_RADIUS_MEDIUM,
     LABEL_KWARGS,
     TEXT_FONT,
@@ -37,11 +34,11 @@ class NodeListFrame(ctk.CTkScrollableFrame):
         self.on_delete_node = on_delete_node
         self.node_buttons: List[ctk.CTkFrame] = []
 
-        self.node_colors: dict[str, str] = {
+        self.node_colors: Dict[str, str] = {
             n.name: g.color for g in NEW_NODE_TYPES for n in g.nodes
         }
 
-    def update_node_list(self, nodes: List[dict]) -> None:
+    def update_node_list(self, nodes: List[Dict]) -> None:
         """Rebuilds the node list from scratch."""
         for btn in self.node_buttons:
             btn.destroy()

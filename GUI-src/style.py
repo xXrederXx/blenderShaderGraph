@@ -1,5 +1,6 @@
-"""Contains styling"""
+"""Contains styling information"""
 
+from typing import Union, Tuple
 from customtkinter import CTkFont
 from util.color_util import dimm_color
 from log import logger as log
@@ -18,11 +19,12 @@ SECONDARY_BUTTON_BG_COLOR = "#393a3e"
 
 TEXT_COLOR = "#f9fdfe"
 _FONT_NAME = "Inter"
-TEXT_FONT = (_FONT_NAME, 13)
-HEADER_FONT = (_FONT_NAME, 20, "bold")
+TEXT_FONT: Union[Tuple[str, int], CTkFont] = (_FONT_NAME, 13)
+HEADER_FONT: Union[Tuple[str, int], CTkFont] = (_FONT_NAME, 20, "bold")
 
 
 def init_fonts():
+    """This replaces the Tuple font type with a propper CTKFont"""
     log.debug("init proper CTkFonts")
     global TEXT_FONT
     global HEADER_FONT

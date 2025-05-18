@@ -1,10 +1,12 @@
+"""This contains the Toolbar"""
+
+import os
 from typing import Callable
 import customtkinter as ctk
 from style import TOOLBAR_BG_COL, LABEL_KWARGS, PAD_SMALL
 from util.color_util import dimm_color
 from custom_components.tool_dropdown import BtnToolDropdown
 from log import logger as log
-import os
 from util.io_util import get_persistant_path, get_tmp_path
 
 
@@ -81,6 +83,7 @@ class ToolBarFrame(ctk.CTkFrame):
         )
 
     def toogle_console_out(self, btn: ctk.CTkButton) -> None:
+        """Toggles the log.is_logging_to_console and changes the button text"""
         log.set_logger_output_console(not log.is_logging_to_console)
         if log.is_logging_to_console:
             btn.configure(text="Disable Console Logging")
