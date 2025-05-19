@@ -22,7 +22,7 @@ class CharLimEntry(ctk.CTkEntry):
         state=tkinter.NORMAL,
         **kwargs
     ):
-        self.textvariable = ctk.StringVar()
+        self.textvariable = ctk.StringVar(value=placeholder_text)
         self.max_chars = max_chars
         super().__init__(
             master,
