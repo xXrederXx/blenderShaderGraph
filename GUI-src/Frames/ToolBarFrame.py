@@ -8,6 +8,7 @@ from util.color_util import dimm_color
 from custom_components.tool_dropdown import BtnToolDropdown
 from globals.my_logger import logger as log
 from globals.paths import PERSISTANT_PATH, TMP_PATH
+from custom_components.char_lim_entry import CharLimEntry
 
 
 class ToolBarFrame(ctk.CTkFrame):
@@ -22,6 +23,7 @@ class ToolBarFrame(ctk.CTkFrame):
         on_new_project: Callable[[], None],
     ) -> None:
         super().__init__(master, corner_radius=0, fg_color=TOOLBAR_BG_COL)
+        self.columnconfigure(10, weight=100)
         grid_props = {"sticky": "nswe", "padx": PAD_SMALL}
 
         file_btn = ctk.CTkButton(
@@ -73,14 +75,23 @@ class ToolBarFrame(ctk.CTkFrame):
                 "Set Log-LvL: ERROR": lambda: log.log.setLevel(40),
                 "Set Log-LvL: CRITICAL": lambda: log.log.setLevel(50),
                 "2-line-": None,
-                "Open tmp Folder": lambda: os.startfile(
-                    os.path.realpath(TMP_PATH)
-                ),
+                "Open tmp Folder": lambda: os.startfile(os.path.realpath(TMP_PATH)),
                 "Open persistant Folder": lambda: os.startfile(
                     os.path.realpath(PERSISTANT_PATH)
                 ),
             },
         )
+
+        self.proj_name_entry = CharLimEntry(
+            self,
+            max_chars=18,
+            border_width=0,
+            bg_color="transparent",
+            fg_color="transparent",
+            placeholder_text="Project Name",
+            **LABEL_KWARGS
+        )
+        self.proj_name_entry.grid(row=0, column=10, sticky="e", padx=PAD_SMALL)
 
     def toogle_console_out(self, btn: ctk.CTkButton) -> None:
         """Toggles the log.is_logging_to_console and changes the button text"""

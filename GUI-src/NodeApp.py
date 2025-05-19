@@ -42,6 +42,17 @@ class NodeApp(ctk.CTk):
             self, fg_color=TOOLBAR_BG_COL, height=48, corner_radius=0
         )
         self.top.grid(row=0, column=0, sticky="nswe")
+        
+        self.tool_bar = ToolBarFrame(
+            self.top,
+            self.on_save_btn,
+            self.on_load_btn,
+            self.on_export_btn,
+            self.on_new_project,
+        )
+        self.top.columnconfigure(0, weight=1)
+        self.top.rowconfigure(0, weight=1)
+        self.tool_bar.grid(sticky="nswe")
 
         self.main = ctk.CTkFrame(self, fg_color=MAIN_BG_COL, corner_radius=0)
         self.main.grid(row=1, column=0, **FRAME_GRID_KWARGS)
@@ -50,15 +61,6 @@ class NodeApp(ctk.CTk):
 
         self.app = NodeAppMainFrame(self.main)
         self.app.grid(sticky="nswe")
-
-        self.tool_bar = ToolBarFrame(
-            self.top,
-            self.on_save_btn,
-            self.on_load_btn,
-            self.on_export_btn,
-            self.on_new_project,
-        )
-        self.tool_bar.grid(sticky="nswe")
 
     def on_save_btn(self):
         """Used to save to a file"""
