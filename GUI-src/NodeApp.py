@@ -42,7 +42,7 @@ class NodeApp(ctk.CTk):
             self, fg_color=TOOLBAR_BG_COL, height=48, corner_radius=0
         )
         self.top.grid(row=0, column=0, sticky="nswe")
-        
+
         self.tool_bar = ToolBarFrame(
             self.top,
             self.on_save_btn,
@@ -66,13 +66,20 @@ class NodeApp(ctk.CTk):
         """Used to save to a file"""
         fp = fd.asksaveasfilename(
             defaultextension=".bsg",
+            initialfile=self.tool_bar.proj_name_entry.get(),
             filetypes=[("bsg file", "*.bsg"), ("json file", "*.json")],
         )
         if not fp:
             log.info("No file path found after asksaveasfilename")
             return
 
-        content = nodes_to_bsg(BSGData(self.app.nodes, self.app.selected_node_index))
+        content = nodes_to_bsg(
+            BSGData(
+                self.app.nodes,
+                self.app.selected_node_index,
+                self.tool_bar.proj_name_entry.get(),
+            )
+        )
         with open(fp, "w", encoding="utf-8") as f:
             f.write(content)
         log.debug("Saved content to %s", fp)
@@ -93,13 +100,18 @@ class NodeApp(ctk.CTk):
         self.app.nodes = data.nodes
         self.app.selected_node_index = data.selected_node_index
         self.app.node_list_frame.update_node_list(self.app.nodes)
-        self.app.config_frame.show_details(data.nodes[data.selected_node_index])
+
+        if data.selected_node_index:
+            self.app.config_frame.show_details(data.nodes[data.selected_node_index])
+
+        self.tool_bar.proj_name_entry.textvariable.set(data.project_name)
         log.debug("Loaded content from %s", fp)
 
     def on_export_btn(self):
         """used to export to a file"""
         fp = fd.asksaveasfilename(
             defaultextension=".bsg",
+            initialfile=self.tool_bar.proj_name_entry.textvariable.get(),
             filetypes=[("json file", "*.json"), ("c-sharp file", "*.cs")],
         )
         if not fp:

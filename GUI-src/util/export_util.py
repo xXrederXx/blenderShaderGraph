@@ -9,8 +9,10 @@ from globals.my_logger import logger as log
 @dataclass
 class BSGData:
     """This stores all data inside a .bsg file"""
+
     nodes: List[Dict[str, Any]]
     selected_node_index: int
+    project_name: str
 
 
 def _format_node_Dict(_Dict: Dict[str, Any]) -> Dict[str, Any]:
@@ -46,7 +48,10 @@ def nodes_to_bsg(data: BSGData) -> str:
     """This converts BSGData to a json string"""
     return json.dumps(
         {
-            "settings": {"selected_node_index": data.selected_node_index},
+            "settings": {
+                "selected_node_index": data.selected_node_index,
+                "project_name": data.project_name,
+            },
             "nodes": data.nodes,
         }
     )
@@ -55,20 +60,23 @@ def nodes_to_bsg(data: BSGData) -> str:
 def nodes_from_bsg(data: str) -> BSGData:
     """This turns a json string into BSGData"""
     idx = 0
+    proj_name = "Project Name"
     nodes = []
 
     json_data: Dict[str, Any] = json.loads(data)
 
     if isinstance(json_data, list):
         # Old way
-        return BSGData(json_data, 0)
+        return BSGData(json_data, idx, proj_name)
 
     settings: Optional[Dict[str, Any]] = json_data.get("settings", None)
     if settings:
         idx = settings.get("selected_node_index", 0)
+        proj_name = settings.get("project_name", "Project Name")
 
     nodes = json_data.get("nodes", [])
-    return BSGData(nodes, idx)
+        
+    return BSGData(nodes, idx, proj_name)
 
 
 def nodes_to_json(dics: List[Dict[str, Any]]) -> str:
