@@ -16,10 +16,10 @@ from globals.style import (
     init_fonts,
 )
 from globals.my_logger import logger as log
-
+from globals.paths import AUTO_SAVE_PATH
 from Frames.NodeAppMainFrame import NodeAppMainFrame
 from Frames.ToolBarFrame import ToolBarFrame
-
+import time
 import customtkinter as ctk
 
 
@@ -33,6 +33,9 @@ class NodeApp(ctk.CTk):
         self.geometry("1400x800")
 
         init_fonts()
+
+        self.auto_save_interval = 1 * 5 * 1000  # 5 minutes
+        self.after(self.auto_save_interval, self.auto_save)
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=0)
@@ -136,3 +139,25 @@ class NodeApp(ctk.CTk):
         self.app.node_list_frame.update_node_list(self.app.nodes)
         self.app.config_frame.show_details({})
         log.debug("New Project init")
+
+    def auto_save(self):
+        """Used to save to a file"""
+        fn = (
+            self.tool_bar.proj_name_entry.get()
+            + "_"
+            + time.strftime("%Y%m%d_%H%M%S")
+            + ".bsg"
+        )
+        fp = AUTO_SAVE_PATH / fn
+        content = nodes_to_bsg(
+            BSGData(
+                self.app.nodes,
+                self.app.selected_node_index,
+                self.tool_bar.proj_name_entry.get(),
+            )
+        )
+        with open(fp, "w", encoding="utf-8") as f:
+            f.write(content)
+        log.debug("Auto Saved content to %s", fp)
+
+        self.after(self.auto_save_interval, self.auto_save)
