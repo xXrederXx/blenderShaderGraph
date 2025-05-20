@@ -31,6 +31,7 @@ class NodeApp(ctk.CTk):
         super().__init__(fg_color=MAIN_BG_COL)
         self.title("Node Manager")
         self.geometry("1400x800")
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         init_fonts()
 
@@ -161,3 +162,8 @@ class NodeApp(ctk.CTk):
         log.debug("Auto Saved content to %s", fp)
 
         self.after(self.auto_save_interval, self.auto_save)
+
+    def on_closing(self):
+        """Gets run when window gets closed"""
+        self.auto_save()
+        self.destroy()
