@@ -2,7 +2,7 @@
 
 import customtkinter as ctk
 from NodeApp import NodeApp
-from globals.my_logger import logger as log
+from globals.my_logger import MyLogger
 from globals.paths import TMP_PATH, PERSISTANT_PATH, LOG_PATH, AUTO_SAVE_PATH
 
 if __name__ == "__main__":
@@ -13,6 +13,7 @@ if __name__ == "__main__":
     AUTO_SAVE_PATH.mkdir(parents=True, exist_ok=True)
     
     #Setting up logging
+    log = MyLogger(10)
     log.set_up_logger()
     log.set_logger_output_console(True)
 

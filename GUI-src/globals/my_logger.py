@@ -5,9 +5,10 @@ import time
 import sys
 from typing import Optional
 from globals.paths import LOG_PATH
+from util.singleton import Singleton
 
 
-class _MyLogger:
+class MyLogger(metaclass=Singleton):
     """My implementation of a logger"""
 
     def __init__(self, log_level: int, formatter: Optional[log.Formatter] = None):
@@ -70,5 +71,5 @@ class _MyLogger:
             self.log.removeHandler(self._console_stream_hdlr)
             self.is_logging_to_console = False
 
-
-logger = _MyLogger(log.DEBUG)
+# Old way to accsses logger
+logger = MyLogger(log.DEBUG)
