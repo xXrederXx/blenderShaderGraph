@@ -1,34 +1,14 @@
 """Used for dataclasses (Easy way to stor data)"""
 
-from dataclasses import dataclass
-from typing import Dict, Any, List
+from typing import List
+from my_types.node import Node, NodeGroup
 
-@dataclass
-class NodeType:
-    """Contains name and params of a Node Type"""
-
-    name: str
-    params: Dict[str, Any]
-
-    def __post_init__(self):
-        self.params["type:S"] = self.name
-
-
-@dataclass
-class NodeTypeGroup:
-    """Contains a group name, a group color, and a List of node types for the group"""
-
-    name: str
-    color: str
-    nodes: List[NodeType]
-
-
-NEW_NODE_TYPES: List[NodeTypeGroup] = [
-    NodeTypeGroup(
+NEW_NODE_TYPES: List[NodeGroup] = [
+    NodeGroup(
         "TextureNodes",
         "#79461d",
         [
-            NodeType(
+            Node(
                 "NoiseTexture",
                 {
                     "width:I": 1024,
@@ -39,7 +19,7 @@ NEW_NODE_TYPES: List[NodeTypeGroup] = [
                     "Lacunarity:F": 2,
                 },
             ),
-            NodeType(
+            Node(
                 "BrickTexture",
                 {
                     "width:I": 1024,
@@ -59,7 +39,7 @@ NEW_NODE_TYPES: List[NodeTypeGroup] = [
                     "forceTilable:B": False,
                 },
             ),
-            NodeType(
+            Node(
                 "MaskTexture",
                 {
                     "width:I": 1024,
@@ -73,11 +53,11 @@ NEW_NODE_TYPES: List[NodeTypeGroup] = [
             ),
         ],
     ),
-    NodeTypeGroup(
+    NodeGroup(
         "Color",
         "#6e6e1d",
         [
-            NodeType(
+            Node(
                 "MixColor",
                 {
                     "a:S": "",
@@ -88,11 +68,11 @@ NEW_NODE_TYPES: List[NodeTypeGroup] = [
             )
         ],
     ),
-    NodeTypeGroup(
+    NodeGroup(
         "Converter",
         "#246283",
         [
-            NodeType(
+            Node(
                 "ColorRamp",
                 {
                     "image:S": "",
@@ -102,29 +82,29 @@ NEW_NODE_TYPES: List[NodeTypeGroup] = [
             )
         ],
     ),
-    NodeTypeGroup(
+    NodeGroup(
         "Input",
         "#83314a",
         [
-            NodeType(
+            Node(
                 "TextureCoordinate",
                 {"width:I": 1024, "height:I": 1024, "mode:E-object": "object"},
             )
         ],
     ),
-    NodeTypeGroup(
+    NodeGroup(
         "Other",
         "#344621",
         [
-            NodeType("Resize", {"width:I": 1024, "height:I": 1024, "image:S": ""}),
-            NodeType("TileFixer", {"blur:F": 16, "image:S": ""}),
+            Node("Resize", {"width:I": 1024, "height:I": 1024, "image:S": ""}),
+            Node("TileFixer", {"blur:F": 16, "image:S": ""}),
         ],
     ),
-    NodeTypeGroup(
+    NodeGroup(
         "Vector",
         "#3c3c83",
         [
-            NodeType(
+            Node(
                 "Bump",
                 {
                     "heightMap:S": "",
