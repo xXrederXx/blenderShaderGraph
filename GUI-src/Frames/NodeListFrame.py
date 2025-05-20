@@ -7,15 +7,9 @@ import customtkinter as ctk
 
 from util.color_util import dimm_color
 from globals.nodes import NEW_NODE_TYPES
-from globals.style import (
-    FRAME_KWARGS,
-    PAD_SMALL,
-    CORNER_RADIUS_MEDIUM,
-    LABEL_KWARGS,
-    TEXT_FONT,
-    FRAME_BG_COL,
-)
+from globals.style import StyleManager
 
+style = StyleManager.get()
 
 class NodeListFrame(ctk.CTkScrollableFrame):
     """Frame that displays a list of nodes as buttons."""
@@ -27,7 +21,7 @@ class NodeListFrame(ctk.CTkScrollableFrame):
         on_node_pos_change: Callable[[int, int], None],
         on_delete_node: Callable[[int], None],
     ) -> None:
-        super().__init__(master, **FRAME_KWARGS)
+        super().__init__(master, **style.frame_kwargs)
         self.on_node_select = on_node_select
         self.on_node_pos_change = on_node_pos_change
         self.on_delete_node = on_delete_node
@@ -44,9 +38,9 @@ class NodeListFrame(ctk.CTkScrollableFrame):
         self.node_buttons.clear()
         for idx, node in enumerate(nodes):
             frame = ctk.CTkFrame(
-                self, corner_radius=CORNER_RADIUS_MEDIUM, fg_color="transparent"
+                self, corner_radius=style.corner_radius_medium, fg_color="transparent"
             )
-            frame.pack(fill="x", pady=PAD_SMALL)
+            frame.pack(fill="x", pady=style.pad_small)
             frame.columnconfigure(0, weight=1)
 
             btn = ctk.CTkButton(
@@ -55,20 +49,20 @@ class NodeListFrame(ctk.CTkScrollableFrame):
                 fg_color=self.node_colors[node["type:S"]],
                 hover_color=dimm_color(self.node_colors[node["type:S"]]),
                 command=partial(self.on_node_select, idx),
-                corner_radius=CORNER_RADIUS_MEDIUM,
-                **LABEL_KWARGS
+                corner_radius=style.corner_radius_medium,
+                **style.label_kwargs
             )
-            btn.grid(row=0, column=0, sticky="nswe", pady=PAD_SMALL)
+            btn.grid(row=0, column=0, sticky="nswe", pady=style.pad_small)
 
             up_btn = ctk.CTkButton(
                 frame,
                 text="⬆",
                 width=12,
-                fg_color=FRAME_BG_COL,
-                hover_color=dimm_color(FRAME_BG_COL),
+                fg_color=style.frame_bg_col,
+                hover_color=dimm_color(style.frame_bg_col),
                 corner_radius=0,
                 command=partial(self.on_node_pos_change, idx, -1),
-                **LABEL_KWARGS
+                **style.label_kwargs
             )
             up_btn.grid(row=0, column=1)
 
@@ -76,11 +70,11 @@ class NodeListFrame(ctk.CTkScrollableFrame):
                 frame,
                 text="⬇",
                 width=12,
-                fg_color=FRAME_BG_COL,
-                hover_color=dimm_color(FRAME_BG_COL),
+                fg_color=style.frame_bg_col,
+                hover_color=dimm_color(style.frame_bg_col),
                 corner_radius=0,
                 command=partial(self.on_node_pos_change, idx, 1),
-                **LABEL_KWARGS
+                **style.label_kwargs
             )
             down_btn.grid(row=0, column=2)
 
@@ -88,12 +82,12 @@ class NodeListFrame(ctk.CTkScrollableFrame):
                 frame,
                 text="x",
                 width=12,
-                fg_color=FRAME_BG_COL,
-                hover_color=dimm_color(FRAME_BG_COL),
+                fg_color=style.frame_bg_col,
+                hover_color=dimm_color(style.frame_bg_col),
                 corner_radius=0,
                 command=partial(self.on_delete_node, idx),
                 text_color="red",
-                font=TEXT_FONT,
+                font=style.text_font,
             )
             delete_btn.grid(row=0, column=3)
 

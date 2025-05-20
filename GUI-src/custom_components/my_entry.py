@@ -3,10 +3,12 @@
 from abc import ABC, abstractmethod
 from typing import List, TypeVar, Generic, Callable
 import customtkinter as ctk
-from globals.style import TEXT_COLOR
-from globals.my_logger import logger as log
+from globals.style import StyleManager
+from globals.my_logger import MyLogger
 
 T = TypeVar("T")
+style = StyleManager.get()
+log = MyLogger()
 
 
 class MyEntry(ctk.CTkEntry, Generic[T], ABC):
@@ -33,7 +35,7 @@ class MyEntry(ctk.CTkEntry, Generic[T], ABC):
         if not self.validate_input(current):
             self.configure(text_color="red")
         else:
-            self.configure(text_color=TEXT_COLOR)
+            self.configure(text_color=style.text_color)
 
     @abstractmethod
     def validate_input(self, text: str) -> bool:

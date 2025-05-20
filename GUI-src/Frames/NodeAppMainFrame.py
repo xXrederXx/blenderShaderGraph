@@ -10,15 +10,18 @@ from Frames.NodeConfigFrame import NodeConfigFrame
 from Frames.NodeListFrame import NodeListFrame
 from util.node_util import change_node_pos, convert_value
 from util.io_util import request_image_async, get_from_tmp
-from globals.style import FRAME_GRID_KWARGS, MAIN_BG_COL
-from globals.my_logger import logger as log
+from globals.style import StyleManager
+from globals.my_logger import MyLogger
+
+log = MyLogger()
+style = StyleManager.get()
 
 
 class NodeAppMainFrame(ctk.CTkFrame):
     """Main application for managing nodes."""
 
     def __init__(self, master) -> None:
-        super().__init__(master, fg_color=MAIN_BG_COL)
+        super().__init__(master, fg_color=style.main_bg_col)
         self.nodes: List[Dict[str, Any]] = []
         self.selected_node_index: Optional[int] = None
 
@@ -38,7 +41,7 @@ class NodeAppMainFrame(ctk.CTkFrame):
             on_node_pos_change=self.change_node_pos,
             on_delete_node=self.delete_node,
         )
-        self.node_list_frame.grid(row=0, column=0, **FRAME_GRID_KWARGS)
+        self.node_list_frame.grid(row=0, column=0, **style.frame_grid_kwargs)
 
         self.config_frame = NodeConfigFrame(
             self,
@@ -46,7 +49,7 @@ class NodeAppMainFrame(ctk.CTkFrame):
             on_req_img=self.request_node_image,
             on_auto_req=self.request_from_tmp,
         )
-        self.config_frame.grid(row=0, column=1, **FRAME_GRID_KWARGS)
+        self.config_frame.grid(row=0, column=1, **style.frame_grid_kwargs)
 
         self.add_node_frame = AddNodeFrame(
             self,
@@ -54,7 +57,7 @@ class NodeAppMainFrame(ctk.CTkFrame):
             on_generate_image=self.generate_image,
             on_group_change=self.update_node_type_menu,
         )
-        add_node_frame_style = FRAME_GRID_KWARGS
+        add_node_frame_style = style.frame_grid_kwargs
         add_node_frame_style.pop("padx")
         add_node_frame_style.pop("pady")
         self.add_node_frame.grid(row=0, column=2, **add_node_frame_style)

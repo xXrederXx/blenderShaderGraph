@@ -3,12 +3,16 @@
 import os
 from typing import Callable
 import customtkinter as ctk
-from globals.style import TOOLBAR_BG_COL, LABEL_KWARGS, PAD_SMALL
+from globals.style import StyleManager
 from util.color_util import dimm_color
 from custom_components.tool_dropdown import BtnToolDropdown
-from globals.my_logger import logger as log
+from globals.my_logger import MyLogger
 from globals.paths import PERSISTANT_PATH, TMP_PATH
 from custom_components.char_lim_entry import CharLimEntry
+
+
+log = MyLogger()
+style = StyleManager.get()
 
 
 class ToolBarFrame(ctk.CTkFrame):
@@ -22,19 +26,19 @@ class ToolBarFrame(ctk.CTkFrame):
         on_export: Callable[[], None],
         on_new_project: Callable[[], None],
     ) -> None:
-        super().__init__(master, corner_radius=0, fg_color=TOOLBAR_BG_COL)
+        super().__init__(master, corner_radius=0, fg_color=style.toolbar_bg_col)
         self.columnconfigure(10, weight=100)
-        grid_props = {"sticky": "nswe", "padx": PAD_SMALL}
+        grid_props = {"sticky": "nswe", "padx": style.pad_small}
 
         file_btn = ctk.CTkButton(
             self,
             text="File",
             width=70,
-            fg_color=TOOLBAR_BG_COL,
-            hover_color=dimm_color(TOOLBAR_BG_COL),
+            fg_color=style.toolbar_bg_col,
+            hover_color=dimm_color(style.toolbar_bg_col),
             command=on_export,
             corner_radius=0,
-            **LABEL_KWARGS
+            **style.label_kwargs
         )
         file_btn.grid(row=0, column=0, **grid_props)
 
@@ -55,11 +59,11 @@ class ToolBarFrame(ctk.CTkFrame):
             self,
             text="Debug",
             width=70,
-            fg_color=TOOLBAR_BG_COL,
-            hover_color=dimm_color(TOOLBAR_BG_COL),
+            fg_color=style.toolbar_bg_col,
+            hover_color=dimm_color(style.toolbar_bg_col),
             command=on_export,
             corner_radius=0,
-            **LABEL_KWARGS
+            **style.label_kwargs
         )
         debug_btn.grid(row=0, column=1, **grid_props)
 
@@ -89,9 +93,9 @@ class ToolBarFrame(ctk.CTkFrame):
             bg_color="transparent",
             fg_color="transparent",
             placeholder_text="Project Name",
-            **LABEL_KWARGS
+            **style.label_kwargs
         )
-        self.proj_name_entry.grid(row=0, column=10, sticky="e", padx=PAD_SMALL)
+        self.proj_name_entry.grid(row=0, column=10, sticky="e", padx=style.pad_small)
 
     def toogle_console_out(self, btn: ctk.CTkButton) -> None:
         """Toggles the log.is_logging_to_console and changes the button text"""

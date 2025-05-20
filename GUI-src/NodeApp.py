@@ -1,7 +1,9 @@
 """This is the main app class which contains all GUI"""
 
+import time
 import json
 from tkinter import filedialog as fd
+import customtkinter as ctk
 from util.export_util import (
     nodes_to_json,
     nodes_to_cs,
@@ -9,18 +11,14 @@ from util.export_util import (
     nodes_to_bsg,
     BSGData,
 )
-from globals.style import (
-    FRAME_GRID_KWARGS,
-    MAIN_BG_COL,
-    TOOLBAR_BG_COL,
-    init_fonts,
-)
-from globals.my_logger import logger as log
+from globals.style import StyleManager
+from globals.my_logger import MyLogger
 from globals.paths import AUTO_SAVE_PATH
 from Frames.NodeAppMainFrame import NodeAppMainFrame
 from Frames.ToolBarFrame import ToolBarFrame
-import time
-import customtkinter as ctk
+
+style = StyleManager.get()
+log = MyLogger()
 
 
 class NodeApp(ctk.CTk):
@@ -28,12 +26,10 @@ class NodeApp(ctk.CTk):
 
     def __init__(self):
         log.debug("Init Node App")
-        super().__init__(fg_color=MAIN_BG_COL)
+        super().__init__(fg_color=style.main_bg_col)
         self.title("Node Manager")
         self.geometry("1400x800")
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
-
-        init_fonts()
 
         self.auto_save_interval = 5 * 60 * 1000  # 5 minutes
         self.after(self.auto_save_interval, self.auto_save)
@@ -43,7 +39,7 @@ class NodeApp(ctk.CTk):
         self.rowconfigure(1, weight=1)
 
         self.top = ctk.CTkFrame(
-            self, fg_color=TOOLBAR_BG_COL, height=48, corner_radius=0
+            self, fg_color=style.toolbar_bg_col, height=48, corner_radius=0
         )
         self.top.grid(row=0, column=0, sticky="nswe")
 
@@ -58,8 +54,8 @@ class NodeApp(ctk.CTk):
         self.top.rowconfigure(0, weight=1)
         self.tool_bar.grid(sticky="nswe")
 
-        self.main = ctk.CTkFrame(self, fg_color=MAIN_BG_COL, corner_radius=0)
-        self.main.grid(row=1, column=0, **FRAME_GRID_KWARGS)
+        self.main = ctk.CTkFrame(self, fg_color=style.main_bg_col, corner_radius=0)
+        self.main.grid(row=1, column=0, **style.frame_grid_kwargs)
         self.main.columnconfigure(0, weight=1)
         self.main.rowconfigure(0, weight=1)
 

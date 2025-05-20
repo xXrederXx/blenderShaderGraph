@@ -11,7 +11,7 @@ from util.singleton import Singleton
 class MyLogger(metaclass=Singleton):
     """My implementation of a logger"""
 
-    def __init__(self, log_level: int, formatter: Optional[log.Formatter] = None):
+    def __init__(self, log_level: int = 10, formatter: Optional[log.Formatter] = None):
         self.log = log.getLogger(__name__)
 
         if formatter:

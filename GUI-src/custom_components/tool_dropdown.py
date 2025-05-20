@@ -1,17 +1,14 @@
 """Contains custom tooldropdowns"""
+
 from typing import Callable, Dict
 import tkinter as tk
 import customtkinter as ctk
-from globals.my_logger import logger as log
-from globals.style import (
-    FRAME_BG_COL,
-    LABEL_KWARGS,
-    PAD_SMALL,
-    PAD_MEDIUM,
-    CORNER_RADIUS_SMALL,
-    PRIMARY_BUTTON_BG_COLOR,
-)
+from globals.my_logger import MyLogger
+from globals.style import StyleManager
 from util.color_util import dimm_color
+
+log = MyLogger()
+style = StyleManager.get()
 
 
 class ToolDropdownBase:
@@ -127,10 +124,10 @@ class BtnToolDropdown(ToolDropdownBase):
         # CTk-compatible frame inside Toplevel
         self.dropdown_frame = ctk.CTkFrame(
             self.dropdown_window,
-            corner_radius=CORNER_RADIUS_SMALL,
-            bg_color=FRAME_BG_COL,
+            corner_radius=style.corner_radius_small,
+            bg_color=style.frame_bg_col,
         )
-        self.dropdown_frame.pack(fill="both", ipady=PAD_SMALL)
+        self.dropdown_frame.pack(fill="both", ipady=style.pad_small)
 
         self._populate_dropdown()
 
@@ -151,14 +148,14 @@ class BtnToolDropdown(ToolDropdownBase):
             text=label,
             command=lambda cmd=command: self._run_and_close(cmd, btn),
             fg_color="transparent",
-            hover_color=dimm_color(PRIMARY_BUTTON_BG_COLOR),
+            hover_color=dimm_color(style.primary_button_bg_color),
             anchor="w",
-            **LABEL_KWARGS,
+            **style.label_kwargs,
         )
-        btn.pack(fill="x", padx=PAD_MEDIUM, pady=PAD_SMALL)
+        btn.pack(fill="x", padx=style.pad_medium, pady=style.pad_small)
 
     def _make_line(self):
         line = ctk.CTkFrame(
-            self.dropdown_frame, fg_color=PRIMARY_BUTTON_BG_COLOR, height=2
+            self.dropdown_frame, fg_color=style.primary_button_bg_color, height=2
         )
-        line.pack(fill="x", padx=PAD_MEDIUM)
+        line.pack(fill="x", padx=style.pad_medium)
