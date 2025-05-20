@@ -35,7 +35,7 @@ class NodeApp(ctk.CTk):
 
         init_fonts()
 
-        self.auto_save_interval = 1 * 5 * 1000  # 5 minutes
+        self.auto_save_interval = 5 * 60 * 1000  # 5 minutes
         self.after(self.auto_save_interval, self.auto_save)
 
         self.columnconfigure(0, weight=1)
