@@ -5,6 +5,7 @@ from typing import Union, Tuple
 from customtkinter import CTkFont
 from util.color_util import dimm_color
 from globals.my_logger import logger as log
+from util.singleton import Singleton
 
 
 @dataclass
@@ -120,14 +121,26 @@ def get_light_theme() -> BaseStyle:
     )
 
 
-class StyleManager:
+class StyleManager(metaclass=Singleton):
     _theme: BaseStyle = get_dark_theme()
+    _current_theme_name: str = "Dark"
 
     @classmethod
-    def use_theme(cls, theme_fn: callable):
-        log.debug(f"Switching theme: {theme_fn.__name__}")
-        cls._theme = theme_fn()
+    def use_theme(cls, theme_name: str):
+        log.debug(f"Switching theme: {theme_name}")
+        if theme_name == "Dark":
+            cls._theme = get_dark_theme()
+            cls._current_theme_name = theme_name
+        elif theme_name == "Light":
+            cls._theme = get_light_theme()
+            cls._current_theme_name = theme_name
+        else:
+            log.error("Theme %s is not found", theme_name)
 
     @classmethod
     def get(cls) -> BaseStyle:
         return cls._theme
+
+    @classmethod
+    def get_theme(cls) -> str:
+        return cls._current_theme_name

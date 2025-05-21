@@ -8,7 +8,11 @@ if __name__ == "__main__":
     PERSISTANT_PATH.mkdir(parents=True, exist_ok=True)
     LOG_PATH.mkdir(parents=True, exist_ok=True)
     AUTO_SAVE_PATH.mkdir(parents=True, exist_ok=True)
-
+    
+    #Loading settings
+    from my_types.settings import load_settings
+    settings = load_settings()
+    
     # Setting up logging
     from globals.my_logger import MyLogger
 
@@ -21,12 +25,12 @@ if __name__ == "__main__":
     # Setting up ctk
     import customtkinter as ctk
 
-    ctk.set_appearance_mode("Dark")
+    ctk.set_appearance_mode(settings.ctk_apperance_mode)
     ctk.set_default_color_theme("dark-blue")
 
-    from globals.style import StyleManager, get_dark_theme, get_light_theme
+    from globals.style import StyleManager
 
-    StyleManager.use_theme(get_dark_theme)
+    StyleManager.use_theme(settings.style_theme)
 
     # Running app
     from NodeApp import NodeApp
