@@ -1,7 +1,7 @@
 """Contains Style classes"""
 
 from dataclasses import dataclass, field
-from typing import Union, Tuple
+from typing import Callable, Dict, Union, Tuple
 from customtkinter import CTkFont
 from util.color_util import dimm_color
 from globals.my_logger import logger as log
@@ -121,21 +121,102 @@ def get_light_theme() -> BaseStyle:
     )
 
 
+def get_night_theme() -> BaseStyle:
+    """returns a night-themed Style Class"""
+    text_font, header_font = _init_fonts()
+    return BaseStyle(
+        text_font=text_font,
+        header_font=header_font,
+        frame_bg_col="#121212",
+        main_bg_col="#0d0d0d",
+        toolbar_bg_col="#1f1f1f",
+        primary_button_bg_color="#0a84ff",
+        secondary_button_bg_color="#2c2c2e",
+        text_color="#e5e5e7",
+    )
+
+
+def get_purple_theme() -> BaseStyle:
+    """returns a purple-themed Style Class"""
+    text_font, header_font = _init_fonts()
+    return BaseStyle(
+        text_font=text_font,
+        header_font=header_font,
+        frame_bg_col="#2e1a47",
+        main_bg_col="#1f1033",
+        toolbar_bg_col="#3c2166",
+        primary_button_bg_color="#7e57c2",
+        secondary_button_bg_color="#5e35b1",
+        text_color="#f3e5f5",
+    )
+
+
+def get_blue_theme() -> BaseStyle:
+    """returns a blue-themed Style Class"""
+    text_font, header_font = _init_fonts()
+    return BaseStyle(
+        text_font=text_font,
+        header_font=header_font,
+        frame_bg_col="#e3f2fd",
+        main_bg_col="#bbdefb",
+        toolbar_bg_col="#90caf9",
+        primary_button_bg_color="#1976d2",
+        secondary_button_bg_color="#64b5f6",
+        text_color="#0d47a1",
+    )
+
+
+def get_high_contrast_light_theme() -> BaseStyle:
+    """returns a high-contrast light-themed Style Class"""
+    text_font, header_font = _init_fonts()
+    return BaseStyle(
+        text_font=text_font,
+        header_font=header_font,
+        frame_bg_col="#ffffff",
+        main_bg_col="#ffffff",
+        toolbar_bg_col="#cccccc",
+        primary_button_bg_color="#000000",
+        secondary_button_bg_color="#ffffff",
+        text_color="#000000",
+    )
+
+
+def get_high_contrast_dark_theme() -> BaseStyle:
+    """returns a high-contrast dark-themed Style Class"""
+    text_font, header_font = _init_fonts()
+    return BaseStyle(
+        text_font=text_font,
+        header_font=header_font,
+        frame_bg_col="#000000",
+        main_bg_col="#000000",
+        toolbar_bg_col="#1a1a1a",
+        primary_button_bg_color="#ffffff",
+        secondary_button_bg_color="#333333",
+        text_color="#ffffff",
+    )
+
+
 class StyleManager(metaclass=Singleton):
     _theme: BaseStyle = get_dark_theme()
     _current_theme_name: str = "Dark"
+    _name_map: Dict[str, Callable[[], BaseStyle]] = {
+        "Dark": get_dark_theme,
+        "Light": get_light_theme,
+        "Night": get_night_theme,
+        "Purple": get_purple_theme,
+        "High Contrast Light": get_high_contrast_light_theme,
+        "High Contrast Dark": get_high_contrast_dark_theme,
+    }
 
     @classmethod
     def use_theme(cls, theme_name: str):
         log.debug(f"Switching theme: {theme_name}")
-        if theme_name == "Dark":
-            cls._theme = get_dark_theme()
-            cls._current_theme_name = theme_name
-        elif theme_name == "Light":
-            cls._theme = get_light_theme()
-            cls._current_theme_name = theme_name
-        else:
+        if not cls._name_map.get(theme_name):
             log.error("Theme %s is not found", theme_name)
+            return
+
+        cls._theme = cls._name_map.get(theme_name, get_dark_theme)()
+        cls._current_theme_name = theme_name
 
     @classmethod
     def get(cls) -> BaseStyle:
