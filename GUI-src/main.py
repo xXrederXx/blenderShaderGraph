@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     from globals.style import StyleManager
 
-    StyleManager.use_theme(settings.style_theme)
+    StyleManager.use_theme("High Contrast Light")
 
     # Running app
     from NodeApp import NodeApp
